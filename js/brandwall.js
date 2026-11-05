@@ -24,7 +24,7 @@
     const r = root.getBoundingClientRect();
     const span = r.height - innerHeight;
     const p = reduce ? .22 : clamp(-r.top / Math.max(1, span));
-    const enter = ease(p / .18);                         // the wall leans back and grows in
+    const enter = .45 + .55 * ease(p / .2);                         // the wall leans back and grows in
     const bump = (x) => Math.sin(Math.PI * ease(x));      // out and back, so the grid is whole again at rest
     const side = bump((p - .16) / .34);                  // rows slide sideways
     const ud = bump((p - .56) / .34);                    // columns slide up / down
