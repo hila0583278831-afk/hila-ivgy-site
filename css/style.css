@@ -452,3 +452,13 @@ html,body{overflow-x:clip}
 .h-rvc__t{align-self:flex-start;display:inline-flex;align-items:center;gap:6px;font-family:"Atzofen","Oswald",sans-serif;font-size:13px;color:#fff;background:linear-gradient(to left,#ff00ff,#9b2ee6 60%,#3b3fd2);border:2px solid #141316;border-radius:999px;padding:4px 12px}
 @media (max-width:980px){.h-rvc{width:290px;padding:18px 20px 22px}.h-rvc__q{font-size:18px}.h-rvw{gap:14px;margin-top:56px}}
 @media (prefers-reduced-motion:reduce){.h-rvw__trk{animation:none}.h-rvw__row{overflow-x:auto}}
+
+/* ---- branding wall: leaned-back plane of wide tiles, driven by scroll (js/brandwall.js) ---- */
+.h-bw{position:relative;height:340svh;margin:24px clamp(10px,1.4vw,20px) 0;border-radius:clamp(28px,5vw,80px);background:#262626;--u:.5}
+.h-bw__pin{position:sticky;top:0;height:100svh;overflow:hidden;perspective:1700px;border-radius:inherit;-webkit-mask-image:linear-gradient(to bottom,transparent 0,#000 9%,#000 91%,transparent 100%);mask-image:linear-gradient(to bottom,transparent 0,#000 9%,#000 91%,transparent 100%)}
+.h-bw__plane{position:absolute;left:50%;top:50%;width:0;height:0;transform-style:preserve-3d;will-change:transform}
+.h-bt{position:absolute;left:0;top:0;margin:0;overflow:hidden;border-radius:calc(var(--u)*22px);background:#1a1424;backface-visibility:hidden;will-change:transform,opacity;box-shadow:0 30px 60px -24px rgba(0,0,0,.8)}
+.h-bt img{display:block;width:100%;height:100%;object-fit:cover}
+.h-bt figcaption{position:absolute;bottom:calc(var(--u)*18px);inset-inline-end:calc(var(--u)*18px);font-family:"Atzofen","Oswald",sans-serif;font-weight:500;font-size:calc(var(--u)*30px);line-height:1;padding:calc(var(--u)*11px) calc(var(--u)*20px);border-radius:999px;background:rgba(18,16,22,.78);color:#fff;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+@media (max-width:760px){.h-bw{height:300svh}.h-bt figcaption{font-size:calc(var(--u)*34px)}}
+@media (prefers-reduced-motion:reduce){.h-bw{height:auto}.h-bw__pin{position:relative;height:90svh}}
