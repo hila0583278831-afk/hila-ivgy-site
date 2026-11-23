@@ -10,6 +10,7 @@
 <script type="module" src="assets/js/journey3d.js"></script>
 <style>
 @font-face{font-family:"Lia Element";src:url(assets/fonts/lia-element-semibold.ttf) format("truetype");font-weight:600;font-style:normal;font-display:block}
+html,body{overflow-x:clip}
 body{margin:0;background:#0B0614}
 a{color:#FFFFFF}a:hover{color:#E9D9FF}
 .hero-bg{background-image:url(assets/hero-bg.webp);background-size:cover;background-position:center}
@@ -38,6 +39,7 @@ a{color:#FFFFFF}a:hover{color:#E9D9FF}
 .hb{box-shadow:0 8px 24px -12px rgba(20,6,60,.45)}
 .hb-talk:hover,.hb-go:hover{background:#FF00FF;color:#fff}
 .hb-menu:hover{background:#F1ECFF}
+@media (max-width:480px){.hb-go{display:none}.hbtns{--h:44px}.hb-talk{padding:0 20px;font-size:16px}}
 /* ---------- menu drawer: slides in from the right, big white links ---------- */
 .hb-wrap{position:relative;z-index:2}
 .menu-panel{position:fixed;z-index:1;top:0;right:0;bottom:0;width:min(640px,100vw);box-sizing:border-box;overflow:auto;
@@ -46,8 +48,9 @@ a{color:#FFFFFF}a:hover{color:#E9D9FF}
   background:radial-gradient(60% 40% at 15% 70%,rgba(190,170,255,.55),transparent 70%),radial-gradient(50% 35% at 95% 25%,rgba(70,40,200,.55),transparent 70%),
              linear-gradient(180deg,#6B55F5 0%,#7360F6 42%,#9A8AEE 100%);
   box-shadow:-30px 0 80px -30px rgba(20,6,60,.6);
-  transform:translateX(104%);transition:transform .7s cubic-bezier(.7,0,.2,1);pointer-events:none}
-.site-head.open .menu-panel{transform:none;pointer-events:auto}
+  transform:translateX(104%);transition:transform .7s cubic-bezier(.7,0,.2,1),visibility 0s linear .7s;pointer-events:none;visibility:hidden}
+.site-head.open .menu-panel{transform:none;pointer-events:auto;visibility:visible;transition-delay:0s}
+body.menu-open .wa-float,body.menu-open .a11y-ui{opacity:0;pointer-events:none}
 .menu-links{display:flex;flex-direction:column;align-items:flex-start;gap:0}
 .menu-links a{color:#fff;text-decoration:none;font-size:clamp(40px,min(4.6vw,8.4vh),84px);line-height:1.12;letter-spacing:-.01em;
   opacity:0;transform:translateX(40px);transition:opacity .5s,transform .6s cubic-bezier(.2,.7,.2,1),color .25s}
@@ -76,6 +79,7 @@ body.menu-open .menu-dim{opacity:1;pointer-events:auto}
 /* ---------- hero (full screen) ---------- */
 /* sized by width (2576:1449) so the 8-column leaf grid continues 1:1 into the next section */
 .hero{position:relative;width:100%;aspect-ratio:2576/1449;overflow:hidden;background-color:#5C2696;font-family:'Lia Element',sans-serif}
+@media (max-width:700px){.hero{aspect-ratio:auto;height:100svh;min-height:540px;max-height:900px}}
 
 /* ---------- statement + curved mockup ring (after tsivia.com) ---------- */
 /* ---------- projects wall (after tsivia.com's reel): cards fly in one by one and lock into a tilted grid ---------- */
@@ -157,7 +161,7 @@ body.menu-open .menu-dim{opacity:1;pointer-events:auto}
 .side img.on{opacity:1;transform:none}
 .wl .acc{display:none}
 @media (max-width:700px){
-  .works{padding:50px 0 60px}.works .tick{height:56px}.works .wk{font-size:31vw;margin-top:30px}
+  .works{padding:50px 0 60px}.works .tick{height:56px}.works .wk{font-size:25vw;margin-top:30px}
   .wl{margin-top:36px;overflow-x:clip}.wl ul{gap:30px}.wl li{font-size:34px;white-space:normal;padding:0 20px}
   .side{display:none}
   .wl .acc{display:grid;grid-template-rows:0fr;transition:grid-template-rows .7s cubic-bezier(.16,1,.3,1)}
@@ -193,7 +197,7 @@ body.menu-open .menu-dim{opacity:1;pointer-events:auto}
 .bwall .bcard:hover::after{opacity:1}
 .bwall .bcard:hover img{transform:scale(1.06)}
 @media (max-width:900px){.bwall{grid-template-columns:repeat(3,1fr);height:110vh}.bcol:nth-child(n+4){display:none}}
-@media (max-width:700px){.brand .bk{font-size:24vw}.brand .tick{height:56px}}
+@media (max-width:700px){.brand .bk{font-size:17vw}.brand .tick{height:56px}}
 
 /* ---------- CONTACT ---------- */
 .contact{position:relative;background:#1A0E30;color:#fff;font-family:'Lia Element',sans-serif;font-weight:600;padding:clamp(40px,5vw,90px) clamp(14px,2.4vw,44px) 30px}
@@ -225,7 +229,7 @@ body.menu-open .menu-dim{opacity:1;pointer-events:auto}
 .ct-grid input::placeholder,.ct-grid textarea::placeholder{color:#6C6187}
 .ct-grid label:focus-within{border-color:#B46BFF}
 .ct-ok{display:flex;align-items:center;gap:10px;margin:22px 0 26px;font-size:clamp(14px,1vw,17px);color:#3A2F55}
-.ct-ok input{width:18px;height:18px;accent-color:#6E5BF2}
+.ct-ok input{flex:none;width:18px;height:18px;accent-color:#6E5BF2}
 .ct-send{width:100%;display:flex;align-items:center;justify-content:space-between;padding:18px 30px;border:0;border-radius:999px;cursor:pointer;
   font:inherit;font-weight:600;font-size:clamp(18px,1.4vw,24px);color:#fff;background:linear-gradient(270deg,#1F1240 0%,#2A1856 55%,#6E5BF2 100%);transition:filter .3s,transform .3s}
 .ct-send:hover{filter:brightness(1.2);transform:translateY(-2px)}
@@ -249,6 +253,8 @@ body.menu-open .menu-dim{opacity:1;pointer-events:auto}
 .wa-float svg{width:32px;height:32px}
 @keyframes waPulse{0%{box-shadow:0 12px 30px -8px rgba(37,211,102,.6),0 0 0 0 rgba(37,211,102,.45)}70%{box-shadow:0 12px 30px -8px rgba(37,211,102,.6),0 0 0 18px rgba(37,211,102,0)}100%{box-shadow:0 12px 30px -8px rgba(37,211,102,.6),0 0 0 0 rgba(37,211,102,0)}}
 @media (max-width:900px){.ct-panel{grid-template-columns:1fr}.ct-grid{grid-template-columns:1fr}}
+@media (max-width:700px){.ct-foot{padding:0 20px 96px}
+  .pcell .pnum{font-size:92px;top:-.34em;left:.12em}.pcell.sh2c .pnum{left:auto;right:.12em}}
 
 /* ---------- IMPRESSION: growing purple dot + giant sentence sweeping with the scroll ---------- */
 .impress{position:relative;height:700vh;background:#EFE8FF}
@@ -469,7 +475,7 @@ html[data-a11y-size="3"] :is(p,blockquote,label,h3,.ct-nav a,.ct-links a,.menu-l
   const set = o => { head.classList.toggle('open', o); document.body.classList.toggle('menu-open', o); btn.setAttribute('aria-expanded', o); btn.setAttribute('aria-label', o ? 'סגירת תפריט' : 'תפריט'); };
   btn.addEventListener('click', e => { e.stopPropagation(); set(!head.classList.contains('open')); });
   document.addEventListener('click', e => { if (!head.contains(e.target) || e.target.closest('.menu-panel a')) set(false); });
-  addEventListener('keydown', e => { if (e.key === 'Escape') set(false); });
+  addEventListener('keydown', e => { if (e.key === 'Escape' && head.classList.contains('open')) { set(false); btn.focus(); } });
 })();
 </script>
 <section class="hero hero-bg" id="hero" dir="ltr" tabindex="-1">
@@ -565,6 +571,47 @@ html[data-a11y-size="3"] :is(p,blockquote,label,h3,.ct-nav a,.ct-links a,.menu-l
 </g>
 </svg>
 </section>
+<script>
+/* phones: the landscape hero would be a thin strip, so rebuild it as a full-height portrait grid –
+   4 cells across (same 322 x 289.8 leaf cells), the three lines stacked and sized to the width */
+(() => {
+  const mq = matchMedia('(max-width:700px)'), hero = document.getElementById('hero'), svg = hero.querySelector('svg');
+  const grid = svg.querySelector('.hero-grid'), texts = svg.querySelectorAll('.hero-type text'), fade = svg.querySelector('#fade');
+  const orig = { vb: svg.getAttribute('viewBox'), grid: grid.innerHTML, t: [...texts].map(t => ['x', 'y', 'font-size', 'letter-spacing', 'text-anchor'].map(a => t.getAttribute(a))), f: [fade.getAttribute('y1'), fade.getAttribute('y2')] };
+  const CW = 322, CH = 289.8, R = 137;
+  const cell = (x, y) => `<rect x="${x}" y="${y}" width="${CW}" height="${CH}" fill="none" stroke="url(#gl)" stroke-width="2.2"/>` +
+    `<path d="M${x},${y} H${x + CW - R} A${R},${R} 0 0 1 ${x + CW},${y + R} V${y + CH} H${x + R} A${R},${R} 0 0 1 ${x},${y + CH - R} Z" fill="none" stroke="url(#gs)" stroke-width="2.6"/>`;
+  let mode = '';
+  function layout() {
+    const want = mq.matches ? 'm' : 'd';
+    if (want === 'd') {
+      if (mode === 'd') return; mode = 'd';
+      svg.setAttribute('viewBox', orig.vb); grid.innerHTML = orig.grid;
+      texts.forEach((t, i) => ['x', 'y', 'font-size', 'letter-spacing', 'text-anchor'].forEach((a, j) => orig.t[i][j] == null ? t.removeAttribute(a) : t.setAttribute(a, orig.t[i][j])));
+      fade.setAttribute('y1', orig.f[0]); fade.setAttribute('y2', orig.f[1]);
+      return;
+    }
+    mode = 'm';
+    const r = hero.getBoundingClientRect(), W = 4 * CW;
+    const rows = Math.max(6, Math.ceil(W * r.height / Math.max(r.width, 1) / CH));
+    const H = rows * CH;
+    svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
+    let g = ''; for (let y = 0; y < rows; y++) for (let x = 0; x < 4; x++) g += cell(x * CW, +(y * CH).toFixed(1));
+    grid.innerHTML = g;
+    // the words sit on the grid lines, centred, in the middle rows
+    const mid = Math.round(rows / 2), base = [(mid - 1) * CH, (mid - 1) * CH + 240, (mid + 1) * CH - 20];
+    const spec = [[292, -14], [208, -1], [318, -15.4]];
+    texts.forEach((t, i) => {
+      t.setAttribute('x', W / 2); t.setAttribute('text-anchor', 'middle');
+      t.setAttribute('y', base[i].toFixed(1)); t.setAttribute('font-size', spec[i][0]); t.setAttribute('letter-spacing', spec[i][1]);
+    });
+    fade.setAttribute('y1', (base[2] - 240).toFixed(1)); fade.setAttribute('y2', (base[2] + 10).toFixed(1));
+  }
+  layout();
+  mq.addEventListener('change', layout);
+  addEventListener('resize', () => { if (mq.matches) { mode = ''; layout(); } });
+})();
+</script>
 <div class="ghost-layer" id="ghostLayer" aria-hidden="true"></div>
 <script src="assets/ghost-cursor.js"></script>
 <script>
@@ -625,7 +672,7 @@ if (window.GhostCursor && matchMedia('(hover: hover)').matches) GhostCursor(docu
     PH = phone ? { tilt: 1.8, side: 1, updown: 1, away: 1, hold: 1 } : { tilt: 2.2, side: 1.2, updown: 1.2, away: 1.4, hold: 1.2 };
     L = PH.tilt + PH.side + PH.updown + PH.away + PH.hold;   // hold: the statement stays on screen before the next section
     sec.style.height = (vh * (1 + L)) + 'px';
-    const u = vw / 1920, w = (phone ? 270 : 540) * u * (phone ? 2.2 : 1), h = w * 10 / 16, gap = .08 * w;
+    const u = vw / 1920, w = phone ? Math.min(vw * .56, 300) : 540 * u, h = w * 10 / 16, gap = .08 * w;
     G = { u, vw, vh, phone, w, h, sx: w + gap, sy: h + gap, cols: phone ? 9 : 7, rows: phone ? 13 : 11 };
     G.spanX = G.cols * G.sx; G.spanY = G.rows * G.sy;
     G.dmax = Math.hypot((G.cols - 1) / 2, (G.rows - 1) / 2);
@@ -835,7 +882,7 @@ if (window.GhostCursor && matchMedia('(hover: hover)').matches) GhostCursor(docu
         const k = clamp(p * (words.length + 3) - i);
         w.style.opacity = k.toFixed(3); w.style.filter = `blur(${((1 - k) * 8).toFixed(2)}px)`;
       });
-      phrase.style.transform = `translate(-50%,calc(-50% + ${(1 - clamp(cur / .2)) * 60}px))`;
+      phrase.style.transform = `translate(-50%,calc(-50% + ${(1 - clamp(cur / .2)) * 60}px))` + (innerWidth < 700 ? ' translateZ(720px) scale(.4)' : '');
     }
     requestAnimationFrame(frame);
   }
@@ -1201,7 +1248,7 @@ if (window.GradientWaves) window.worksWaves = GradientWaves(document.getElementB
         <label class="wide"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16zM14 6l4 4"/></svg><span class="sr">הודעה (רשות)</span><textarea name="msg" rows="3" maxlength="2000" placeholder="ספרו לי קצת על העסק. אם יש לינק לאתר קיים או לרשתות, אשמח לראות."></textarea></label>
       </div>
       <label class="hp" aria-hidden="true">אין למלא שדה זה<input name="_honey" tabindex="-1" autocomplete="off"></label>
-      <label class="ct-ok"><input type="checkbox" name="ok" required aria-required="true"> קראתי את <a href="privacy.html" target="_blank" rel="noopener">מדיניות הפרטיות</a> ואני מאשר/ת שהילה תחזור אליי בנוגע לפנייה</label>
+      <label class="ct-ok"><input type="checkbox" name="ok" required aria-required="true"> <span>קראתי את <a href="privacy.html" target="_blank" rel="noopener">מדיניות הפרטיות</a> ואני מאשר/ת שהילה תחזור אליי בנוגע לפנייה</span></label>
       <p class="ct-note">הפרטים נמסרים מרצונכם ומשמשים רק לחזרה לפנייה – בלי דיוור ובלי פרסום. בשליחה במייל הם עוברים דרך שירות FormSubmit ונשמרים בתיבת Gmail, בשרתים שעשויים להיות מחוץ לישראל. אפשר לבקש לעיין בהם או למחוק אותם בכל עת.</p>
       <div class="ct-actions">
         <button type="submit" class="ct-send" data-via="mail"><span>שליחה למייל</span><svg width="40" height="12" viewBox="0 0 53 12" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M53 6H1M7 1 1 6l6 5"/></svg></button>
