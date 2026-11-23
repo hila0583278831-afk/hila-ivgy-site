@@ -392,11 +392,12 @@ body.menu-open .menu-dim{opacity:1;pointer-events:auto}
 .leaf::before{content:"";position:absolute;inset:0;border-radius:inherit;padding:2.5px;pointer-events:none;
   background:linear-gradient(120deg,#3A46EC,#8E4CF2 50%,#FF00FF);
   -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude}
-.leaf .about-lead{margin:0;font-size:clamp(30px,3.4vw,66px);line-height:1.08;letter-spacing:-.01em;font-weight:600}
+.leaf .about-lead{margin:0;font-size:clamp(30px,3.4vw,66px);line-height:.98;letter-spacing:-.01em;font-weight:600}
 .leaf .about-lead .hl{background:linear-gradient(100deg,#C49BFF,#FF3DF2);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent}
 .leaf .about-text{margin:clamp(18px,2vw,34px) 0 0;font-size:clamp(18px,1.5vw,27px);line-height:1.5;color:#fff}
 .leaf .about-text .one-line{white-space:nowrap}
-@media (max-width:520px){.leaf .about-text .one-line{white-space:normal}}
+.leaf .about-text .mbr{display:none}
+@media (max-width:900px){.leaf .about-text .one-line{white-space:normal}.leaf .about-text .mbr{display:inline}}
 .about .w{opacity:.2;transition:opacity .5s ease}
 .about .w.lit{opacity:1}
 .about-cta{display:inline-flex;align-items:center;gap:12px;margin-top:clamp(24px,2.6vw,44px);padding:16px 34px;border-radius:999px;background:#fff;color:#2A1460;
@@ -1072,7 +1073,7 @@ if (window.GradientWaves) window.worksWaves = GradientWaves(document.getElementB
   <div class="about-stage" dir="rtl">
     <div class="leaf">
       <h2 class="about-lead" id="aboutTitle">אני הילה, ואני מעצבת עסקים <span class="hl">מהלוגו ועד האתר.</span></h2>
-      <p class="about-text">אני מקשיבה לעסק, מוצאת את מה שמיוחד בו, ובונה לו מראה שמחזיק לאורך זמן.<br><span class="one-line">הלקוחות שלי מרוצים, ורואים את זה גם בתוצאה.</span></p>
+      <p class="about-text">אני מקשיבה לעסק, מוצאת את מה שמיוחד בו, ובונה לו מראה שמחזיק לאורך זמן.<br><span class="one-line">הלקוחות שלי מרוצים,<br class="mbr"> ורואים את זה גם בתוצאה.</span></p>
       <a class="about-cta" href="#contact">בואו נדבר <svg width="22" height="12" viewBox="0 0 53 12" fill="none" stroke="currentColor" stroke-width="3"><path d="M53 6H1M7 1 1 6l6 5"/></svg></a>
     </div>
     <figure class="about-avatar"><img src="assets/avatar-toon.png" alt="הילה – אווטר מאויר"></figure>
