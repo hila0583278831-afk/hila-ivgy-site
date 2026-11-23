@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>HILA IVGY — Websites that leave a mark</title>
+<title>הילה איבגי – HILA IVGY | בניית אתרים, עיצוב אתרים ומיתוג לעסקים</title>
 <meta name="description" content="HILA IVGY — מיתוג, בניה ועיצוב אתרים">
 <link rel="preload" href="assets/fonts/lia-element-semibold.ttf" as="font" type="font/ttf" crossorigin>
 <script type="importmap">{"imports":{"three":"./assets/js/vendor/three.module.min.js"}}</script>
@@ -183,6 +183,8 @@ body.menu-open .menu-dim{opacity:1;pointer-events:auto}
   background:rgba(255,255,255,.22) center/22px no-repeat url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'%3E%3Cpath d='M3 9v6h4l5 4V5L7 9H3z'/%3E%3Cpath d='M16 9l5 6M21 9l-5 6' stroke='white' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E");
   -webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);box-shadow:0 0 0 1px rgba(255,255,255,.35);transition:opacity .4s,transform .4s}
 .bvid.loud .bsnd{opacity:0;transform:scale(.7)}
+.bvid .bsnd{border:0;cursor:pointer;padding:0}
+.bvid.loud .bsnd:focus-visible{opacity:1;transform:none}
 .bcard::after{content:"";position:absolute;inset:0;border-radius:inherit;padding:2px;pointer-events:none;opacity:0;transition:opacity .4s;
   background:linear-gradient(135deg,#B46BFF,#FF00FF 55%,#5227FF);
   -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude}
@@ -233,7 +235,13 @@ body.menu-open .menu-dim{opacity:1;pointer-events:auto}
 .ct-err{min-height:1.2em;margin:12px 0 0;color:#C2185B;font-size:15px;text-align:center}
 .ct-err.ok{color:#4B3FC7}
 @media (max-width:520px){.ct-actions{grid-template-columns:1fr}}
-.ct-foot{margin:26px 0 0;text-align:center;font-size:14px;color:rgba(255,255,255,.55);letter-spacing:.06em}
+.ct-foot{margin:26px 0 0;text-align:center;font-size:14px;color:rgba(255,255,255,.62);letter-spacing:.02em;line-height:1.6;padding:0 84px 24px}
+.ct-foot nav{display:flex;flex-wrap:wrap;justify-content:center;gap:6px 26px;margin-bottom:8px;font-size:15px}
+.ct-foot nav a{color:rgba(255,255,255,.85)}
+.ct-foot p{margin:0}
+.ct-note{margin:-14px 0 22px;font-size:13px;line-height:1.55;color:#4A3F66}
+.ct-note a,.ct-ok a{color:#5227FF}
+.hp{position:absolute!important;left:-9999px;width:1px;height:1px;overflow:hidden}
 /* floating WhatsApp button */
 .wa-float{position:fixed;left:clamp(14px,2vw,30px);bottom:clamp(14px,2vw,30px);z-index:55;width:60px;height:60px;border-radius:50%;display:grid;place-items:center;
   background:#25D366;box-shadow:0 12px 30px -8px rgba(37,211,102,.6),0 0 0 0 rgba(37,211,102,.5);animation:waPulse 2.6s infinite;transition:transform .3s}
@@ -389,9 +397,47 @@ body.menu-open .menu-dim{opacity:1;pointer-events:auto}
   text-decoration:none;font-size:clamp(16px,1.2vw,20px);transition:background .25s,color .25s}
 .about-cta:hover{background:#FF00FF;color:#fff}
 @media (max-width:860px){.about-stage{grid-template-columns:1fr;margin-top:-10vw}.about-avatar{width:70%}.leaf{text-align:center}}
+/* ================= accessibility ================= */
+.skip{position:fixed;top:-80px;right:16px;z-index:100;padding:12px 22px;border-radius:999px;background:#fff;color:#2A1460;font:700 17px/1 system-ui,sans-serif;text-decoration:none;box-shadow:0 8px 24px rgba(0,0,0,.35)}
+.skip:focus{top:16px}
+:focus-visible{outline:3px solid #FF9FFC!important;outline-offset:3px}
+.ct-form :focus-visible{outline-color:#5227FF!important}
+.ct-grid label:focus-within{box-shadow:0 2px 0 #5227FF}
+#hero:focus,#main:focus{outline:none}
+/* accessibility menu */
+.a11y-ui{position:fixed;right:clamp(14px,2vw,30px);bottom:clamp(14px,2vw,30px);z-index:60;font:600 16px/1.3 system-ui,"Segoe UI",Arial,sans-serif}
+.a11y-btn{width:56px;height:56px;border-radius:50%;border:0;cursor:pointer;display:grid;place-items:center;background:#4B3FC7;color:#fff;box-shadow:0 10px 26px -8px rgba(40,20,120,.7)}
+.a11y-btn svg{width:32px;height:32px}
+.a11y-btn:hover{background:#5227FF}
+.a11y-panel{position:absolute;right:0;bottom:68px;width:min(330px,calc(100vw - 28px));max-height:min(78vh,620px);overflow:auto;padding:18px;border-radius:22px;background:#fff;color:#1D1530;box-shadow:0 30px 70px -20px rgba(0,0,0,.55)}
+.a11y-panel[hidden]{display:none}
+.a11y-panel h2{margin:0 0 12px;font-size:20px;color:#2A1460;display:flex;justify-content:space-between;align-items:center}
+.a11y-x{width:34px;height:34px;border-radius:50%;border:0;background:#F1ECFF;color:#2A1460;font-size:20px;cursor:pointer}
+.a11y-size{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+.a11y-size span{flex:1}
+.a11y-size button{width:46px;height:40px;border-radius:12px;border:1.5px solid #CFC4EC;background:#fff;color:#2A1460;font:700 17px system-ui,sans-serif;cursor:pointer}
+.a11y-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.a11y-grid button{min-height:52px;padding:8px;border-radius:14px;border:1.5px solid #CFC4EC;background:#F8F5FF;color:#2A1460;font:600 15px/1.2 system-ui,sans-serif;cursor:pointer;text-align:center}
+.a11y-grid button[aria-pressed="true"]{background:#4B3FC7;border-color:#4B3FC7;color:#fff}
+.a11y-foot{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:12px}
+.a11y-foot button{border:0;background:none;color:#C2185B;font:600 15px system-ui,sans-serif;cursor:pointer;text-decoration:underline}
+.a11y-foot a{color:#4B3FC7;font-size:15px}
+/* modes */
+html.a11y-links a{text-decoration:underline!important;text-underline-offset:3px}
+html.a11y-links a:not(.hb):not(.wa-float){outline:2px dashed #FFD400;outline-offset:2px}
+html.a11y-font body *:not(svg):not(svg *):not(.a11y-ui *){font-family:Arial,"Segoe UI",sans-serif!important;letter-spacing:normal!important}
+html.a11y-cursor,html.a11y-cursor *{cursor:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='48' viewBox='0 0 24 24'%3E%3Cpath d='M4 2l15 11-7 1 4 8-3 1-4-8-5 5z' fill='black' stroke='white' stroke-width='1.3'/%3E%3C/svg%3E") 4 2,auto!important}
+html.a11y-stop *,html.a11y-stop *::before,html.a11y-stop *::after{animation-play-state:paused!important;transition-duration:0s!important;scroll-behavior:auto!important}
+html.a11y-stop .ghost-layer{display:none!important}
+html[data-a11y-size="1"] :is(p,blockquote,label,h3,.ct-nav a,.ct-links a,.menu-links a,.menu-foot a,.wl li .nm,.ct-foot){zoom:1.15}
+html[data-a11y-size="2"] :is(p,blockquote,label,h3,.ct-nav a,.ct-links a,.menu-links a,.menu-foot a,.wl li .nm,.ct-foot){zoom:1.3}
+html[data-a11y-size="3"] :is(p,blockquote,label,h3,.ct-nav a,.ct-links a,.menu-links a,.menu-foot a,.wl li .nm,.ct-foot){zoom:1.45}
+@media (max-width:700px){.a11y-btn{width:50px;height:50px}.a11y-panel{bottom:60px}}
 </style>
 </head>
 <body>
+<span id="top"></span>
+<a class="skip" href="#hero">דילוג לתוכן</a>
 <div class="menu-dim" aria-hidden="true"></div>
 <header class="site-head" dir="rtl">
   <div class="hb-wrap">
@@ -426,8 +472,8 @@ body.menu-open .menu-dim{opacity:1;pointer-events:auto}
   addEventListener('keydown', e => { if (e.key === 'Escape') set(false); });
 })();
 </script>
-<section class="hero hero-bg" id="hero" dir="ltr">
-<h1 class="sr">Websites that leave a mark</h1>
+<section class="hero hero-bg" id="hero" dir="ltr" tabindex="-1">
+<h1 class="sr" dir="rtl">הילה איבגי – בניית אתרים, עיצוב אתרים ומיתוג לעסקים. <span lang="en">Websites that leave a mark</span></h1>
 <svg aria-hidden="true" viewBox="0 0 2576 1449" preserveAspectRatio="xMidYMid slice" style="position: absolute; inset: 0; z-index: 2; pointer-events: none; width: 100%; height: 100%; display: block">
 <defs>
 <linearGradient id="gl" x1="0" y1="0" x2="2576" y2="1449" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#4C3BE6" stop-opacity=".85"></stop><stop offset="1" stop-color="#8A4DF0" stop-opacity=".9"></stop></linearGradient>
@@ -799,25 +845,25 @@ if (window.GhostCursor && matchMedia('(hover: hover)').matches) GhostCursor(docu
 
 <section class="works" id="works-list" aria-labelledby="worksTitle">
   <i class="tick" aria-hidden="true"></i>
-  <h2 class="wk" id="worksTitle">WORKS</h2>
+  <h2 class="wk" id="worksTitle" lang="en">WORKS</h2>
   <div class="wl" id="wl">
     <div class="side side-a" aria-hidden="true"><div id="sideA"></div></div>
     <div class="side side-b" aria-hidden="true"><div id="sideB"></div></div>
     <ul id="wlList" dir="rtl">
-      <li data-img="ravitz"><span class="nm">RAVITZ ניהול נכסים</span><div class="acc"><div><img alt="" data-src="ravitz"></div></div></li>
-      <li data-img="trolist"><span class="nm">TROLIST</span><div class="acc"><div><img alt="" data-src="trolist"></div></div></li>
-      <li data-img="hapisga"><span class="nm">הפסגה</span><div class="acc"><div><img alt="" data-src="hapisga"></div></div></li>
-      <li data-img="avney"><span class="nm">אבני הכתר</span><div class="acc"><div><img alt="" data-src="avney"></div></div></li>
-      <li data-img="event"><span class="nm">אירוע חד פעמי</span><div class="acc"><div><img alt="" data-src="event"></div></div></li>
-      <li data-img="biscotti"><span class="nm">Biscotti</span><div class="acc"><div><img alt="" data-src="biscotti"></div></div></li>
-      <li data-img="vortex"><span class="nm">VORTEX</span><div class="acc"><div><img alt="" data-src="vortex"></div></div></li>
+      <li data-img="ravitz"><span class="nm">RAVITZ ניהול נכסים</span><div class="acc"><div><img alt="עיצוב ובניית האתר – RAVITZ ניהול נכסים" data-src="ravitz"></div></div></li>
+      <li data-img="trolist"><span class="nm">TROLIST</span><div class="acc"><div><img alt="עיצוב ובניית האתר – TROLIST" data-src="trolist"></div></div></li>
+      <li data-img="hapisga"><span class="nm">הפסגה</span><div class="acc"><div><img alt="עיצוב ובניית האתר – הפסגה" data-src="hapisga"></div></div></li>
+      <li data-img="avney"><span class="nm">אבני הכתר</span><div class="acc"><div><img alt="עיצוב ובניית האתר – אבני הכתר" data-src="avney"></div></div></li>
+      <li data-img="event"><span class="nm">אירוע חד פעמי</span><div class="acc"><div><img alt="עיצוב ובניית האתר – אירוע חד פעמי" data-src="event"></div></div></li>
+      <li data-img="biscotti"><span class="nm">Biscotti</span><div class="acc"><div><img alt="עיצוב ובניית האתר – Biscotti" data-src="biscotti"></div></div></li>
+      <li data-img="vortex"><span class="nm">VORTEX</span><div class="acc"><div><img alt="עיצוב ובניית האתר – VORTEX" data-src="vortex"></div></div></li>
     </ul>
   </div>
 </section>
 
 <section class="brand" id="branding" aria-labelledby="brandTitle">
   <i class="tick" aria-hidden="true"></i>
-  <h2 class="bk" id="brandTitle">BRANDING</h2>
+  <h2 class="bk" id="brandTitle" lang="en">BRANDING</h2>
   <p class="bsub" dir="rtl">זהות שלמה למותג – לוגו, שפה ויזואלית, דפוס, שילוט ומדיה, הכל מדבר באותו קול.</p>
   <div class="bwall" id="bwall" aria-label="עבודות מיתוג"></div>
 </section>
@@ -834,7 +880,22 @@ if (window.GhostCursor && matchMedia('(hover: hover)').matches) GhostCursor(docu
     ['b04', 'h12', 'marom-lobby.webp', 'ad-kollel', 'b24', 'h07'],
     ['b12', 'ad-women', 'b28', 'b11', 'marom-folder.webp', 'b09']
   ];
+  const ALT = {
+    'ad-women': 'מודעה: נופש נשים מיוחד במלון כינר גליל', h00: 'שילוט חוצות להדס קפיטל – המיקום לפרויקט המנצח',
+    h01: 'הדס קפיטל – רול-אפ "ברוכים הבאים" וקשת בלונים לכנס', h04: 'הדס קפיטל – לוח "מזמור לתודה" במסגרת זהב',
+    h07: 'הדס קפיטל – שילוט ענק על בניין בבנייה', h08: 'הדס קפיטל – לוח זמני שבת ממותג',
+    h09: 'מודעת הדס קפיטל – 2 דירות אחרונות בפרויקט', h10: 'מודעת הדס קפיטל – מאחלת חורף בריא',
+    h11: 'מודעת הדס קפיטל לראש השנה – תתחדשו', h12: 'שילוט הדס קפיטל – הגעת ליעד',
+    'ad-kollel': 'מודעה לכולל חזון אליעזר – ממשיכים את האור', b01: 'לובי משרדי RAVITZ עם לוגו מואר',
+    b03: 'כרטיסי ביקור ZERO TEN בעיצוב בוטני', b04: 'מיתוג מוצרי ספא לאורטל', b05: 'ערכת מיתוג עסקי למשה אושרי',
+    b06: 'כוסות קפה ממותגות לפרוטיק', b09: 'פלייר ל-ESTILO מטבחים', b11: 'מדבקות עגולות לסילבר ליין',
+    b12: 'ניירת משרדית ממותגת לצבי נקר', b14: 'כרזה קליגרפית – אמונה', b20: 'הזמנת חתונה מעוצבת',
+    b24: 'שלט TROLIST בשדה התעופה', b28: 'כרזה לפרשת נח',
+    'marom-sign.webp': 'לוגו MAROM ניהול נכסים בזהב על קיר שיש', 'marom-lobby.webp': 'לובי משרד MAROM עם לוגו ודלפק קבלה',
+    'marom-folder.webp': 'תיקייה וחומרי דפוס ממותגים ל-MAROM', 'marom-kit.webp': 'ערכת ניירת ל-MAROM – תיקייה, כרטיס ביקור, מעטפה ועט'
+  };
   const vids = [];
+  const stopped = () => document.documentElement.classList.contains('a11y-stop');
   const make = (k, dup) => {
     const fig = document.createElement('figure'); fig.className = 'bcard';
     if (k === 'VIDEO') {
@@ -842,13 +903,15 @@ if (window.GhostCursor && matchMedia('(hover: hover)').matches) GhostCursor(docu
       const v = document.createElement('video');
       v.src = 'assets/branding/shilat.mp4'; v.muted = true; v.loop = true; v.playsInline = true; v.preload = dup ? 'none' : 'metadata';
       v.setAttribute('aria-label', 'סרטון תדמית');
-      const b = document.createElement('span'); b.className = 'bsnd'; b.setAttribute('aria-hidden', 'true');
+      const b = document.createElement('button'); b.type = 'button'; b.className = 'bsnd';
+      b.setAttribute('aria-label', 'הפעלת הקול בסרטון'); b.setAttribute('aria-pressed', 'false');
+      if (dup) { b.tabIndex = -1; fig.setAttribute('aria-hidden', 'true'); }
       fig.append(v, b);
-      fig.addEventListener('click', () => { const m = !v.muted; vids.forEach(x => x.muted = true); v.muted = m; fig.classList.toggle('loud', !m); v.play().catch(() => {}); });
-      v.addEventListener('canplay', () => { if (on) v.play().catch(() => {}); });
+      fig.addEventListener('click', () => { const m = !v.muted; vids.forEach(x => { x.muted = true; x.parentNode.classList.remove('loud'); }); v.muted = m; fig.classList.toggle('loud', !m); b.setAttribute('aria-pressed', String(!m)); b.setAttribute('aria-label', m ? 'הפעלת הקול בסרטון' : 'השתקת הסרטון'); if (!stopped()) v.play().catch(() => {}); });
+      v.addEventListener('canplay', () => { if (on && !stopped()) v.play().catch(() => {}); });
       vids.push(v);
     } else {
-      const im = new Image(); im.src = `assets/branding/${k.includes('.') ? k : k + '.jpg'}`; im.alt = dup ? '' : 'עבודת עיצוב'; im.decoding = 'async';
+      const im = new Image(); im.src = `assets/branding/${k.includes('.') ? k : k + '.jpg'}`; im.alt = dup ? '' : (ALT[k] || 'עבודת מיתוג'); im.decoding = 'async'; if (dup) fig.setAttribute('aria-hidden', 'true');
       fig.appendChild(im);
     }
     return fig;
@@ -867,11 +930,11 @@ if (window.GhostCursor && matchMedia('(hover: hover)').matches) GhostCursor(docu
   let lastY = scrollY, push = 0, on = false;
   new IntersectionObserver(e => {
     on = e[0].isIntersecting;
-    vids.forEach(v => { if (on) { if (v.preload === 'none') v.preload = 'auto'; v.play().catch(() => {}); } else { v.pause(); v.muted = true; v.parentNode.classList.remove('loud'); } });
+    vids.forEach(v => { if (on && !stopped()) { if (v.preload === 'none') v.preload = 'auto'; v.play().catch(() => {}); } else { v.pause(); v.muted = true; v.parentNode.classList.remove('loud'); } });
   }, { rootMargin: '200px' }).observe(wall);
   addEventListener('scroll', () => { push += (scrollY - lastY) * 0.35; lastY = scrollY; }, { passive: true });
   (function tick() {
-    if (on && !reduce) {
+    if (on && !reduce && !stopped()) {
       push *= 0.9;
       cols.forEach(o => {
         const half = o.tr.scrollHeight / 2; if (!half) return;
@@ -949,7 +1012,7 @@ if (window.GradientWaves) window.worksWaves = GradientWaves(document.getElementB
 /* About: the WORKS waves carry on behind it, and the text lights up word by word as it scrolls through */
 (() => {
   const sec = document.getElementById('about');
-  if (window.GradientWaves) GradientWaves(document.getElementById('aboutWaves'), {
+  if (window.GradientWaves) window.aboutWaves = GradientWaves(document.getElementById('aboutWaves'), {
     horizonColor: '#5227FF', waveColor: '#C98BFF', crestColor: '#FFFFFF',
     speed: 0.4, amplitude: 2.5, relief: 1, lightAngle: 120, brightness: 1, opacity: .9, grain: .2, intro: false
   });
@@ -1131,13 +1194,15 @@ if (window.GradientWaves) window.worksWaves = GradientWaves(document.getElementB
     <form class="ct-form" id="ctForm" novalidate>
       <h3>השאירו פרטים ואחזור אליכם<br>לשיחת היכרות ללא עלות:</h3>
       <div class="ct-grid">
-        <label><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg><input name="name" placeholder="שם מלא" required autocomplete="name"></label>
-        <label><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2"/></svg><input name="phone" type="tel" placeholder="מספר טלפון" required autocomplete="tel"></label>
-        <label><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg><input name="email" type="email" placeholder="אימייל" autocomplete="email"></label>
-        <label><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.5 10.9c.6.5 1 1.2 1 2.1h5c0-.9.4-1.6 1-2.1A6 6 0 0 0 12 3"/></svg><input name="biz" placeholder="שם העסק" autocomplete="organization"></label>
-        <label class="wide"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16zM14 6l4 4"/></svg><textarea name="msg" rows="3" placeholder="ספרו לי קצת על העסק. אם יש לינק לאתר קיים או לרשתות, אשמח לראות."></textarea></label>
+        <label><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg><span class="sr">שם מלא (חובה)</span><input name="name" placeholder="שם מלא" required aria-required="true" maxlength="80" autocomplete="name"></label>
+        <label><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2"/></svg><span class="sr">מספר טלפון (חובה)</span><input name="phone" type="tel" placeholder="מספר טלפון" required aria-required="true" maxlength="20" autocomplete="tel"></label>
+        <label><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg><span class="sr">אימייל (רשות)</span><input name="email" type="email" placeholder="אימייל" maxlength="120" autocomplete="email"></label>
+        <label><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.5 10.9c.6.5 1 1.2 1 2.1h5c0-.9.4-1.6 1-2.1A6 6 0 0 0 12 3"/></svg><span class="sr">שם העסק (רשות)</span><input name="biz" placeholder="שם העסק" maxlength="80" autocomplete="organization"></label>
+        <label class="wide"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16zM14 6l4 4"/></svg><span class="sr">הודעה (רשות)</span><textarea name="msg" rows="3" maxlength="2000" placeholder="ספרו לי קצת על העסק. אם יש לינק לאתר קיים או לרשתות, אשמח לראות."></textarea></label>
       </div>
-      <label class="ct-ok"><input type="checkbox" name="ok" required> אני מאשר/ת שהילה תחזור אליי בנוגע לפנייה</label>
+      <label class="hp" aria-hidden="true">אין למלא שדה זה<input name="_honey" tabindex="-1" autocomplete="off"></label>
+      <label class="ct-ok"><input type="checkbox" name="ok" required aria-required="true"> קראתי את <a href="privacy.html" target="_blank" rel="noopener">מדיניות הפרטיות</a> ואני מאשר/ת שהילה תחזור אליי בנוגע לפנייה</label>
+      <p class="ct-note">הפרטים נמסרים מרצונכם ומשמשים רק לחזרה לפנייה – בלי דיוור ובלי פרסום. בשליחה במייל הם עוברים דרך שירות FormSubmit ונשמרים בתיבת Gmail, בשרתים שעשויים להיות מחוץ לישראל. אפשר לבקש לעיין בהם או למחוק אותם בכל עת.</p>
       <div class="ct-actions">
         <button type="submit" class="ct-send" data-via="mail"><span>שליחה למייל</span><svg width="40" height="12" viewBox="0 0 53 12" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M53 6H1M7 1 1 6l6 5"/></svg></button>
         <button type="submit" class="ct-send ct-wa" data-via="wa"><span>שליחה בוואטסאפ</span><svg viewBox="0 0 32 32" width="24" height="24" aria-hidden="true"><path fill="currentColor" d="M16 3a13 13 0 0 0-11.2 19.6L3 29l6.6-1.7A13 13 0 1 0 16 3m0 23.7c-2 0-4-.6-5.7-1.6l-.4-.2-3.9 1 1-3.8-.3-.4A10.7 10.7 0 1 1 16 26.7"/></svg></button>
@@ -1145,7 +1210,10 @@ if (window.GradientWaves) window.worksWaves = GradientWaves(document.getElementB
       <p class="ct-err" id="ctErr" role="alert" aria-live="polite"></p>
     </form>
   </div>
-  <p class="ct-foot" dir="ltr">© HILA IVGY · Websites that leave a mark</p>
+  <footer class="ct-foot" dir="rtl">
+    <nav aria-label="מידע משפטי"><a href="accessibility.html">הצהרת נגישות</a><a href="privacy.html">מדיניות פרטיות</a><a href="terms.html">תנאי שימוש</a></nav>
+    <p>© 2026 הילה איבגי – <span lang="en">HILA IVGY</span>. כל הזכויות שמורות. הסימנים המסחריים והעבודות המוצגים שייכים לבעליהם ומוצגים כתיק עבודות.</p>
+  </footer>
 </section>
 
 <a class="wa-float" href="https://wa.me/972559653225" target="_blank" rel="noopener" aria-label="שיחה בוואטסאפ">
@@ -1165,6 +1233,7 @@ if (window.GradientWaves) window.worksWaves = GradientWaves(document.getElementB
     e.preventDefault();
     const via = (e.submitter && e.submitter.dataset.via) || 'mail';
     const d = Object.fromEntries(new FormData(f));
+    if (d._honey) { f.reset(); say('תודה! הפרטים נשלחו 💜', true); return; }   // bots fill the hidden field
     if (!d.name || !d.phone) { say('נא למלא שם וטלפון.'); return; }
     if (via === 'mail' && d.email && !/^\S+@\S+\.\S+$/.test(d.email)) { say('כתובת האימייל לא תקינה.'); return; }
     if (!d.ok) { say('נא לאשר את יצירת הקשר.'); return; }
@@ -1178,7 +1247,7 @@ if (window.GradientWaves) window.worksWaves = GradientWaves(document.getElementB
     try {
       const r = await fetch(`https://formsubmit.co/ajax/${MAIL}`, {
         method: 'POST', headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-        body: JSON.stringify({ _subject: `פנייה חדשה מהאתר – ${d.name}`, _template: 'table', _captcha: 'false',
+        body: JSON.stringify({ _subject: `פנייה חדשה מהאתר – ${d.name}`, _template: 'table', _captcha: 'false', _honey: '',
           'שם': d.name, 'טלפון': d.phone, 'אימייל': d.email || '', 'שם העסק': d.biz || '', 'הודעה': d.msg || '', _replyto: d.email || '' })
       });
       const j = await r.json().catch(() => ({}));
@@ -1246,6 +1315,73 @@ if (window.GradientWaves) window.worksWaves = GradientWaves(document.getElementB
     });
     if (active || mx > -1e4) requestAnimationFrame(loop); else running = false;
   }
+})();
+</script>
+
+<div class="a11y-ui" dir="rtl">
+  <button class="a11y-btn" id="a11yBtn" type="button" aria-expanded="false" aria-controls="a11yPanel" aria-label="תפריט נגישות">
+    <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="4.2" r="2.2"/><path d="M4 7.6c2.6.7 5.3 1 8 1s5.4-.3 8-1l.5 1.9c-2 .6-4.1.9-6.2 1.1v3.2l2 7.4-1.9.6L12.2 15h-.4l-2.2 6.8-1.9-.6 2-7.4v-3.2c-2.1-.2-4.2-.5-6.2-1.1z"/></svg>
+  </button>
+  <div class="a11y-panel" id="a11yPanel" role="dialog" aria-labelledby="a11yTitle" hidden>
+    <h2 id="a11yTitle">הגדרות נגישות <button class="a11y-x" type="button" aria-label="סגירת תפריט הנגישות">×</button></h2>
+    <div class="a11y-size" role="group" aria-label="גודל טקסט">
+      <span>גודל טקסט</span>
+      <button type="button" data-size="-1" aria-label="הקטנת טקסט">א-</button>
+      <button type="button" data-size="1" aria-label="הגדלת טקסט">א+</button>
+    </div>
+    <div class="a11y-grid">
+      <button type="button" data-t="contrast" aria-pressed="false">ניגודיות גבוהה</button>
+      <button type="button" data-t="gray" aria-pressed="false">גווני אפור</button>
+      <button type="button" data-t="links" aria-pressed="false">הדגשת קישורים</button>
+      <button type="button" data-t="font" aria-pressed="false">גופן קריא</button>
+      <button type="button" data-t="cursor" aria-pressed="false">סמן גדול</button>
+      <button type="button" data-t="stop" aria-pressed="false">עצירת אנימציות</button>
+    </div>
+    <div class="a11y-foot">
+      <button type="button" data-reset>איפוס הגדרות</button>
+      <a href="accessibility.html">הצהרת נגישות</a>
+    </div>
+  </div>
+</div>
+<script>
+/* accessibility menu: text size, contrast, grayscale, link highlight, readable font, big cursor, stop all motion.
+   Choices are kept in this browser only (localStorage). */
+(() => {
+  const H = document.documentElement, btn = document.getElementById('a11yBtn'), panel = document.getElementById('a11yPanel');
+  const KEY = 'hila-a11y';
+  let S = { size: 0, contrast: false, gray: false, links: false, font: false, cursor: false, stop: false };
+  try { Object.assign(S, JSON.parse(localStorage.getItem(KEY) || '{}')); } catch (_) {}
+  // visual filters go on every top-level block except the menu itself (a filter on <body> would break fixed elements)
+  const style = document.createElement('style'); document.head.appendChild(style);
+  const waves = () => [window.worksWaves, window.aboutWaves].filter(w => w && w.set);
+  function apply() {
+    H.dataset.a11ySize = S.size;
+    ['links', 'font', 'cursor', 'stop'].forEach(k => H.classList.toggle('a11y-' + k, !!S[k]));
+    const fl = [S.contrast && 'contrast(1.35) saturate(1.15)', S.gray && 'grayscale(1)'].filter(Boolean).join(' ');
+    style.textContent = fl ? `body > :not(.a11y-ui):not(script):not(style){filter:${fl}}` : '';
+    waves().forEach(w => w.set({ paused: !!S.stop }));
+    document.querySelectorAll('.bvid video').forEach(v => { if (S.stop) v.pause(); });
+    panel.querySelectorAll('[data-t]').forEach(b => b.setAttribute('aria-pressed', String(!!S[b.dataset.t])));
+    try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (_) {}
+  }
+  const open = o => {
+    panel.hidden = !o; btn.setAttribute('aria-expanded', String(o));
+    if (o) panel.querySelector('button').focus(); else btn.focus();
+  };
+  btn.addEventListener('click', () => open(panel.hidden));
+  panel.querySelector('.a11y-x').addEventListener('click', () => open(false));
+  addEventListener('keydown', e => { if (e.key === 'Escape' && !panel.hidden) open(false); });
+  document.addEventListener('click', e => { if (!panel.hidden && !e.target.closest('.a11y-ui')) { panel.hidden = true; btn.setAttribute('aria-expanded', 'false'); } });
+  panel.addEventListener('click', e => {
+    const b = e.target.closest('button'); if (!b) return;
+    if (b.dataset.t) S[b.dataset.t] = !S[b.dataset.t];
+    else if (b.dataset.size) S.size = Math.max(0, Math.min(3, S.size + +b.dataset.size));
+    else if (b.hasAttribute('data-reset')) S = { size: 0, contrast: false, gray: false, links: false, font: false, cursor: false, stop: false };
+    else return;
+    apply();
+  });
+  // waves are created a moment later; apply once they exist
+  apply(); addEventListener('load', apply);
 })();
 </script>
 </body>
