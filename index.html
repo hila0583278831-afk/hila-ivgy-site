@@ -254,7 +254,7 @@ body.menu-open .menu-dim{opacity:1;pointer-events:auto}
 @keyframes waPulse{0%{box-shadow:0 12px 30px -8px rgba(37,211,102,.6),0 0 0 0 rgba(37,211,102,.45)}70%{box-shadow:0 12px 30px -8px rgba(37,211,102,.6),0 0 0 18px rgba(37,211,102,0)}100%{box-shadow:0 12px 30px -8px rgba(37,211,102,.6),0 0 0 0 rgba(37,211,102,0)}}
 @media (max-width:900px){.ct-panel{grid-template-columns:1fr}.ct-grid{grid-template-columns:1fr}}
 @media (max-width:700px){.ct-foot{padding:0 20px 96px}
-  .pcell .pnum{font-size:92px;top:-.34em;left:.12em}.pcell.sh2c .pnum{left:auto;right:.12em}}
+  .pcell .pnum{font-size:92px;top:-.34em;left:.12em}}
 
 /* ---------- IMPRESSION: growing purple dot + giant sentence sweeping with the scroll ---------- */
 .impress{position:relative;height:700vh;background:#EFE8FF}
@@ -350,7 +350,7 @@ body.menu-open .menu-dim{opacity:1;pointer-events:auto}
   color:transparent;-webkit-text-fill-color:transparent;-webkit-text-stroke:2px rgba(255,255,255,.9);
   filter:drop-shadow(0 0 14px rgba(180,107,255,.45));transition:-webkit-text-stroke-color .5s}
 .pcell.on .pnum{-webkit-text-stroke-color:#FF9FFC}
-.sh2c .pnum{left:auto;right:-.06em}
+
 .sh5 .pbody{text-align:center;padding:0 10% 6%}
 /* keep the text clear of a rounded bottom corner */
 .sh1 .pbody,.sh4 .pbody{padding-left:24%}
@@ -607,9 +607,32 @@ html[data-a11y-size="3"] :is(p,blockquote,label,h3,.ct-nav a,.ct-links a,.menu-l
     });
     fade.setAttribute('y1', (base[2] - 240).toFixed(1)); fade.setAttribute('y2', (base[2] + 10).toFixed(1));
   }
-  layout();
-  mq.addEventListener('change', layout);
-  addEventListener('resize', () => { if (mq.matches) { mode = ''; layout(); } });
+  // soften the grid behind the words: the sharp grid is masked out around the text block and a blurred,
+  // fainter copy shows there instead, with feathered edges
+  const NS = 'http://www.w3.org/2000/svg', defs = svg.querySelector('defs');
+  const mk = (tag, attrs, parent) => { const e = document.createElementNS(NS, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); parent && parent.appendChild(e); return e; };
+  mk('filter', { id: 'gsoft', x: '-5%', y: '-5%', width: '110%', height: '110%' }, defs).appendChild(mk('feGaussianBlur', { stdDeviation: 5 }));
+  const feather = mk('filter', { id: 'gfeather', x: '-50%', y: '-50%', width: '200%', height: '200%' }, defs); feather.appendChild(mk('feGaussianBlur', { stdDeviation: 70 }));
+  const mOut = mk('mask', { id: 'gmOut', maskUnits: 'userSpaceOnUse', x: -500, y: -500, width: 9000, height: 9000 }, defs);
+  mk('rect', { x: -500, y: -500, width: 9000, height: 9000, fill: '#fff' }, mOut);
+  const holeOut = mk('rect', { fill: '#000', filter: 'url(#gfeather)' }, mOut);
+  const mIn = mk('mask', { id: 'gmIn', maskUnits: 'userSpaceOnUse', x: -500, y: -500, width: 9000, height: 9000 }, defs);
+  const holeIn = mk('rect', { fill: '#fff', filter: 'url(#gfeather)' }, mIn);
+  grid.id = 'heroGrid';
+  const wrap = mk('g', { mask: 'url(#gmOut)' }); grid.parentNode.insertBefore(wrap, grid); wrap.appendChild(grid);
+  const soft = mk('use', { href: '#heroGrid', filter: 'url(#gsoft)', mask: 'url(#gmIn)', opacity: '.45' }); wrap.after(soft);
+  function soften() {
+    let x0 = 1e9, y0 = 1e9, x1 = -1e9, y1 = -1e9;
+    texts.forEach(t => { try { const b = t.getBBox(); x0 = Math.min(x0, b.x); y0 = Math.min(y0, b.y); x1 = Math.max(x1, b.x + b.width); y1 = Math.max(y1, b.y + b.height); } catch (_) {} });
+    if (x1 < x0) return;
+    const pad = 60, a = { x: x0 - pad, y: y0 - pad, width: x1 - x0 + 2 * pad, height: y1 - y0 + 2 * pad, rx: 120 };
+    for (const k in a) { holeOut.setAttribute(k, a[k]); holeIn.setAttribute(k, a[k]); }
+  }
+  const relayout = () => { layout(); soften(); };
+  relayout();
+  document.fonts && document.fonts.ready.then(soften);
+  mq.addEventListener('change', relayout);
+  addEventListener('resize', () => { if (mq.matches) { mode = ''; } relayout(); });
 })();
 </script>
 <div class="ghost-layer" id="ghostLayer" aria-hidden="true"></div>
