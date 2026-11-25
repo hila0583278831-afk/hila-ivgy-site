@@ -140,7 +140,7 @@ body.menu-open .menu-dim{opacity:1;pointer-events:auto}
   background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
 /* GhostCursor (whole site) */
 .ghost-layer{position:fixed;inset:0;pointer-events:none}
-.ghost-cursor{overflow:hidden;pointer-events:none}
+.hero-glass{position:absolute;inset:0;z-index:3;pointer-events:none}.ghost-cursor{overflow:hidden;pointer-events:none}
 .ghost-cursor__canvas{position:absolute;inset:0;display:block;width:100%;height:100%}
 /* waves sit behind the list and stay pinned to the screen while it scrolls */
 .works .waves{position:absolute;inset:0;z-index:-1;pointer-events:none}
@@ -639,12 +639,14 @@ html[data-a11y-size="3"] :is(p,blockquote,label,h3,.ct-nav a,.ct-links a,.menu-l
     for (const k in a) { holeOut.setAttribute(k, a[k]); holeIn.setAttribute(k, a[k]); }
   }
   const relayout = () => { layout(); soften(); };
+  window.heroRelayout = relayout;      // hero-glass.js calls this after it swaps the sentence
   relayout();
   document.fonts && document.fonts.ready.then(() => { mode = ''; relayout(); });
   mq.addEventListener('change', relayout);
   addEventListener('resize', () => { if (mq.matches) { mode = ''; } relayout(); });
 })();
 </script>
+<script src="assets/hero-glass.js"></script>
 <div class="ghost-layer" id="ghostLayer" aria-hidden="true"></div>
 <script src="assets/ghost-cursor.js"></script>
 <script>
@@ -1362,7 +1364,7 @@ if (window.GradientWaves) window.worksWaves = GradientWaves(document.getElementB
   if (!matchMedia('(hover: hover)').matches) return;
   const NS = 'http://www.w3.org/2000/svg';
   const letters = [];
-  document.querySelectorAll('#hero .hero-type text, #about .about-type text').forEach(t => {
+  document.querySelectorAll('#about .about-type text').forEach(t => {   // the hero has the glass tiles instead (hero-glass.js)
     const paint = t.getAttribute('fill');               // white, black, or the gradient url(#fade)
     const chars = [...t.textContent]; t.textContent = '';
     t.setAttribute('stroke', paint);
