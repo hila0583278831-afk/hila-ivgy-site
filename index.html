@@ -484,7 +484,7 @@ html[data-a11y-size="3"] :is(p,blockquote,label,h3,.ct-nav a,.ct-links a,.menu-l
 })();
 </script>
 <section class="hero hero-bg" id="hero" dir="ltr" tabindex="-1">
-<h1 class="sr" dir="rtl">הילה איבגי – בניית אתרים, עיצוב אתרים ומיתוג לעסקים. מתרגמים את היחודיות בעסק שלך לאתר שמביא תוצאות.</h1>
+<h1 class="sr" dir="rtl">הילה איבגי – בניית אתרים, עיצוב אתרים ומיתוג לעסקים. אתר שנראה כמו שהעסק שלך באמת שווה</h1>
 <svg aria-hidden="true" viewBox="0 0 2576 1449" preserveAspectRatio="xMidYMid slice" style="position: absolute; inset: 0; z-index: 2; pointer-events: none; width: 100%; height: 100%; display: block">
 <defs>
 <linearGradient id="gl" x1="0" y1="0" x2="2576" y2="1449" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#4C3BE6" stop-opacity=".85"></stop><stop offset="1" stop-color="#8A4DF0" stop-opacity=".9"></stop></linearGradient>
@@ -571,11 +571,9 @@ html[data-a11y-size="3"] :is(p,blockquote,label,h3,.ct-nav a,.ct-links a,.menu-l
 <path d="M2254.0,1159.2 H2439.0 A137,137 0 0 1 2576.0,1296.2 V1449.0 H2391.0 A137,137 0 0 1 2254.0,1312.0 Z" fill="none" stroke="url(#gs)" stroke-width="2.6"></path>
 </g>
 <g class="hero-type" font-family="Lia Element, sans-serif" font-weight="600" direction="rtl" text-anchor="middle">
-<text x="1288" y="400" font-size="200" fill="#FFFFFF">מתרגמים את</text>
-<text x="1288" y="600" font-size="200" fill="#FFFFFF">היחודיות</text>
-<text x="1288" y="800" font-size="200" fill="#000000">בעסק שלך</text>
-<text x="1288" y="1000" font-size="200" fill="#FFFFFF">לאתר שמביא</text>
-<text x="1288" y="1200" font-size="200" fill="#FFFFFF">תוצאות.</text></g>
+<text x="1288" y="585" font-size="230" fill="#000000">אתר שנראה</text>
+<text x="1288" y="830" font-size="230" fill="#FFFFFF">כמו שהעסק שלך</text>
+<text x="1288" y="1075" font-size="230" fill="#FFFFFF">באמת שווה</text></g>
 </svg>
 </section>
 <script>
@@ -591,9 +589,11 @@ html[data-a11y-size="3"] :is(p,blockquote,label,h3,.ct-nav a,.ct-links a,.menu-l
   let mode = '';
   // all lines one size: the widest one fills k of the width; lines stacked around cy
   // maxH: the block (all lines) never gets taller than this, so it always fits the visible hero
-  function fit(W, cy, k, max, lh = 1.1, maxH = 1e9) {
+  // pw: line pitch as a fraction of the widest line's width (so the spacing keeps the design's proportion)
+  function fit(W, cy, k, max, pw, maxH = 1e9) {
     texts.forEach(t => { t.setAttribute('x', W / 2); t.setAttribute('font-size', 100); t.setAttribute('letter-spacing', -2); });
     let mw = 0; texts.forEach(t => { try { mw = Math.max(mw, t.getBBox().width); } catch (_) {} });
+    const lh = mw ? pw * mw / 100 : 1.1;
     const S = Math.min(max, mw ? 100 * k * W / mw : max, maxH / ((texts.length - 1) * lh + .8)), L = S * lh;
     texts.forEach((t, i) => { t.setAttribute('font-size', S.toFixed(1)); t.setAttribute('letter-spacing', (-S * .02).toFixed(1)); t.setAttribute('y', (cy + (i - (texts.length - 1) / 2) * L + S * .36).toFixed(1)); });
   }
@@ -604,7 +604,8 @@ html[data-a11y-size="3"] :is(p,blockquote,label,h3,.ct-nav a,.ct-links a,.menu-l
       // the hero keeps the 16:9 box, so on wide/short screens its bottom is below the fold –
       // fit the text into the part of the box that is on screen in the first view
       const r = hero.getBoundingClientRect(), vis = Math.min(1449, 1449 * innerHeight / Math.max(r.height, 1));
-      fit(2576, vis * .53, .56, 320, .84, vis * .7);
+      // measured from the design (2000×1125 mock): widest line = 83.5% of the width, pitch = 11.4% of it, block centre at 51.6% height
+      fit(2576, vis * .516, .835, 400, .114, vis * .62);
       return;
     }
     mode = 'm';
@@ -614,7 +615,7 @@ html[data-a11y-size="3"] :is(p,blockquote,label,h3,.ct-nav a,.ct-links a,.menu-l
     svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
     let g = ''; for (let y = 0; y < rows; y++) for (let x = 0; x < 4; x++) g += cell(x * CW, +(y * CH).toFixed(1));
     grid.innerHTML = g;
-    fit(W, Math.round(rows / 2) * CH, .8, 260, .84);
+    fit(W, Math.round(rows / 2) * CH, .9, 260, .114);
   }
   // soften the grid behind the words: the sharp grid is masked out around the text block and a blurred,
   // fainter copy shows there instead, with feathered edges
