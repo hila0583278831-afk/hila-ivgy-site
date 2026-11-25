@@ -82,39 +82,40 @@ body.menu-open .menu-dim{opacity:1;pointer-events:auto}
 @media (max-width:700px){.hero{aspect-ratio:auto;height:100svh;min-height:540px;max-height:900px}}
 
 /* ---------- statement + curved mockup ring (after tsivia.com) ---------- */
-/* ---------- projects wall (after tsivia.com's reel): cards fly in one by one and lock into a tilted grid ---------- */
-.reel{position:relative;height:620vh}
-/* reel + ring carousel + WORKS share one background: the purple gradient waves start right after the hero */
+/* ---------- INTO THE SCREEN: hero pinned, WebGL concave gallery on top (assets/js/dive3d.js) ---------- */
+.dive{position:relative;--hero-h:56.25vw;--track:780vh}
+.dive>.hero{position:sticky;top:0;z-index:1}
+.dive-stage{position:sticky;top:0;z-index:3;height:100vh;margin-top:calc(-1 * var(--hero-h));overflow:hidden;visibility:hidden;pointer-events:none}
+.dive-stage canvas{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:pan-y}
+.dive-stage.on canvas{pointer-events:auto;cursor:grab}
+.dive-stage.on canvas:active{cursor:grabbing}
+.dive-light{position:absolute;inset:0;pointer-events:none;mix-blend-mode:screen;opacity:0;
+  background:radial-gradient(55% 45% at 50% 52%,rgba(122,64,255,.26),rgba(122,64,255,.06) 55%,transparent 75%)}
+.dive-type{position:absolute;left:0;top:0;pointer-events:none;transform-origin:0 0;visibility:hidden;will-change:transform,opacity}
+.dive-type svg{display:block}
+.dive-ui{position:absolute;left:0;right:0;bottom:clamp(18px,5vh,54px);display:flex;align-items:center;justify-content:center;gap:clamp(14px,3vw,44px);
+  pointer-events:none;font-family:'Lia Element',sans-serif;font-weight:600}
+.dive-cap{text-align:center;color:#fff;opacity:0;min-width:min(62vw,440px)}
+.dive-cap .n{display:block;direction:ltr;unicode-bidi:isolate;font-size:13px;letter-spacing:.32em;color:#B9A6FF}
+.dive-cap .t{margin:8px 0 4px;font-size:clamp(22px,2.3vw,38px);line-height:1.1;font-weight:600}
+.dive-cap .s{margin:0 0 12px;font-size:clamp(14px,1.1vw,17px);color:#CFC4EC}
+.dive-cap .o{font-size:15px;color:#fff;text-decoration:none;padding-bottom:3px;border-bottom:1px solid rgba(200,170,255,.55)}
+.dive-ui button{flex:none;width:54px;height:54px;border-radius:50%;border:0;display:grid;place-items:center;cursor:pointer;color:#fff;opacity:0;
+  background:rgba(255,255,255,.06);box-shadow:inset 0 0 0 1px rgba(190,160,255,.4);transition:background .3s}
+.dive-ui button svg{width:22px;height:22px}
+.dive-ui button:hover{background:rgba(142,76,242,.45)}
+.dive-stage.on .dive-cap .o,.dive-stage.on .dive-ui button{pointer-events:auto}
+.dive-track{height:var(--track)}
+.dive-off>.hero{position:relative}
+.dive-off .dive-stage,.dive-off .dive-track{display:none}
+@media (max-width:700px){.dive-ui{bottom:96px;gap:10px}.dive-ui button{width:44px;height:44px}.dive-cap{min-width:0;max-width:62vw}}
+/* the wrapper below: one background behind the ring carousel + WORKS */
 .wwrap{position:relative;isolation:isolate;background:linear-gradient(180deg,#111113 0%,#150E22 30%,#1D1133 75%,#2A1550 100%)}
 .wwrap>.waves{position:absolute;inset:0;z-index:-1;pointer-events:none}
 .wwrap>.waves>div{position:sticky;top:0;height:100vh}
-/* lead-in: the hero background mirrored at the seam fades to near-black gray, and the hero's 8 column lines run on */
-.reel::before{content:"";position:absolute;left:0;right:0;top:0;height:56.25vw;pointer-events:none;
-  background:url(assets/hero-bg.webp) center bottom/100% auto no-repeat;transform:scaleY(-1)}
-.reel::after{content:"";position:absolute;left:0;right:0;top:0;height:56.25vw;pointer-events:none;
-  background:linear-gradient(180deg,rgba(17,17,19,0) 0%,rgba(17,17,19,.6) 16%,rgba(17,17,19,.94) 34%,#111113 50%,rgba(17,17,19,0) 100%)}
 .lines{position:absolute;inset:0;z-index:1;pointer-events:none;
   background:repeating-linear-gradient(90deg,rgba(120,100,255,.85) 0 1.5px,transparent 1.5px 12.5%);
   -webkit-mask-image:linear-gradient(180deg,rgba(0,0,0,.09),rgba(0,0,0,.09));mask-image:linear-gradient(180deg,rgba(0,0,0,.09),rgba(0,0,0,.09))}
-/* the lines leave the hero at full strength and settle to a very faint hairline */
-.reel .lines{-webkit-mask-image:linear-gradient(180deg,#000 0,rgba(0,0,0,.09) 32vw,rgba(0,0,0,.09) 100%);
-                     mask-image:linear-gradient(180deg,#000 0,rgba(0,0,0,.09) 32vw,rgba(0,0,0,.09) 100%)}
-.reel .stage{position:sticky;top:0;z-index:2;height:100vh;overflow:hidden;perspective:1700px;perspective-origin:50% 50%}
-.reel .plane{position:absolute;left:50%;top:50%;width:0;height:0;transform-style:preserve-3d}
-.reel .rc{position:absolute;left:0;top:0;margin:0;border-radius:6px;overflow:hidden;background:#1A1424;backface-visibility:hidden}
-.reel .rc img{display:block;width:100%;height:100%;object-fit:cover}
-/* statement that takes over as the cards sink away */
-.reel .rtext{position:absolute;inset:0;z-index:6;display:flex;flex-direction:column;align-items:center;justify-content:center;
-  padding:0 5vw;text-align:center;pointer-events:none;font-family:'Lia Element',sans-serif;font-weight:600}
-.reel .rtext h2{margin:0;font-size:clamp(48px,min(12.6vw,21vh),290px);line-height:.92;white-space:nowrap;letter-spacing:-.02em;opacity:0;
-  background:linear-gradient(100deg,#8E4CF2 0%,#B46BFF 35%,#FF3DF2 70%,#FF00FF 100%);-webkit-background-clip:text;background-clip:text;
-  -webkit-text-fill-color:transparent;color:transparent;padding:.06em .04em .12em;will-change:transform,opacity,filter}
-.reel .rtext h2 .one{-webkit-text-fill-color:#fff;color:#fff}
-.reel .rtext p{margin:clamp(16px,2.2vw,44px) 0 0;max-width:94vw;font-size:clamp(24px,min(3.7vw,6.2vh),76px);line-height:1.16;
-  letter-spacing:-.005em;color:#fff;-webkit-text-stroke:.01em #fff;opacity:0;will-change:transform,opacity}
-/* the mockup that travels down from the hero into the centre slot */
-.reel .flyer{position:absolute;left:0;top:0;z-index:5;border-radius:6px;overflow:hidden;visibility:hidden;pointer-events:none;
-  background:#1A1424 center/cover no-repeat;box-shadow:0 30px 70px -25px rgba(0,0,0,.7)}
 
 .cg{position:relative;height:640vh}
 .cg .stage{position:sticky;top:0;z-index:2;height:100vh;overflow:hidden;perspective:1200px;perspective-origin:50% 50%}
@@ -483,6 +484,7 @@ html[data-a11y-size="3"] :is(p,blockquote,label,h3,.ct-nav a,.ct-links a,.menu-l
   addEventListener('keydown', e => { if (e.key === 'Escape' && head.classList.contains('open')) { set(false); btn.focus(); } });
 })();
 </script>
+<div class="dive" id="dive">
 <section class="hero hero-bg" id="hero" dir="ltr" tabindex="-1">
 <h1 class="sr" dir="rtl">הילה איבגי – בניית אתרים, עיצוב אתרים ומיתוג לעסקים. אתר שנראה כמו שהעסק שלך באמת שווה</h1>
 <svg aria-hidden="true" viewBox="0 0 2576 1449" preserveAspectRatio="xMidYMid slice" style="position: absolute; inset: 0; z-index: 2; pointer-events: none; width: 100%; height: 100%; display: block">
@@ -634,166 +636,26 @@ if (window.GhostCursor && matchMedia('(hover: hover)').matches) GhostCursor(docu
   bloomStrength: 0.6, grainIntensity: 0.05, intro: false, zIndex: 45 });
 </script>
 
+<!-- INTO THE SCREEN: the camera flies into the hero, the leaf grid bends into a concave display and the projects
+     grow into its cells (assets/js/dive3d.js). The hero above stays exactly as it is; it is only pinned while this plays. -->
+<script src="assets/projects.js"></script>
+<div class="dive-stage" id="diveStage">
+  <canvas id="diveCanvas" aria-hidden="true"></canvas>
+  <div class="dive-light" aria-hidden="true"></div>
+  <div class="dive-type" id="diveType" aria-hidden="true"></div>
+  <div class="dive-ui" dir="rtl">
+    <button class="dive-prev" type="button" aria-label="לפרויקט הקודם"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+    <div class="dive-cap" aria-live="polite"><span class="n"></span><h3 class="t"></h3><p class="s"></p><a class="o" href="works.html">לצפייה בפרויקט</a></div>
+    <button class="dive-next" type="button" aria-label="לפרויקט הבא"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"/></svg></button>
+  </div>
+</div>
+<div class="dive-track" aria-hidden="true"></div>
+<nav class="sr" aria-label="פרויקטים נבחרים" dir="rtl"><a href="project.html?id=ravitz">RAVITZ</a> <a href="project.html?id=avney">אבני הכתר</a> <a href="project.html?id=hapisga">הפסגה</a> <a href="project.html?id=event">אירוע חד פעמי</a> <a href="project.html?id=vortex">VORTEX</a> <a href="project.html?id=biscotti">Biscotti</a> <a href="project.html?id=trolist">TROLIST</a></nav>
+<script type="module" src="assets/js/dive3d.js"></script>
+</div><!-- /dive -->
+
 <div class="wwrap">
 <div class="waves" aria-hidden="true"><div id="worksWaves"></div></div>
-<section class="reel" id="reel" aria-label="פרויקטים נבחרים">
-  <div class="lines" aria-hidden="true"></div>
-  <div class="stage" id="reelStage"><div class="plane" id="plane"></div><div class="flyer" id="flyer"></div>
-    <div class="rtext" dir="rtl">
-      <h2 id="rHead">יש לכם הזדמנות<br><span class="one">אחת</span> להרשים</h2>
-      <p id="rPara">כי אני מאמינה<br>שעסק שנראה טוב הוא עסק שמצליח,<br>ושלקוח מחליט אם להאמין בכם<br>כבר בשניות הראשונות.</p>
-    </div>
-  </div>
-</section>
-<script>
-/* Projects wall – same motion model as tsivia.com's reel, rebuilt for this site.
-   Scroll is split into four phases measured in screen heights: TILT → SIDE → UPDOWN → AWAY.
-   TILT   : the wall tilts to rotateX 54° / rotateZ −34° and scales up; cards fly in from outside (radially),
-            from 520 units in front, spinning slightly, each with a delay that grows with its distance from the centre.
-   SIDE   : rows slide sideways by 3 cells, even rows one way and odd rows the other (wrapping around).
-   UPDOWN : columns slide vertically by 3 cells, alternating direction (wrapping around).
-   AWAY   : cards sink back, shrink a little and fade, outer cards last.
-   Before all that, the mockup travels down from the hero into the centre slot. */
-(() => {
-  const sec = document.getElementById('reel'), stage = document.getElementById('reelStage'),
-        plane = document.getElementById('plane'), flyer = document.getElementById('flyer'),
-        rHead = document.getElementById('rHead'), rPara = document.getElementById('rPara');
-  if (matchMedia('(prefers-reduced-motion: reduce)').matches) { sec.style.display = 'none'; return; }
-  // home pages + inner pages, grouped by site; no card ever sits next to (or diagonal to) the same site
-  const POOL = {
-    ravitz:  ['ravitz-d.jpg', 'ravitz.webp'],
-    trolist: ['mock5.jpg', 'in-trolist-c.jpg', 'mock4.jpg', 'in-trolist-0.jpg'],
-    hapisga: ['in-hapisga-2.jpg', 'mock3.jpg', 'in-hapisga-4.jpg', 'in-hapisga-6.jpg', 'in-hapisga-1.jpg', 'in-hapisga-3.jpg', 'hapisga.webp', 'in-hapisga-c.jpg'],
-    avney:   ['in-avney-1.jpg', 'avney.webp', 'in-avney-2.jpg', 'in-avney-3.jpg', 'mock1.jpg', 'in-avney-c.jpg'],
-    event:   ['in-event-2.jpg', 'event.webp', 'in-event-c.jpg', 'mock2.jpg'],
-    vortex:  ['vortex.webp', 'vortex-d.jpg'],
-    biscotti:['biscotti.webp', 'biscotti-d.jpg']
-  };
-  const SITES = Object.keys(POOL), useN = {};
-  const HERO_IMG = 'assets/shots/ravitz.webp';
-  const clamp = (v, a = 0, b = 1) => Math.max(a, Math.min(b, v)), lerp = (a, b, t) => a + (b - a) * t;
-  const io3 = t => (t = clamp(t)) < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;   // ease in-out cubic
-  const io2 = t => (t = clamp(t)) < .5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;       // ease in-out quad
-  const smooth = t => (t = clamp(t)) * t * (3 - 2 * t);
-  const out3 = t => 1 - Math.pow(1 - clamp(t), 3);
-  const wrap = (v, span) => ((v + span / 2) % span + span) % span - span / 2;
-  const hash = n => { const t = Math.sin(n * 12.9898 + 78.233) * 43758.5453; return t - Math.floor(t); };
-
-  let G = {}, cards = [], PH, L;
-  function build() {
-    const vw = document.documentElement.clientWidth, vh = innerHeight, phone = vw < 900;
-    PH = phone ? { tilt: 1.8, side: 1, updown: 1, away: 1, hold: 1 } : { tilt: 2.2, side: 1.2, updown: 1.2, away: 1.4, hold: 1.2 };
-    L = PH.tilt + PH.side + PH.updown + PH.away + PH.hold;   // hold: the statement stays on screen before the next section
-    sec.style.height = (vh * (1 + L)) + 'px';
-    const u = vw / 1920, w = phone ? Math.min(vw * .56, 300) : 540 * u, h = w * 10 / 16, gap = .08 * w;
-    G = { u, vw, vh, phone, w, h, sx: w + gap, sy: h + gap, cols: phone ? 9 : 7, rows: phone ? 13 : 11 };
-    G.spanX = G.cols * G.sx; G.spanY = G.rows * G.sy;
-    G.dmax = Math.hypot((G.cols - 1) / 2, (G.rows - 1) / 2);
-    plane.textContent = ''; cards = [];
-    let n = 0; const grid = []; SITES.forEach(s => useN[s] = 0);
-    const cr = Math.floor(G.rows / 2), cc = Math.floor(G.cols / 2);
-    const pickSite = (r, c, k) => {
-      if (r === cr && c === cc) return 'ravitz';
-      const near = new Set();
-      for (let dr = -1; dr <= 1; dr++) for (let dc = -1; dc <= 1; dc++) {
-        const rr = r + dr, c2 = c + dc;
-        if (rr === cr && c2 === cc) near.add('ravitz');                       // the hero card's neighbours avoid Ravitz
-        if (grid[rr] && grid[rr][c2]) near.add(grid[rr][c2]);
-      }
-      // also look one row further down-left/right of the hero slot so nothing repeats around it
-      const ok = SITES.filter(s => !near.has(s));
-      const start = Math.floor(hash(k * 1.91 + 3) * ok.length);
-      return ok[start % ok.length] || SITES[k % SITES.length];
-    };
-    for (let r = 0; r < G.rows; r++) { grid[r] = []; for (let c = 0; c < G.cols; c++) grid[r][c] = pickSite(r, c, r * G.cols + c); }
-    // second pass: fix cells whose later (right / lower) neighbours clash
-    for (let pass = 0; pass < 3; pass++) for (let r = 0; r < G.rows; r++) for (let c = 0; c < G.cols; c++) {
-      if (r === cr && c === cc) continue;
-      const nb = []; for (let dr = -1; dr <= 1; dr++) for (let dc = -1; dc <= 1; dc++) if (dr || dc) nb.push(grid[(r + dr + G.rows) % G.rows][(c + dc + G.cols) % G.cols]);   // the plane wraps, so edges count too
-      if (nb.includes(grid[r][c])) { const alt = SITES.find(s => !nb.includes(s)); if (alt) grid[r][c] = alt; }
-    }
-    for (let r = 0; r < G.rows; r++) for (let c = 0; c < G.cols; c++, n++) {
-      const x = c - (G.cols - 1) / 2, y = r - (G.rows - 1) / 2, hero = x === 0 && y === 0;
-      const el = document.createElement('div'); el.className = 'rc'; el.style.width = w + 'px'; el.style.height = h + 'px';
-      const im = new Image(); im.alt = ''; im.decoding = 'async';
-      const site = grid[r][c], list = POOL[site];
-      im.src = hero ? HERO_IMG : 'assets/shots/' + list[(useN[site]++) % list.length];
-      el.appendChild(im); plane.appendChild(el);
-      const d = Math.hypot(x, y), q = d / G.dmax;
-      cards.push({ el, c: x, r: y, a: Math.atan2(y, x), hero,
-        inAt: clamp(.42 * q + .2 * hash(1.7 * n), 0, .62),
-        outAt: clamp(.45 * (1 - q) + .25 * hash(3.1 * n), 0, .7),
-        spin: 2 * (hash(5.3 * n) - .5) });
-    }
-    flyer.style.backgroundImage = `url(${HERO_IMG})`;
-  }
-
-  let E = null;
-  function render(snap) {
-    const b = sec.getBoundingClientRect(), vh = G.vh, top = b.top + scrollY;
-    const S = clamp(-b.top / vh, 0, L);
-    E = (E === null || snap) ? S : E + .1 * (S - E);
-    if (Math.abs(S - E) < 5e-4) E = S;
-    let q = E;
-    const zT = clamp(q / PH.tilt); q -= PH.tilt;
-    const A = clamp(q / PH.side); q -= PH.side;
-    const C = clamp(q / PH.updown); q -= PH.updown;
-    const P = clamp(q / PH.away);
-
-    // statement grows in while the cards sink away
-    const th = smooth((P - .2) / .5), tp = smooth((P - .45) / .45);
-    rHead.style.opacity = th.toFixed(3);
-    rHead.style.filter = `blur(${((1 - th) * 14).toFixed(1)}px)`;
-    rHead.style.transform = `scale(${(1.12 - .12 * th).toFixed(4)})`;
-    rHead.style.backgroundPosition = '0 0';
-    rPara.style.opacity = tp.toFixed(3);
-    rPara.style.transform = `translateY(${((1 - tp) * 30).toFixed(1)}px)`;
-
-    // the mockup travelling down from the hero into the centre slot
-    const f = clamp(scrollY / Math.max(1, top));
-    let flying = false;
-    if (f > .001 && f < 1) {
-      const H = stage.getBoundingClientRect(), k = io3(f);
-      const sw = G.vw * (G.phone ? .7 : .34), sh = sw * 10 / 16;
-      const sx0 = G.vw / 2 - sw / 2, sy0 = vh * .62 - scrollY;               // starts low in the hero, moves with the page
-      const fw = lerp(sw, G.w, k), fh = lerp(sh, G.h, k);
-      flyer.style.width = fw + 'px'; flyer.style.height = fh + 'px';
-      flyer.style.transform = `translate3d(${lerp(sx0 - H.left, H.width / 2 - G.w / 2, k)}px,${lerp(sy0 - H.top, H.height / 2 - G.h / 2, k)}px,0)`;
-      flyer.style.opacity = clamp(f / .15);
-      flyer.style.visibility = 'visible'; stage.style.overflow = 'visible'; flying = true;
-    } else { flyer.style.visibility = 'hidden'; stage.style.overflow = f >= 1 ? 'hidden' : 'visible'; }
-
-    // the wall
-    const O = io2(zT / .7), Gp = io3(P);
-    const sc = lerp(1, G.phone ? 1.6 : 1.2, O) * lerp(1, .9, Gp);
-    plane.style.transform = `rotateX(${(54 * O + 3 * Gp).toFixed(2)}deg) rotateZ(${(-34 * O).toFixed(2)}deg) scale(${sc.toFixed(4)})`;
-    const V = 3 * io2(A), J = 3 * io2(C);
-    cards.forEach(e => {
-      const t = clamp((zT - e.inAt) / .38);
-      const i = e.hero ? 1 : out3(t), o = e.hero ? 1 : smooth(t / .45);
-      const rowDir = Math.round(e.r) % 2 === 0 ? 1 : -1;
-      let x = wrap(e.c * G.sx + rowDir * V * G.sx, G.spanX);
-      const colDir = Math.round(x / G.sx) % 2 === 0 ? -1 : 1;
-      let y = wrap(e.r * G.sy + colDir * J * G.sy, G.spanY);
-      const far = .7 * (1 - i) * Math.max(G.vw, vh);                          // fly in from outside, radially
-      x += Math.cos(e.a) * far; y += Math.sin(e.a) * far;
-      const gone = smooth((P - e.outAt) / .3);
-      const z = 520 * (1 - i) * G.u - 220 * gone * G.u;
-      const rot = (1 - i) * e.spin * 25, s = 1 - .08 * gone, op = o * (1 - gone);
-      e.el.style.opacity = op >= .999 ? '1' : op.toFixed(3);
-      e.el.style.visibility = (op < .005 || (e.hero && flying)) ? 'hidden' : 'visible';
-      e.el.style.transform = `translate3d(${(x - G.w / 2).toFixed(1)}px,${(y - G.h / 2).toFixed(1)}px,${z.toFixed(1)}px) rotateZ(${rot.toFixed(2)}deg) scale(${s.toFixed(4)})`;
-    });
-    return E !== S;
-  }
-
-  let queued = false;
-  const tick = () => { if (queued) return; queued = true; requestAnimationFrame(() => { queued = false; if (render()) tick(); }); };
-  build(); render(true);
-  addEventListener('scroll', tick, { passive: true });
-  let rt = 0; addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(() => { build(); render(true); }, 150); });
-})();
-</script>
 
 <section class="cg" id="works" aria-label="אתם יודעים כמה העסק שלכם טוב">
   <div class="lines" aria-hidden="true"></div>
