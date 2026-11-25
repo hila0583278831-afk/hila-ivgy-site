@@ -1263,7 +1263,7 @@ if (window.GradientWaves) window.worksWaves = GradientWaves(document.getElementB
   if (!matchMedia('(hover: hover)').matches) return;
   const NS = 'http://www.w3.org/2000/svg';
   const letters = [];
-  document.querySelectorAll('#hero .hero-type text, #about .about-type text').forEach(t => {
+  document.querySelectorAll('#hero .hero-type text.big, #about .about-type text').forEach(t => {
     const paint = t.getAttribute('fill');               // white, black, or the gradient url(#fade)
     const chars = [...t.textContent]; t.textContent = '';
     t.setAttribute('stroke', paint);
