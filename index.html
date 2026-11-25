@@ -297,8 +297,8 @@ body.menu-open .menu-dim{opacity:1;pointer-events:auto}
 /* faint hero grid behind (8 columns) */
 .proc-stage::before{content:"";position:absolute;inset:0;pointer-events:none;opacity:.5;
   background:repeating-linear-gradient(90deg,rgba(120,100,255,.14) 0 1.5px,transparent 1.5px 12.5%)}
-.proc-head{position:relative;width:min(1760px,96vw);margin:0 auto clamp(40px,8vh,100px);text-align:right}
-.proc-big{display:block;width:100%;height:auto;max-height:28vh}
+.proc-head{position:relative;width:98vw;margin:0 auto clamp(30px,6vh,80px);text-align:right}
+.proc-big{display:block;width:100%;height:auto;max-height:40vh}
 .proc-kick{margin:0 0 10px;font-size:clamp(13px,1vw,17px);letter-spacing:.32em;color:#D9B8FF}
 .proc-kick::after{content:"";display:inline-block;width:clamp(26px,3vw,48px);height:1px;background:#FF00FF;vertical-align:middle;margin-left:14px}
 .proc-head h2{margin:0;font-size:clamp(46px,min(6.6vw,11vh),128px);line-height:1;letter-spacing:-.015em}
@@ -1073,10 +1073,10 @@ if (window.GradientWaves) window.worksWaves = GradientWaves(document.getElementB
     <div class="proc-head" dir="rtl">
       <h2 class="sr" id="procTitle">המסלול המהיר לאתר שממיר</h2>
       <!-- giant English line in the ABOUT treatment: Lia Element, white fading down, stretched to the full width -->
-      <svg class="proc-big" viewBox="0 0 2576 430" aria-hidden="true">
+      <svg class="proc-big" viewBox="0 0 2576 470" aria-hidden="true">
         <defs><linearGradient id="procBigFade" x1="0" y1="60" x2="0" y2="400" gradientUnits="userSpaceOnUse">
           <stop offset="0" stop-color="#FFFFFF"/><stop offset=".45" stop-color="#FFFFFF"/><stop offset="1" stop-color="#FFFFFF" stop-opacity=".25"/></linearGradient></defs>
-        <text x="1288" y="395" text-anchor="middle" font-family="Lia Element, sans-serif" font-weight="600" font-size="500" textLength="2480" lengthAdjust="spacingAndGlyphs" fill="url(#procBigFade)">FAST TRACK</text>
+        <text x="1288" y="440" text-anchor="middle" font-family="Lia Element, sans-serif" font-weight="600" font-size="560" textLength="2540" lengthAdjust="spacingAndGlyphs" fill="url(#procBigFade)">FAST TRACK</text>
       </svg>
     </div>
     <div class="proc-track" id="procTrack" dir="rtl">
@@ -1318,7 +1318,7 @@ if (window.GradientWaves) window.worksWaves = GradientWaves(document.getElementB
   if (!matchMedia('(hover: hover)').matches) return;
   const NS = 'http://www.w3.org/2000/svg';
   const letters = [];
-  document.querySelectorAll('#hero .hero-type text.big, #about .about-type text').forEach(t => {
+  document.querySelectorAll('#hero .hero-type text.big, #about .about-type text, #process .proc-big text').forEach(t => {
     const paint = t.getAttribute('fill');               // white, black, or the gradient url(#fade)
     const chars = [...t.textContent]; t.textContent = '';
     t.setAttribute('stroke', paint);
