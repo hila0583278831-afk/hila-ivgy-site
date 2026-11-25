@@ -8,17 +8,21 @@
 <link rel="icon" href="assets/logo.png">
 <link rel="stylesheet" href="assets/pages.css">
 <style>
-.b-filter{position:relative;z-index:5;margin:clamp(24px,3vw,44px) auto 0;padding:10px;width:fit-content;max-width:94vw;border-radius:28px;
-  background:rgba(14,10,24,.7);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);box-shadow:inset 0 0 0 1px rgba(255,255,255,.1)}
-@media (max-width:760px){.b-filter{position:static}.b-filter .chips{flex-wrap:nowrap;overflow-x:auto;justify-content:flex-start;padding-bottom:4px}.b-filter .chip{flex:none}}
-.chips .chip{display:inline-flex;align-items:center;gap:8px;min-height:48px}
-.chip.has-logo{background:#fff;padding:6px 14px 6px 10px}
-.chip.has-logo small{color:#2A1460;opacity:.55}
-.chip.has-logo[aria-pressed="true"]{background:#fff;box-shadow:0 0 0 3px #FF00FF,0 0 24px rgba(255,0,255,.5)}
-.chip .lg{display:block;height:34px;width:auto;border-radius:8px;background-repeat:no-repeat}
-.chip img.lg{max-width:120px;object-fit:contain}
-.b-count{margin:22px 0 0;text-align:center;color:var(--mute);font-size:15px;font-family:"Segoe UI",Arial,sans-serif;font-weight:500}
-/* masonry: every work keeps its own proportions */
+/* the filter: client logos in large outlined circles, categories in outlined pills – white on the dark page */
+/* the filter: two tidy rows running past the edges – client logos in outlined circles, categories in outlined pills */
+.b-filter{position:relative;z-index:5;margin:clamp(30px,4vw,64px) 0 0;width:100%}
+.b-filter .chips{display:flex;flex-direction:column;align-items:flex-start;gap:clamp(18px,2vw,34px);flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;cursor:grab;
+  padding:6px 0 10px;-webkit-mask-image:linear-gradient(90deg,transparent 0,#000 6%,#000 94%,transparent 100%);mask-image:linear-gradient(90deg,transparent 0,#000 6%,#000 94%,transparent 100%)}
+.b-filter .chips::-webkit-scrollbar{display:none}
+.crow{display:flex;flex-wrap:nowrap;gap:clamp(16px,2vw,36px);padding:0 clamp(40px,6vw,110px);width:max-content}
+.crow-2{padding-inline-start:calc(clamp(40px,6vw,110px) + clamp(60px,6vw,110px))}
+.chips .chip{flex:none;display:inline-flex;align-items:center;justify-content:center;height:clamp(96px,9vw,160px);min-width:clamp(140px,13vw,230px);padding:0 clamp(24px,2.4vw,44px);
+  border-radius:999px;background:transparent;box-shadow:inset 0 0 0 1px rgba(255,255,255,.38);color:#fff;font-size:clamp(15px,1.15vw,20px);transition:box-shadow .3s,background .3s}
+.chips .chip small{display:none}
+.chips .chip:hover{background:transparent;box-shadow:inset 0 0 0 1px rgba(255,255,255,.9)}
+.chips .chip[aria-pressed="true"]{background:rgba(255,0,255,.08);box-shadow:inset 0 0 0 1.5px #FF9FFC,0 0 26px rgba(255,0,255,.35)}
+.chip.has-logo{width:clamp(96px,9vw,160px);min-width:0;padding:0;border-radius:50%}
+.chip .lg{display:block;max-width:70%;max-height:44%;width:auto;height:auto;object-fit:contain;pointer-events:none}/* masonry: every work keeps its own proportions */
 .masonry{columns:4 280px;column-gap:clamp(12px,1.3vw,22px);margin-top:clamp(26px,3vw,46px)}
 .tile{position:relative;break-inside:avoid;margin:0 0 clamp(12px,1.3vw,22px);border-radius:clamp(14px,1.3vw,22px);overflow:hidden;background:#1A1030;cursor:zoom-in;
   box-shadow:0 18px 40px -18px rgba(0,0,0,.7);opacity:0;transform:translateY(30px);transition:opacity .7s,transform .8s cubic-bezier(.2,.7,.2,1)}
@@ -108,17 +112,14 @@
   let filter = 'הכל', shown = 0, list = [];
   // client logos instead of names: a ready logo file, or a crop [x0,y0,x1,y1] (fractions) out of one of the client's works
   const A = 'assets/branding/all/', LG = 'assets/branding/logos/';
+  // white logos on the dark page (assets/branding/logos-w); clients without a clean white logo show their name in a pill
+  const W = 'assets/branding/logos-w/';
   const LOGO = {
-    'TROLIST': { src: LG + 'trolist.png' }, 'משה אושרי': { src: LG + 'oshri.png' }, 'היכלי התורה': { src: LG + 'heichal.png' },
-    'צבי נקר': { src: LG + 'neker.png', w: 600, h: 384, crop: [.06, .12, .97, .86] },
-    'ZERO TEN': { src: A + 'zeroten-18.jpg', crop: [.2, .07, .8, .17] }, 'סילבר ליין': { src: A + 'silverline-06.jpg', crop: [.04, .89, .28, .975] },
-    'אורטל וייצמן': { src: A + 'ortal-04.jpg', crop: [.05, .91, .32, .985] }, 'הדס קפיטל': { src: A + 'hadas-04.jpg', crop: [.17, .25, .32, .5] },
-    'ESTILO': { src: A + 'estilo-04.jpg', crop: [.3, .06, .7, .17] }, 'פרי STIGE': { src: A + 'steag-05.jpg', crop: [.42, .07, .6, .33] },
-    'פרוטיק': { src: A + 'protik-01.jpg', crop: [.17, .17, .43, .33] }, 'הרב אביגד יונה': { src: A + 'yona-05.jpg', crop: [.36, .12, .64, .58] },
-    'RAVITZ': { src: A + 'ravitz-02.jpg', crop: [.14, .2, .86, .55] }, 'MAROM': { src: A + 'marom-sign.webp', w: 1672, h: 941, crop: [.23, .17, .89, .57] },
-    'Biscotti': { src: A + 'biscotti-01.jpg', crop: [.22, .23, .81, .41] }
-  };
-  const dims = {}; all.forEach(x => dims[A + x.f] = [x.w, x.h]);
+    'TROLIST': { src: W + 'trolist.png' }, 'משה אושרי': { src: W + 'oshri.png' }, 'היכלי התורה': { src: W + 'heichal.png' },
+    'צבי נקר': { src: W + 'neker.png' }, 'ZERO TEN': { src: W + 'zeroten.png' }, 'סילבר ליין': { src: W + 'silverline.png' },
+    'אורטל וייצמן': { src: W + 'ortal.png' }, 'הדס קפיטל': { src: W + 'hadas.png' }, 'ESTILO': { src: W + 'estilo.png' },
+    'הרב אביגד יונה': { src: W + 'yona.png' }, 'Biscotti': { src: W + 'biscotti.png' }
+  };  const dims = {}; all.forEach(x => dims[A + x.f] = [x.w, x.h]);
   const logoHTML = name => {
     const L = LOGO[name]; if (!L) return `<span class="ct">${name}</span>`;
     if (!L.crop) return `<img class="lg" src="${L.src}" alt="">`;
@@ -128,6 +129,20 @@
   };
   const chip = (name, n) => { const b = document.createElement('button'); b.type = 'button'; b.className = 'chip' + (LOGO[name] ? ' has-logo' : ''); b.dataset.l = name; b.title = name; b.setAttribute('aria-pressed', name === filter); b.setAttribute('aria-label', `${name} – ${n} עבודות`); b.innerHTML = (name === 'הכל' ? '<span class="ct">הכל</span>' : logoHTML(name)) + `<small aria-hidden="true">${n}</small>`; chips.appendChild(b); };
   chip('הכל', all.length + 1); labels.forEach(l => chip(l, by[l].length + (l === 'מודעות' ? 1 : 0)));
+  // two tidy rows (like the inspiration): first half on top, the rest below, the lower row a half-step out of line;
+  // the rows run past the edges – scroll sideways, or drag them with the mouse
+  {
+    const items = [...chips.children], half = Math.ceil(items.length / 2);
+    const r1 = document.createElement('div'), r2 = document.createElement('div');
+    r1.className = 'crow'; r2.className = 'crow crow-2';
+    items.forEach((b, i) => (i < half ? r1 : r2).appendChild(b));
+    chips.append(r1, r2);
+    let down = null, moved = false;
+    chips.addEventListener('pointerdown', e => { if (e.pointerType !== 'mouse') return; down = { x: e.clientX, s: chips.scrollLeft }; moved = false; });
+    addEventListener('pointermove', e => { if (!down) return; const dx = e.clientX - down.x; if (Math.abs(dx) > 5) moved = true; chips.scrollLeft = down.s - dx; });
+    addEventListener('pointerup', () => { down = null; });
+    chips.addEventListener('click', e => { if (moved) { e.stopPropagation(); e.preventDefault(); moved = false; } }, true);
+  }
 
   const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } }), { rootMargin: '0px 0px -5% 0px' });
   // videos play only while on screen
