@@ -250,42 +250,24 @@ body.menu-open .menu-dim{opacity:1;pointer-events:auto}
 .imp-line b{font-weight:inherit;color:#0B0614}
 .imp-line b span{background:linear-gradient(100deg,#fff 0%,#FFD6FF 45%,#FF9FFC 100%);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent}
 
-/* ---------- TESTIMONIALS: light section, giant word, three drifting columns of real reactions ---------- */
-.tst{position:relative;overflow:hidden;color:#0E0A18;font-family:'Lia Element',sans-serif;font-weight:600;padding:clamp(200px,32vh,340px) 0 0;
-  background:radial-gradient(60% 30% at 50% 30%,rgba(196,170,255,.45),transparent 70%),linear-gradient(180deg,#FBFAFF 0%,#F3EEFF 55%,#EFE8FF 100%)}
-/* the same 8 column lines as the hero / process run straight through */
-.tst::before{content:"";position:absolute;inset:0;pointer-events:none;z-index:1;background:repeating-linear-gradient(90deg,rgba(110,90,220,.16) 0 1.5px,transparent 1.5px 12.5%)}
-/* transition: the deep purple of the process section melts into the light lavender */
+/* ---------- TESTIMONIALS: white section, giant word, a purple grid of shapes with a reaction inside each ---------- */
+.tst{position:relative;overflow:hidden;color:#0E0A18;font-family:'Lia Element',sans-serif;font-weight:600;padding:clamp(200px,32vh,340px) 0 clamp(80px,10vw,160px);background:#fff}
+/* transition: the deep purple of the process section melts into white */
 .tst-fade{position:absolute;left:0;right:0;top:0;height:clamp(260px,42vh,460px);pointer-events:none;
-  background:linear-gradient(180deg,#22123F 0%,#3A2373 22%,#7A5BC9 48%,rgba(205,190,250,.55) 74%,rgba(243,238,255,0) 100%)}
-.tst-big,.tst-lead,.tst-cols{z-index:2}
-.tst-big{position:relative;display:block;width:94%;height:auto;margin:0 auto clamp(30px,4vw,64px)}
-.tst-lead{position:relative;width:min(760px,86vw);margin:clamp(8px,1.4vw,24px) auto clamp(30px,4vw,60px);text-align:center;font-size:clamp(17px,1.35vw,23px);line-height:1.5;color:#4A3E66}
-.tst-cols{position:relative;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(16px,2.2vw,36px);width:min(1560px,92vw);margin:0 auto;
-  height:min(110vh,1100px);overflow:hidden;
-  -webkit-mask-image:linear-gradient(180deg,transparent 0,#000 12%,#000 82%,transparent 100%);mask-image:linear-gradient(180deg,transparent 0,#000 12%,#000 82%,transparent 100%)}
-.tcol{overflow:hidden}
-.tcol-in{display:flex;flex-direction:column;gap:clamp(16px,2.2vw,36px);animation:tstUp 70s linear infinite}
-.tcol.down .tcol-in{animation-name:tstDown;animation-duration:80s}
-.tcol:nth-child(3) .tcol-in{animation-duration:62s}
-.tst-cols:hover .tcol-in{animation-play-state:paused}
-@keyframes tstUp{from{transform:translateY(0)}to{transform:translateY(-50%)}}
-@keyframes tstDown{from{transform:translateY(-50%)}to{transform:translateY(0)}}
-.tcard{margin:0;padding:clamp(22px,2.2vw,38px);background:#fff;border:1px solid #D9D0EE;border-radius:22px;box-shadow:0 20px 40px -30px rgba(60,30,140,.35);
-  transition:transform .4s,border-color .4s}
-.tcard:hover{transform:translateY(-4px);border-color:#B46BFF}
-.tc-mark{display:block;font-size:clamp(54px,4.4vw,80px);line-height:.6;height:.45em;margin-bottom:10px;
+  background:linear-gradient(180deg,#22123F 0%,#3A2373 22%,#7A5BC9 48%,rgba(225,215,255,.6) 74%,rgba(255,255,255,0) 100%)}
+.tst-big,.tst-grid{position:relative;z-index:2}
+.tst-big{display:block;width:94%;height:auto;margin:0 auto clamp(30px,4vw,64px)}
+/* the grid: square-ish cells, each a thin outline + a shape whose corners follow the design's pattern */
+.tst-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));width:min(1700px,96vw);margin:0 auto;gap:0}
+.tcell{position:relative;aspect-ratio:395/370;box-sizing:border-box;border:1px solid rgba(98,78,235,.32);margin:-.5px}
+.tshape{position:absolute;inset:3px;box-sizing:border-box;border:1.5px solid #6A4BEA;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:12% 14%;text-align:center;transition:background .4s,border-color .4s}
+.tcell:hover .tshape{background:rgba(142,76,242,.07);border-color:#B046F2}
+.tc-mark{display:block;font-size:clamp(40px,3.2vw,62px);line-height:.6;height:.42em;margin-bottom:.35em;
   -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent}
-.tc-top{display:flex;align-items:center;gap:14px;margin-bottom:16px}
-.tc-av{flex:none;width:clamp(48px,3.6vw,64px);aspect-ratio:1;border-radius:50%}
-.tc-who{display:flex;flex-direction:column;gap:2px}
-.tc-name{font-size:18px;letter-spacing:.08em;color:#2A2140;filter:blur(1.2px)}
-.tc-on{font-size:14px;color:#8E4CF2}
-.tcard blockquote{margin:0;font-size:clamp(18px,1.4vw,24px);line-height:1.45;color:#1D1530}
-.tc-t{display:inline-flex;align-items:center;gap:6px;margin-top:16px;font-size:13px;color:#8C80A8}
-.tc-t svg{color:#FF3FD8}
-@media (max-width:860px){.tst-cols{grid-template-columns:1fr;height:90vh}.tcol:not(:first-child){display:none}}
-@media (prefers-reduced-motion:reduce){.tcol-in{animation:none}}
+.tshape blockquote{margin:0;font-size:clamp(16px,1.32vw,24px);line-height:1.38;color:#1D1530}
+@media (max-width:900px){.tst-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media (max-width:600px){.tst-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.tshape{padding:12% 11%}.tshape blockquote{font-size:13.5px}}
 /* header over light sections: logo turns dark */
 .site-head .brand img{transition:filter .35s}
 .site-head.on-light .brand img{filter:brightness(0) saturate(100%) invert(8%) sepia(20%) saturate(2000%) hue-rotate(240deg)}
@@ -1143,11 +1125,11 @@ if (window.GradientWaves) window.worksWaves = GradientWaves(document.getElementB
     <text x="1288" y="300" text-anchor="middle" font-family="Lia Element, sans-serif" font-weight="600" font-size="362"
       textLength="2440" lengthAdjust="spacingAndGlyphs" fill="url(#tstFade)">TESTIMONIALS</text>
   </svg>
-  <div class="tst-cols" id="tstCols" dir="rtl"></div>
+  <div class="tst-grid" id="tstGrid" dir="ltr"></div>
 </section>
 <script>
-/* Testimonials: real WhatsApp reactions from the earlier site (names blurred), in three columns
-   that drift up / down / up and pause on hover */
+/* Testimonials: real WhatsApp reactions from the earlier site, one inside each shape of a purple grid.
+   The shapes follow the design's pattern (3 rows × 5 columns, repeating): corners TL TR BR BL, R = rounded. */
 (() => {
   const R = [
     ['אמאלה הזיההההה. נדיר ברמותתת','VORTEX','15:08'],['תקשיבי, אני לא נרגעת. אני מסתכלת על זה שוב ושוב, הוא מהפנט.','VORTEX','15:09'],
@@ -1169,11 +1151,25 @@ if (window.GradientWaves) window.worksWaves = GradientWaves(document.getElementB
   const dots = n => '•'.repeat(n);
   // only the reactions themselves – no project names, times or "first site" hints
   const hide = ['זה וואווו לאתר ראשון! אם מפה את מתחילה, לאן תגיעי 🥰', 'בול הפוטנציאל נדיר!'];
-  const card = ([q], i) => `<figure class="tcard"><span class="tc-mark" style="background-image:linear-gradient(135deg,${grads[i % grads.length]})" aria-hidden="true">״</span><blockquote>${q}</blockquote></figure>`;
-  const cols = [[], [], []];
-  R.filter(r => !hide.includes(r[0])).forEach((r, i) => cols[i % 3].push(card(r, i)));
-  document.getElementById('tstCols').innerHTML = cols.map((c, i) =>
-    `<div class="tcol ${i === 1 ? 'down' : 'up'}"><div class="tcol-in">${c.join('')}${c.join('')}</div></div>`).join('');
+  const SHAPES = [['..R.', 'RRRR', '..RR', 'RRRR', '...R'],
+                  ['.R.R', 'R..R', 'RR..', 'R.R.', '.R.R'],
+                  ['....', 'RRRR', '.R.R', 'RRRR', '....']];
+  const grid = document.getElementById('tstGrid'), list = R.filter(r => !hide.includes(r[0]));
+  const radius = m => [...m].map(c => c === 'R' ? '50%' : '0').join(' ');
+  function build() {
+    const cols = getComputedStyle(grid).gridTemplateColumns.split(' ').length;
+    const n = Math.ceil(list.length / cols) * cols;                  // fill the last row with empty shapes
+    let h = '';
+    for (let i = 0; i < n; i++) {
+      const r = Math.floor(i / cols), c = i % cols, m = SHAPES[r % 3][c % 5], q = list[i];
+      h += `<figure class="tcell" dir="rtl"><div class="tshape" style="border-radius:${radius(m)}">` +
+        (q ? `<span class="tc-mark" style="background-image:linear-gradient(135deg,${grads[i % grads.length]})" aria-hidden="true">״</span><blockquote>${q[0]}</blockquote>` : '') +
+        `</div></figure>`;
+    }
+    grid.innerHTML = h;
+  }
+  build();
+  let rt; addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(build, 150); });
 })();
 </script>
 
