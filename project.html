@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>פרויקט | הילה איבגי HILA IVGY</title>
+<link rel="icon" href="assets/logo.png">
+<link rel="stylesheet" href="assets/pages.css">
+<style>
+/* project page – title, big hero, story in big type, gallery 2+1, more projects carousel */
+.pj-hero{position:relative;padding:clamp(110px,14vh,150px) 0 0;text-align:center}
+.pj-l{position:absolute;z-index:0;font-size:clamp(160px,22vw,400px);line-height:1;color:transparent;-webkit-text-stroke:2px #FF00FF;opacity:.55;pointer-events:none}
+.pj-l.a{top:2%;right:-3%}.pj-l.b{top:22%;left:-2%}
+.pj-t{position:relative;z-index:1;margin:0 0 clamp(26px,3vw,46px);font-size:clamp(34px,4.2vw,72px);line-height:1}
+.pj-img{position:relative;z-index:1;border-radius:22px;overflow:hidden;box-shadow:0 40px 90px -30px rgba(0,0,0,.8)}
+.pj-img img{width:100%;height:auto}
+.pj-body{display:grid;grid-template-columns:minmax(0,7fr) minmax(0,5fr);gap:40px;align-items:end;padding:clamp(70px,9vw,140px) 0 clamp(40px,5vw,80px)}
+.pj-txt p{margin:0 0 .9em;font-size:clamp(21px,2.1vw,32px);line-height:1.25}
+.pj-txt .c{opacity:.12;transition:opacity .4s}.pj-txt .c.on{opacity:1}
+.pj-go{justify-self:start}
+.pj-gal{display:grid;grid-template-columns:1fr 1fr;gap:clamp(12px,1.4vw,22px)}
+.pj-gal figure{margin:0;border-radius:12px;overflow:hidden;background:#1A1030}
+.pj-gal figure.w{grid-column:1/-1}
+.pj-gal img{width:100%;height:100%;object-fit:cover;aspect-ratio:3/2}
+.pj-gal figure.w img{aspect-ratio:auto}
+.more-h{margin:clamp(80px,10vw,160px) 0 30px;text-align:center;font-size:clamp(30px,3.4vw,56px)}
+.car{position:relative}
+.car-track{display:flex;gap:18px;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;padding-bottom:6px}
+.car-track::-webkit-scrollbar{display:none}
+.car a{flex:none;width:clamp(240px,30vw,410px);scroll-snap-align:start;text-decoration:none}
+.car img{width:100%;aspect-ratio:3/2;object-fit:cover;border-radius:12px;transition:transform .6s}
+.car a:hover img{transform:scale(1.03)}
+.car span{display:block;margin-top:12px;font-size:18px}
+.car-b{position:absolute;top:38%;width:54px;height:54px;border-radius:50%;border:0;cursor:pointer;background:#fff;color:#2A1460;font-size:24px;z-index:2}
+.car-prev{right:-12px}.car-next{left:-12px}
+.big-word{margin:clamp(60px,8vw,120px) 0 0;text-align:center;font-size:clamp(80px,17vw,330px);line-height:.8;color:transparent;-webkit-text-stroke:1.5px rgba(180,107,255,.45);white-space:nowrap;overflow:hidden}
+.pj-wip{padding:clamp(60px,8vw,120px) 0 0;text-align:center}
+.pj-wip .w{display:inline-flex;align-items:center;gap:14px;padding:14px 30px;border-radius:999px;background:rgba(255,0,255,.12);box-shadow:inset 0 0 0 1.5px rgba(255,0,255,.5);font-size:clamp(18px,1.5vw,24px)}
+.pj-wip .w::before{content:"";width:11px;height:11px;border-radius:50%;background:#FF00FF;animation:wipP 1.6s infinite}
+.pj-wip h2{margin:26px 0 0;font-size:clamp(34px,5vw,90px);line-height:1}
+.pj-wip h2 .hl{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+@keyframes wipP{50%{opacity:.25}}
+@media (max-width:900px){.pj-body{grid-template-columns:1fr}.pj-gal{grid-template-columns:1fr}.car-b{display:none}}
+</style>
+</head>
+<body>
+<a class="skip" href="#main">דילוג לתוכן</a>
+<div class="bg-glow" aria-hidden="true"></div><div class="bg-lines" aria-hidden="true"></div>
+<header class="ph">
+  <a class="logo" href="./" aria-label="HILA IVGY – לעמוד הבית"><img src="assets/logo.png" alt="HILA IVGY"></a>
+  <nav aria-label="ניווט ראשי"><a href="./">בית</a><a href="works.html" aria-current="page">עבודות</a><a href="branding.html">מיתוג</a><a href="about.html">אודות</a><a class="talk" href="./#contact">שנדבר?</a></nav>
+</header>
+<main id="main" tabindex="-1" class="wrap">
+  <section class="pj-hero">
+    <span class="pj-l a" aria-hidden="true" lang="en">H</span><span class="pj-l b" aria-hidden="true" lang="en">I</span>
+    <h1 class="pj-t" id="pjT"></h1>
+    <div class="pj-img"><img id="pjHero" alt=""></div>
+  </section>
+  <section class="pj-body"><div class="pj-txt" id="pjTxt"></div><a class="btn ghost pj-go" id="pjGo" target="_blank" rel="noopener">מעבר לאתר <svg viewBox="0 0 53 12" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M53 6H1M7 1 1 6l6 5"/></svg></a></section>
+  <section class="pj-gal" id="pjGal" aria-label="עמודים מהאתר"></section>
+  <h2 class="more-h">פרויקטים נוספים</h2>
+  <div class="car"><button class="car-b car-prev" type="button" aria-label="הקודם">›</button><div class="car-track" id="car"></div><button class="car-b car-next" type="button" aria-label="הבא">‹</button></div>
+  <p class="big-word" aria-hidden="true" lang="en">HILA IVGY</p>
+</main>
+<footer class="pf"><nav aria-label="מידע משפטי"><a href="accessibility.html">הצהרת נגישות</a><a href="privacy.html">מדיניות פרטיות</a><a href="terms.html">תנאי שימוש</a></nav><p>© 2026 הילה איבגי – <span lang="en">HILA IVGY</span></p></footer>
+<script src="assets/projects.js"></script>
+<script src="assets/site.js"></script>
+<script>
+(() => {
+  const P = window.PROJECTS, id = new URLSearchParams(location.search).get('id'), p = P.find(x => x.id === id) || P[0];
+  document.title = `${p.name} | הילה איבגי HILA IVGY`;
+  document.getElementById('pjT').textContent = p.name;
+  const hero = document.getElementById('pjHero'); hero.src = p.hero; hero.alt = `האתר של ${p.name}`;
+  if (p.wip) { // not approved for publishing yet: hero + 'in progress' only
+    document.querySelector('.pj-body').outerHTML = '<section class="pj-wip"><span class="w">האתר בעבודה</span><h2>הפרויקט בתהליך.<br><span class="hl">בקרוב באוויר.</span></h2></section>';
+    document.getElementById('pjGal').remove();
+  }
+  const txt = document.getElementById('pjTxt') || document.createElement('div');
+  p.text.forEach(t => { const el = document.createElement('p'); el.setAttribute('aria-label', t); el.innerHTML = [...t].map(ch => `<span class="c" aria-hidden="true">${ch}</span>`).join(''); txt.appendChild(el); });
+  const go = document.getElementById('pjGo'); if (go) { if (p.url) go.href = p.url; else go.remove(); }
+  const gal = document.getElementById('pjGal');
+  if (!gal) {} else if (p.heroOnly || !p.gallery.length) gal.remove();
+  else p.gallery.forEach((g, i) => gal.insertAdjacentHTML('beforeend', `<figure class="${i === 2 ? 'w' : ''}"><img src="${g}" alt="עמוד מתוך האתר של ${p.name}" loading="lazy"></figure>`));
+  // letters light up as the text scrolls through the screen
+  const cs = [...txt.querySelectorAll('.c')];
+  const lit = () => { const r = txt.getBoundingClientRect(), k = Math.min(1, Math.max(0, (innerHeight * .85 - r.top) / (r.height + innerHeight * .3))); const n = Math.round(k * cs.length); cs.forEach((c, i) => c.classList.toggle('on', i < n)); };
+  addEventListener('scroll', lit, { passive: true }); lit();
+  if (matchMedia('(prefers-reduced-motion: reduce)').matches) cs.forEach(c => c.classList.add('on'));
+  // more projects
+  const car = document.getElementById('car');
+  P.filter(x => x.id !== p.id).forEach(x => car.insertAdjacentHTML('beforeend', `<a href="project.html?id=${x.id}"><img src="${x.hero}" alt="" loading="lazy"><span>${x.name}</span></a>`));
+  document.querySelector('.car-prev').onclick = () => car.scrollBy({ left: 430, behavior: 'smooth' });
+  document.querySelector('.car-next').onclick = () => car.scrollBy({ left: -430, behavior: 'smooth' });
+})();
+</script>
+</body>
+</html>

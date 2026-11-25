@@ -1,0 +1,304 @@
+﻿<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>עבודות – עיצוב ובניית אתרים | הילה איבגי HILA IVGY</title>
+<meta name="description" content="תיק העבודות של הילה איבגי: אתרי תדמית ונדל״ן יוקרה, אתרי מוצר ומותגים – עם הסיפור, האתגר והפתרון מאחורי כל אתר.">
+<link rel="icon" href="assets/logo.png">
+<link rel="stylesheet" href="assets/pages.css">
+<style>
+/* index of projects */
+.w-index{margin-top:clamp(20px,3vw,40px)}
+/* one case study */
+.case{position:relative;padding:clamp(70px,9vw,150px) 0;border-top:1px solid rgba(255,255,255,.08)}
+.case-head{display:flex;align-items:flex-end;gap:clamp(16px,2vw,34px);flex-wrap:wrap;margin-bottom:clamp(28px,3.4vw,56px)}
+.case-n{font-size:clamp(70px,9vw,170px);line-height:.8;color:transparent;-webkit-text-stroke:2px rgba(255,255,255,.75);letter-spacing:-.03em}
+.case-head h2{margin:0;font-size:clamp(40px,5.4vw,100px);line-height:.9;letter-spacing:-.02em}
+.case-head h2 small{display:block;margin-top:10px;font-size:.32em;letter-spacing:0;color:var(--soft)}
+.tags{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 6px auto;padding:0;list-style:none}
+.tags li{padding:8px 14px;border-radius:999px;font-size:14px;background:rgba(255,255,255,.08);box-shadow:inset 0 0 0 1px rgba(255,255,255,.14)}
+.case-grid{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:clamp(30px,4vw,80px);align-items:start}
+.case:nth-of-type(even) .case-grid{grid-template-columns:minmax(0,7fr) minmax(0,5fr)}
+.case:nth-of-type(even) .case-text{order:2}
+.case-text{padding:clamp(30px,3.2vw,56px);font-weight:400}
+/* flipped leaf: the corner where RTL text starts (top-right) stays square, so lines never leave the shape */
+.case-text.leaf,.case-text.leaf2{border-radius:clamp(70px,9vw,160px) 0 clamp(70px,9vw,160px) 0}
+.case-text h3{margin:0 0 8px;font-size:clamp(20px,1.6vw,26px);font-weight:600;background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent;display:inline-block}
+.case-text p{margin:0 0 22px;font-size:clamp(16px,1.15vw,19px);line-height:1.65;color:var(--soft);font-family:"Segoe UI",Arial,sans-serif}
+.case-text .btn{margin-top:6px}
+.case-text .wip{display:inline-flex;align-items:center;gap:10px;margin-top:6px;padding:12px 22px;border-radius:999px;background:rgba(255,0,255,.12);box-shadow:inset 0 0 0 1px rgba(255,0,255,.45);color:#fff;font-weight:600}
+.case-text .wip::before{content:"";width:9px;height:9px;border-radius:50%;background:var(--pink);animation:wipP 1.6s infinite}
+@keyframes wipP{50%{opacity:.25}}
+.note{display:flex;gap:10px;align-items:center;padding:14px 18px;border-radius:16px;background:rgba(255,0,255,.1);box-shadow:inset 0 0 0 1px rgba(255,0,255,.35);font-size:15px;color:#FFD6FB;font-family:"Segoe UI",Arial,sans-serif;font-weight:500}
+/* device frames */
+.case-visual{position:relative;padding-bottom:clamp(20px,3vw,60px)}
+.laptop{position:relative;margin:0 auto;width:100%}
+.laptop .lid{position:relative;padding:1.6% 1.6% 2.2%;border-radius:18px 18px 6px 6px;background:linear-gradient(#2B2540,#1A1528);box-shadow:0 40px 90px -30px rgba(0,0,0,.8),inset 0 0 0 1.5px rgba(255,255,255,.12)}
+.screen{position:relative;aspect-ratio:16/10;overflow:hidden;border-radius:6px;background:#0B0614}
+.screen img{width:100%;height:100%;object-fit:cover;object-position:top}
+.screen iframe{position:absolute;top:0;right:0;border:0;transform-origin:top right;background:#0B0614}
+.laptop .base{height:clamp(10px,1.2vw,18px);margin:0 -6%;border-radius:0 0 22px 22px;background:linear-gradient(#3A3352,#1E1930);box-shadow:0 18px 30px -12px rgba(0,0,0,.7)}
+.live-hint{position:absolute;z-index:2;left:50%;bottom:14px;transform:translateX(-50%);padding:8px 16px;border-radius:999px;background:rgba(14,10,24,.75);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);font-size:13px;pointer-events:none;transition:opacity .5s}
+.screen.used .live-hint{opacity:0}
+.play-live{position:absolute;inset:0;z-index:3;display:grid;place-items:center;border:0;cursor:pointer;background:rgba(14,10,24,.35);color:#fff;font:inherit;font-size:clamp(16px,1.3vw,22px)}
+.play-live span{padding:14px 26px;border-radius:999px;background:var(--pink);box-shadow:0 12px 30px -8px rgba(255,0,255,.6)}
+.phone{position:absolute;left:-2%;bottom:0;width:clamp(90px,18%,190px);aspect-ratio:9/19;padding:2.2%;border-radius:22px;background:#1A1528;box-shadow:0 30px 60px -20px rgba(0,0,0,.8),inset 0 0 0 1.5px rgba(255,255,255,.14)}
+.phone img{width:100%;height:100%;object-fit:cover;border-radius:16px}
+.case:nth-of-type(even) .phone{left:auto;right:-2%}
+.mock{border-radius:22px;overflow:hidden;box-shadow:0 40px 90px -30px rgba(0,0,0,.8)}
+/* strip of inner pages */
+.strip{display:flex;gap:clamp(12px,1.4vw,22px);margin-top:clamp(30px,4vw,60px);padding:4px 4px 16px;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:thin;scrollbar-color:#6E5BF2 transparent}
+.strip figure{flex:none;width:clamp(260px,30vw,480px);margin:0;scroll-snap-align:start}
+.strip img{width:100%;aspect-ratio:16/10;object-fit:cover;border-radius:16px;box-shadow:0 20px 40px -20px rgba(0,0,0,.8)}
+.strip figcaption{margin-top:8px;font-size:14px;color:var(--mute)}
+@media (max-width:900px){
+  .case-grid,.case:nth-of-type(even) .case-grid{grid-template-columns:1fr}
+  .case:nth-of-type(even) .case-text{order:0}
+  .case-visual{order:-1}
+  .tags{margin:0}
+}
+</style>
+</head>
+<body>
+<a class="skip" href="#main">דילוג לתוכן</a>
+<div class="bg-glow" aria-hidden="true"></div><div class="bg-lines" aria-hidden="true"></div>
+<header class="ph">
+  <a class="logo" href="./" aria-label="HILA IVGY – לעמוד הבית"><img src="assets/logo.png" alt="HILA IVGY"></a>
+  <nav aria-label="ניווט ראשי">
+    <a href="./">בית</a><a href="works.html" aria-current="page">עבודות</a><a href="branding.html">מיתוג</a><a href="about.html">אודות</a><a class="talk" href="./#contact">שנדבר?</a>
+  </nav>
+</header>
+
+<main id="main" tabindex="-1">
+<section class="p-hero wrap">
+  <p class="p-kick" dir="ltr">SELECTED PROJECTS</p>
+  <h1 class="p-big" lang="en">WORKS</h1>
+  <p class="p-lead">כל אתר מתחיל בעסק אחד ובסיפור שלו.<br><span class="hl">ככה זה נראה מבפנים.</span></p>
+  <nav class="w-index chips" aria-label="דילוג לפרויקט">
+    <a class="chip" href="#ravitz">RAVITZ</a><a class="chip" href="#avney">אבני הכתר</a><a class="chip" href="#hapisga">הפסגה</a>
+    <a class="chip" href="#event">אירוע חד פעמי</a><a class="chip" href="#vortex">VORTEX</a><a class="chip" href="#biscotti">Biscotti</a><a class="chip" href="#trolist">TROLIST</a>
+  </nav>
+</section>
+
+<!-- 01 RAVITZ -->
+<article class="case wrap" id="ravitz" aria-labelledby="t-ravitz">
+  <header class="case-head rv">
+    <span class="case-n" aria-hidden="true">01</span>
+    <h2 id="t-ravitz">RAVITZ <small>ניהול נכסים יוקרתי בירושלים</small></h2>
+    <ul class="tags"><li>אתר תדמית</li><li>נדל״ן יוקרה</li><li>אנגלית</li></ul>
+  </header>
+  <div class="case-grid">
+    <div class="case-text glass leaf rv">
+      <h3>האתגר</h3>
+      <p>חברת ניהול נכסים שעובדת עם בעלי דירות יוקרה, רבים מהם גרים בחו״ל. הם צריכים לסמוך על מי שמחזיק את המפתח – עוד לפני שדיברו איתו.</p>
+      <h3>מה היה חשוב</h3>
+      <p>שהאתר ירגיש כמו לובי של בניין יוקרה: שקט, מדויק, עם הרבה אוויר – ושיסביר בבירור מה מקבלים בכל שלב.</p>
+      <h3>מה עשיתי</h3>
+      <p>שפה בכחול-לילה וזהב, טיפוגרפיה ענקית שנפרשת על גריד, וגלילה שמספרת את השירות צעד אחר צעד – עד לקביעת פגישה.</p>
+      <span class="wip">האתר בעבודה – בקרוב באוויר</span>
+    </div>
+    <div class="case-visual rv">
+      <div class="laptop"><div class="lid"><div class="screen">
+        <img src="assets/works/ravitz-d.jpg" alt="ההירו של אתר RAVITZ" loading="lazy">
+      </div></div><div class="base"></div></div>
+    </div>
+  </div>
+</article>
+
+<!-- 02 AVNEY -->
+<article class="case wrap" id="avney" aria-labelledby="t-avney">
+  <header class="case-head rv">
+    <span class="case-n" aria-hidden="true">02</span>
+    <h2 id="t-avney">אבני הכתר <small>יזמות ושיווק נדל״ן בירושלים</small></h2>
+    <ul class="tags"><li>אתר חברה</li><li>פרויקטים</li><li>נדל״ן</li></ul>
+  </header>
+  <div class="case-grid">
+    <div class="case-text glass leaf2 rv">
+      <h3>האתגר</h3>
+      <p>חברה עם כמה פרויקטים במקביל – בשלבים שונים, בשכונות שונות – שצריכה אתר אחד שמציג את כולם בלי להפוך לקטלוג.</p>
+      <h3>מה היה חשוב</h3>
+      <p>שהמותג ירגיש יציב ובטוח, ושכל פרויקט יקבל במה משלו עם המידע שקונה דירה באמת מחפש.</p>
+      <h3>מה עשיתי</h3>
+      <p>הירו קולנועי של ירושלים, עמוד פרויקטים עם סינון לפי סטטוס, ושפה עיצובית בזהב ואבן שמחברת בין כולם.</p>
+      <a class="btn ghost" href="https://hila0583278831-afk.github.io/avney-haketer-site/" target="_blank" rel="noopener">לאתר החי <svg viewBox="0 0 53 12" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M53 6H1M7 1 1 6l6 5"/></svg></a>
+    </div>
+    <div class="case-visual rv">
+      <div class="laptop"><div class="lid"><div class="screen" data-live="https://hila0583278831-afk.github.io/avney-haketer-site/" data-title="האתר של אבני הכתר">
+        <img src="assets/shots/in-avney-1.jpg" alt="עמוד באתר אבני הכתר" loading="lazy">
+      </div></div><div class="base"></div></div>
+      <div class="phone"><img src="assets/works/avney-m.jpg" alt="אתר אבני הכתר בטלפון" loading="lazy"></div>
+    </div>
+  </div>
+  <div class="strip rv" aria-label="עמודים נוספים מהאתר">
+    <figure><img src="assets/shots/in-avney-2.jpg" alt="עמוד הפרויקטים" loading="lazy"><figcaption>כל הפרויקטים</figcaption></figure>
+    <figure><img src="assets/shots/in-avney-3.jpg" alt="עמוד תכנון ואדריכלות" loading="lazy"><figcaption>תכנון ואדריכלות</figcaption></figure>
+    <figure><img src="assets/shots/in-avney-5.jpg" alt="עמוד נוסף באתר" loading="lazy"><figcaption>עמוד פרויקט</figcaption></figure>
+    <figure><img src="assets/shots/avney.webp" alt="מוקאפ האתר" loading="lazy"><figcaption>דף הבית</figcaption></figure>
+  </div>
+</article>
+
+<!-- 03 HAPISGA -->
+<article class="case wrap" id="hapisga" aria-labelledby="t-hapisga">
+  <header class="case-head rv">
+    <span class="case-n" aria-hidden="true">03</span>
+    <h2 id="t-hapisga">הפסגה <small>מגדל מגורים יוקרתי על קו המים</small></h2>
+    <ul class="tags"><li>אתר פרויקט</li><li>נדל״ן יוקרה</li><li>חוויית גלילה</li></ul>
+  </header>
+  <div class="case-grid">
+    <div class="case-text glass leaf rv">
+      <h3>האתגר</h3>
+      <p>למכור דירות במגדל שעוד לא קיים. הקונה צריך לראות את הנוף, להרגיש את החללים ולהבין למה זה שווה – הכל דרך מסך.</p>
+      <h3>מה היה חשוב</h3>
+      <p>שהגולש ירגיש שהוא עומד במרפסת. פחות טקסט, יותר אווירה – ומידע מדויק בדיוק כשצריך אותו.</p>
+      <h3>מה עשיתי</h3>
+      <p>חוויית גלילה שעוברת מהמגדל אל הנוף ואל החללים הפנימיים, עם הדמיות במסך מלא, מעברים רכים וכותרות ענקיות.</p>
+      <a class="btn ghost" href="https://hila0583278831-afk.github.io/hapisga-site/" target="_blank" rel="noopener">לאתר החי <svg viewBox="0 0 53 12" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M53 6H1M7 1 1 6l6 5"/></svg></a>
+    </div>
+    <div class="case-visual rv">
+      <div class="laptop"><div class="lid"><div class="screen" data-live="https://hila0583278831-afk.github.io/hapisga-site/" data-title="האתר של הפסגה">
+        <img src="assets/shots/in-hapisga-1.jpg" alt="דף הבית של אתר הפסגה" loading="lazy">
+      </div></div><div class="base"></div></div>
+      <div class="phone"><img src="assets/works/hapisga-m.jpg" alt="אתר הפסגה בטלפון" loading="lazy"></div>
+    </div>
+  </div>
+  <div class="strip rv" aria-label="עמודים נוספים מהאתר">
+    <figure><img src="assets/shots/in-hapisga-2.jpg" alt="בין הים לעיר" loading="lazy"><figcaption>בין הים לעיר</figcaption></figure>
+    <figure><img src="assets/shots/in-hapisga-3.jpg" alt="החללים הפנימיים" loading="lazy"><figcaption>החללים הפנימיים</figcaption></figure>
+    <figure><img src="assets/shots/in-hapisga-4.jpg" alt="חלל כפול" loading="lazy"><figcaption>חלל כפול</figcaption></figure>
+    <figure><img src="assets/shots/in-hapisga-6.jpg" alt="חוויה בפסגה" loading="lazy"><figcaption>חוויה בפסגה</figcaption></figure>
+  </div>
+</article>
+
+<!-- 04 EVENT -->
+<article class="case wrap" id="event" aria-labelledby="t-event">
+  <header class="case-head rv">
+    <span class="case-n" aria-hidden="true">04</span>
+    <h2 id="t-event">אירוע חד פעמי <small>כל מה שצריך לשולחן מושלם</small></h2>
+    <ul class="tags"><li>אתר מוצרים</li><li>אירועים</li><li>הזמנה בוואטסאפ</li></ul>
+  </header>
+  <div class="case-grid">
+    <div class="case-text glass leaf2 rv">
+      <h3>האתגר</h3>
+      <p>עסק לכלי הגשה ועיצוב שולחנות לאירועים, עם עשרות מוצרים – שהיה צריך להציג אותם בלי שהעין תתעייף.</p>
+      <h3>מה היה חשוב</h3>
+      <p>שהלקוחה תדמיין את השולחן שלה כבר מהמסך הראשון, ותגיע להזמנה בכמה שפחות לחיצות.</p>
+      <h3>מה עשיתי</h3>
+      <p>עיצוב רך בירוק-זית ושמנת, צילומי אווירה גדולים, קטלוג מסודר לפי קטגוריות ושליחת הזמנה ישירות לוואטסאפ.</p>
+    </div>
+    <div class="case-visual rv">
+      <div class="laptop"><div class="lid"><div class="screen"><img src="assets/shots/in-event-0.jpg" alt="דף הבית של אתר אירוע חד פעמי" loading="lazy"></div></div><div class="base"></div></div>
+      <div class="phone"><img src="assets/works/event-m.jpg" alt="האתר בטלפון" loading="lazy"></div>
+    </div>
+  </div>
+  <div class="strip rv" aria-label="עמודים נוספים מהאתר">
+    <figure><img src="assets/shots/in-event-2.jpg" alt="קטלוג המוצרים" loading="lazy"><figcaption>קטלוג המוצרים</figcaption></figure>
+    <figure><img src="assets/shots/in-event-c.jpg" alt="עמוד מוצרים" loading="lazy"><figcaption>בחירת כלים</figcaption></figure>
+    <figure><img src="assets/shots/event.webp" alt="מוקאפ האתר" loading="lazy"><figcaption>דף הבית</figcaption></figure>
+  </div>
+</article>
+
+<!-- 05 VORTEX -->
+<article class="case wrap" id="vortex" aria-labelledby="t-vortex">
+  <header class="case-head rv">
+    <span class="case-n" aria-hidden="true">05</span>
+    <h2 id="t-vortex">VORTEX <small>חוויות מוטורספורט</small></h2>
+    <ul class="tags"><li>דף נחיתה</li><li>חוויה</li><li>אנימציה</li></ul>
+  </header>
+  <div class="case-grid">
+    <div class="case-text glass leaf rv">
+      <h3>האתגר</h3>
+      <p>מותג של חוויות נהיגה ומהירות, שהקהל שלו רגיל לרמה הכי גבוהה של תוכן – ונמאס לו מאתרים שנראים אותו דבר.</p>
+      <h3>מה היה חשוב</h3>
+      <p>להעביר אדרנלין. שהאתר עצמו ירגיש כמו לחיצה על הגז.</p>
+      <h3>מה עשיתי</h3>
+      <p>הירו נועז בכתום-אש, טיפוגרפיה ענקית שהרכב פורץ דרכה, ומספרים שעולים בגלילה – עד לכפתור ההזמנה.</p>
+    </div>
+    <div class="case-visual rv">
+      <div class="laptop"><div class="lid"><div class="screen"><img src="assets/shots/in-vortex-0.jpg" alt="דף הבית של אתר VORTEX" loading="lazy"></div></div><div class="base"></div></div>
+      <div class="phone"><img src="assets/works/vortex-m.jpg" alt="אתר VORTEX בטלפון" loading="lazy"></div>
+    </div>
+  </div>
+  <div class="strip rv" aria-label="עמודים נוספים מהאתר">
+    <figure><img src="assets/shots/in-vortex-b.jpg" alt="ההירו של VORTEX" loading="lazy"><figcaption>ההירו</figcaption></figure>
+    <figure><img src="assets/shots/vortex.webp" alt="מוקאפ האתר" loading="lazy"><figcaption>מוקאפ</figcaption></figure>
+  </div>
+</article>
+
+<!-- 06 BISCOTTI -->
+<article class="case wrap" id="biscotti" aria-labelledby="t-biscotti">
+  <header class="case-head rv">
+    <span class="case-n" aria-hidden="true">06</span>
+    <h2 id="t-biscotti" lang="en">Biscotti <small lang="he">מאפים ועוגות בוטיק</small></h2>
+    <ul class="tags"><li>אתר מותג</li><li>מזון</li></ul>
+  </header>
+  <div class="case-grid">
+    <div class="case-text glass leaf2 rv">
+      <h3>האתגר</h3>
+      <p>מותג מאפים עם מוצר יפה וטעים, שהיה צריך אתר שמעורר תיאבון ומסביר בקלות מה מזמינים ואיך.</p>
+      <h3>מה היה חשוב</h3>
+      <p>שהמוצר יהיה הכוכב, ושהמותג ירגיש טרי, טבעי ומקצועי.</p>
+      <h3>מה עשיתי</h3>
+      <p>צבעוניות ירוקה עשירה, צילומי מוצר ענקיים, טיפוגרפיה עם אופי ותפריט ברור שמוביל להזמנה.</p>
+    </div>
+    <div class="case-visual rv">
+      <div class="mock"><img src="assets/works/biscotti-d.jpg" alt="אתר Biscotti על מחשב" loading="lazy"></div>
+      <div class="phone"><img src="assets/works/biscotti-m.jpg" alt="אתר Biscotti בטלפון" loading="lazy"></div>
+    </div>
+  </div>
+</article>
+
+<!-- 07 TROLIST – hero only, not launched yet -->
+<article class="case wrap" id="trolist" aria-labelledby="t-trolist">
+  <header class="case-head rv">
+    <span class="case-n" aria-hidden="true">07</span>
+    <h2 id="t-trolist">TROLIST <small>מדבקה חכמה לכבודה</small></h2>
+    <ul class="tags"><li>אתר מוצר</li><li>בקרוב</li></ul>
+  </header>
+  <div class="case-grid">
+    <div class="case-text glass leaf rv">
+      <h3>על הפרויקט</h3>
+      <p>מוצר חדש מעולם התעופה – מדבקה חכמה שמחליפה את תגית המזוודה. בניתי למותג את האתר ואת המיתוג מאפס.</p>
+      <span class="wip">האתר בעבודה – בקרוב באוויר</span>
+    </div>
+    <div class="case-visual rv">
+      <div class="laptop"><div class="lid"><div class="screen"><img src="assets/shots/in-trolist-0.jpg" alt="ההירו של אתר TROLIST" loading="lazy"></div></div><div class="base"></div></div>
+    </div>
+  </div>
+</article>
+
+<section class="cta leaf rv" aria-labelledby="ctaT">
+  <h2 id="ctaT">הפרויקט הבא<br>יכול להיות שלכם</h2>
+  <p>ספרו לי על העסק – ונבנה יחד אתר שאי אפשר לשכוח.</p>
+  <a class="btn" href="./#contact">בואו נדבר <svg viewBox="0 0 53 12" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M53 6H1M7 1 1 6l6 5"/></svg></a>
+</section>
+</main>
+
+<footer class="pf">
+  <nav aria-label="מידע משפטי"><a href="accessibility.html">הצהרת נגישות</a><a href="privacy.html">מדיניות פרטיות</a><a href="terms.html">תנאי שימוש</a></nav>
+  <p>© 2026 הילה איבגי – <span lang="en">HILA IVGY</span>. הסימנים המסחריים והעבודות המוצגים שייכים לבעליהם ומוצגים כתיק עבודות.</p>
+</footer>
+
+<script src="assets/site.js"></script>
+<script>
+/* live preview: the real site runs inside the laptop screen at desktop width (1440px) and is scaled down to fit.
+   It loads once the laptop comes near the screen (it is a whole website), on top of a still image. */
+(() => {
+  const W = 1440;
+  const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { io.unobserve(e.target); e.target._load(); } }), { rootMargin: '300px 0px' });
+  document.querySelectorAll('.screen[data-live]').forEach(scr => {
+    io.observe(scr);
+    scr._load = () => {
+      const f = document.createElement('iframe'); f.src = scr.dataset.live; f.title = scr.dataset.title; f.loading = 'lazy';
+      const fit = () => { const s = scr.clientWidth / W; f.style.width = W + 'px'; f.style.height = (scr.clientHeight / s) + 'px'; f.style.transform = `scale(${s})`; };
+      fit(); addEventListener('resize', fit);
+      scr.appendChild(f);
+      const hint = document.createElement('span'); hint.className = 'live-hint'; hint.textContent = 'זה האתר האמיתי – גללו בתוך המסך'; scr.appendChild(hint);
+      f.addEventListener('mouseenter', () => scr.classList.add('used'));
+      const img = scr.querySelector('img'); f.addEventListener('load', () => img && (img.style.visibility = 'hidden'));
+    };
+  });
+})();
+</script>
+</body>
+</html>

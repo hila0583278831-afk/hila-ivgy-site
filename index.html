@@ -404,6 +404,9 @@ body.menu-open .menu-dim{opacity:1;pointer-events:auto}
   text-decoration:none;font-size:clamp(16px,1.2vw,20px);transition:background .25s,color .25s}
 .about-cta:hover{background:#FF00FF;color:#fff}
 @media (max-width:860px){.about-stage{grid-template-columns:1fr;margin-top:-10vw}.about-avatar{width:70%}.leaf{text-align:center}}
+.to-page{margin:clamp(30px,4vw,60px) 0 0;text-align:center;position:relative;z-index:3}
+.to-btn{display:inline-flex;align-items:center;gap:14px;padding:16px 30px;border-radius:999px;background:#fff;color:#2A1460;text-decoration:none;font-family:'Lia Element',sans-serif;font-weight:600;font-size:clamp(16px,1.2vw,20px);transition:transform .3s,background .3s,color .3s}
+.to-btn:hover{transform:translateY(-2px);background:#FF00FF;color:#fff}
 /* ================= accessibility ================= */
 .skip{position:fixed;top:-80px;right:16px;z-index:100;padding:12px 22px;border-radius:999px;background:#fff;color:#2A1460;font:700 17px/1 system-ui,sans-serif;text-decoration:none;box-shadow:0 8px 24px rgba(0,0,0,.35)}
 .skip:focus{top:16px}
@@ -457,8 +460,9 @@ html[data-a11y-size="3"] :is(p,blockquote,label,h3,.ct-nav a,.ct-links a,.menu-l
   <nav class="menu-panel" id="menuPanel" aria-label="ניווט ראשי">
     <div class="menu-links">
       <a href="#top">בית</a>
-      <a href="#reel">פרויקטים</a>
-      <a href="#about">אודות</a>
+      <a href="works.html">עבודות</a>
+      <a href="branding.html">מיתוג</a>
+      <a href="about.html">אודות</a>
       <a href="#process">התהליך</a>
       <a href="#contact">שנדבר?</a>
     </div>
@@ -673,7 +677,7 @@ if (window.GhostCursor && matchMedia('(hover: hover)').matches) GhostCursor(docu
   // home pages + inner pages, grouped by site; no card ever sits next to (or diagonal to) the same site
   const POOL = {
     ravitz:  ['ravitz-d.jpg', 'ravitz.webp'],
-    trolist: ['mock5.jpg', 'in-trolist-3.jpg', 'in-trolist-4.jpg', 'in-trolist-c.jpg', 'mock4.jpg'],
+    trolist: ['mock5.jpg', 'in-trolist-c.jpg', 'mock4.jpg', 'in-trolist-0.jpg'],
     hapisga: ['in-hapisga-2.jpg', 'mock3.jpg', 'in-hapisga-4.jpg', 'in-hapisga-6.jpg', 'in-hapisga-1.jpg', 'in-hapisga-3.jpg', 'hapisga.webp', 'in-hapisga-c.jpg'],
     avney:   ['in-avney-1.jpg', 'avney.webp', 'in-avney-2.jpg', 'in-avney-3.jpg', 'mock1.jpg', 'in-avney-c.jpg'],
     event:   ['in-event-2.jpg', 'event.webp', 'in-event-c.jpg', 'mock2.jpg'],
@@ -930,6 +934,7 @@ if (window.GhostCursor && matchMedia('(hover: hover)').matches) GhostCursor(docu
       <li data-img="vortex"><span class="nm">VORTEX</span><div class="acc"><div><img alt="עיצוב ובניית האתר – VORTEX" data-src="vortex"></div></div></li>
     </ul>
   </div>
+  <p class="to-page"><a class="to-btn" href="works.html">לכל העבודות והסיפורים שמאחוריהן <svg width="34" height="10" viewBox="0 0 53 12" fill="none" stroke="currentColor" stroke-width="2.6" aria-hidden="true"><path d="M53 6H1M7 1 1 6l6 5"/></svg></a></p>
 </section>
 
 <section class="brand" id="branding" aria-labelledby="brandTitle">
@@ -937,6 +942,7 @@ if (window.GhostCursor && matchMedia('(hover: hover)').matches) GhostCursor(docu
   <h2 class="bk" id="brandTitle" lang="en">BRANDING</h2>
   <p class="bsub" dir="rtl">זהות שלמה למותג – לוגו, שפה ויזואלית, דפוס, שילוט ומדיה, הכל מדבר באותו קול.</p>
   <div class="bwall" id="bwall" aria-label="עבודות מיתוג"></div>
+  <p class="to-page"><a class="to-btn" href="branding.html">לכל עבודות המיתוג <svg width="34" height="10" viewBox="0 0 53 12" fill="none" stroke="currentColor" stroke-width="2.6" aria-hidden="true"><path d="M53 6H1M7 1 1 6l6 5"/></svg></a></p>
 </section>
 <script>
 /* BRANDING wall: mostly the Hadas Capital campaign, the women's-retreat ad and the Shilat film, plus one piece per other brand.
@@ -1259,7 +1265,7 @@ if (window.GradientWaves) window.worksWaves = GradientWaves(document.getElementB
       </div>
       <h3>ניווט באתר</h3>
       <nav class="ct-nav" aria-label="ניווט בתחתית">
-        <a href="#top">עמוד הבית</a><a href="#works-list">פרויקטים</a><a href="#about">אודות</a><a href="#process">התהליך</a><a href="#testimonials">המלצות</a>
+        <a href="#top">עמוד הבית</a><a href="works.html">עבודות</a><a href="branding.html">מיתוג</a><a href="about.html">אודות</a><a href="#process">התהליך</a><a href="#testimonials">המלצות</a>
       </nav>
     </div>
     <form class="ct-form" id="ctForm" novalidate>
