@@ -637,6 +637,36 @@ html[data-a11y-size="3"] :is(p,blockquote,label,h3,.ct-nav a,.ct-links a,.menu-l
     const pad = 60, a = { x: x0 - pad, y: y0 - pad, width: x1 - x0 + 2 * pad, height: y1 - y0 + 2 * pad, rx: 120 };
     for (const k in a) { holeOut.setAttribute(k, a[k]); holeIn.setAttribute(k, a[k]); }
   }
+  // reveal: the hero opens with no grid; moving the mouse uncovers the shapes with a soft brush, and the trail
+  // fades back out behind it. Phones / reduced motion keep the grid simply visible.
+  if (matchMedia('(hover: hover)').matches && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    const rg = mk('radialGradient', { id: 'revealDot' }, defs);
+    mk('stop', { offset: 0, 'stop-color': '#fff', 'stop-opacity': 1 }, rg);
+    mk('stop', { offset: .5, 'stop-color': '#fff', 'stop-opacity': .7 }, rg);
+    mk('stop', { offset: 1, 'stop-color': '#fff', 'stop-opacity': 0 }, rg);
+    const rmask = mk('mask', { id: 'heroReveal', maskUnits: 'userSpaceOnUse', x: -500, y: -500, width: 9000, height: 9000 }, defs);
+    const holder = mk('g', { mask: 'url(#heroReveal)' }); wrap.before(holder); holder.appendChild(wrap); holder.appendChild(soft);
+    const dots = [], LIFE = 2400; let lx = -1e4, ly = -1e4, rraf = 0;
+    const tick = now => {
+      rraf = 0;
+      for (let i = dots.length - 1; i >= 0; i--) {
+        const d = dots[i], k = (now - d.t) / LIFE;
+        if (k >= 1) { d.c.remove(); dots.splice(i, 1); continue; }
+        d.c.setAttribute('opacity', (k < .1 ? k / .1 : 1 - Math.pow((k - .1) / .9, 1.6)).toFixed(3));   // quick in, slow out
+      }
+      if (dots.length) rraf = requestAnimationFrame(tick);
+    };
+    addEventListener('pointermove', e => {
+      const r = hero.getBoundingClientRect(); if (e.clientY < r.top || e.clientY > r.bottom) return;
+      const m = svg.getScreenCTM(); if (!m) return;
+      const p = new DOMPoint(e.clientX, e.clientY).matrixTransform(m.inverse());
+      if (Math.hypot(p.x - lx, p.y - ly) < 45) return; lx = p.x; ly = p.y;
+      const vb = svg.viewBox.baseVal, R = Math.max(vb.width, vb.height) * .15;
+      dots.push({ c: mk('circle', { cx: p.x.toFixed(1), cy: p.y.toFixed(1), r: R.toFixed(1), fill: 'url(#revealDot)', opacity: 0 }, rmask), t: performance.now() });
+      if (dots.length > 70) dots.shift().c.remove();
+      if (!rraf) rraf = requestAnimationFrame(tick);
+    }, { passive: true });
+  }
   const relayout = () => { layout(); soften(); };
   relayout();
   document.fonts && document.fonts.ready.then(() => { mode = ''; relayout(); });
