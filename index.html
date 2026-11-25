@@ -484,7 +484,7 @@ html[data-a11y-size="3"] :is(p,blockquote,label,h3,.ct-nav a,.ct-links a,.menu-l
 })();
 </script>
 <section class="hero hero-bg" id="hero" dir="ltr" tabindex="-1">
-<h1 class="sr" dir="rtl">הילה איבגי – בניית אתרים, עיצוב אתרים ומיתוג לעסקים. <span lang="en">Websites that leave a mark</span></h1>
+<h1 class="sr" dir="rtl">הילה איבגי – בניית אתרים, עיצוב אתרים ומיתוג לעסקים. העסק שלך שווה יותר ממה שהוא נראה</h1>
 <svg aria-hidden="true" viewBox="0 0 2576 1449" preserveAspectRatio="xMidYMid slice" style="position: absolute; inset: 0; z-index: 2; pointer-events: none; width: 100%; height: 100%; display: block">
 <defs>
 <linearGradient id="gl" x1="0" y1="0" x2="2576" y2="1449" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#4C3BE6" stop-opacity=".85"></stop><stop offset="1" stop-color="#8A4DF0" stop-opacity=".9"></stop></linearGradient>
@@ -569,10 +569,10 @@ html[data-a11y-size="3"] :is(p,blockquote,label,h3,.ct-nav a,.ct-links a,.menu-l
 <rect x="2254.0" y="1159.2" width="322" height="289.8" fill="none" stroke="url(#gl)" stroke-width="2.2"></rect>
 <path d="M2254.0,1159.2 H2439.0 A137,137 0 0 1 2576.0,1296.2 V1449.0 H2391.0 A137,137 0 0 1 2254.0,1312.0 Z" fill="none" stroke="url(#gs)" stroke-width="2.6"></path>
 </g>
-<g class="hero-type" font-family="Lia Element, sans-serif" font-weight="600">
-<text x="290.3" y="579.6" font-size="495.4" letter-spacing="-23.9" fill="#FFFFFF">Websites</text>
-<text x="576.6" y="796.6" font-size="271.3" letter-spacing="-1.4" fill="#000000">that leave</text>
-<text x="406.8" y="1159.2" font-size="493" letter-spacing="-23.9" fill="url(#fade)">a mark</text>
+<g class="hero-type" font-family="Lia Element, sans-serif" font-weight="600" direction="rtl">
+<text x="2286" y="579.6" font-size="428" letter-spacing="-8" text-anchor="start" fill="#FFFFFF">העסק שלך</text>
+<text x="2000" y="796.6" font-size="230" letter-spacing="-1.4" text-anchor="start" fill="#000000">שווה יותר ממה</text>
+<text x="2169" y="1159.2" font-size="400" letter-spacing="-8" text-anchor="start" fill="url(#fade)">שהוא נראה</text>
 </g>
 </svg>
 </section>
@@ -605,7 +605,7 @@ html[data-a11y-size="3"] :is(p,blockquote,label,h3,.ct-nav a,.ct-links a,.menu-l
     grid.innerHTML = g;
     // the words sit on the grid lines, centred, in the middle rows
     const mid = Math.round(rows / 2), base = [(mid - 1) * CH, (mid - 1) * CH + 240, (mid + 1) * CH - 20];
-    const spec = [[292, -14], [208, -1], [318, -15.4]];
+    const spec = [[266, -4], [186, -1], [263, -4]];
     texts.forEach((t, i) => {
       t.setAttribute('x', W / 2); t.setAttribute('text-anchor', 'middle');
       t.setAttribute('y', base[i].toFixed(1)); t.setAttribute('font-size', spec[i][0]); t.setAttribute('letter-spacing', spec[i][1]);
