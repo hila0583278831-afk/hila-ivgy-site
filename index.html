@@ -82,35 +82,18 @@ body.menu-open .menu-dim{opacity:1;pointer-events:auto}
 @media (max-width:700px){.hero{aspect-ratio:auto;height:100svh;min-height:540px;max-height:900px}}
 
 /* ---------- statement + curved mockup ring (after tsivia.com) ---------- */
-/* ---------- INTO THE SCREEN: hero pinned, WebGL concave gallery on top (assets/js/dive3d.js) ---------- */
-.dive{position:relative;--hero-h:56.25vw;--track:780vh}
-.dive>.hero{position:sticky;top:0;z-index:1}
-.dive-stage{position:sticky;top:0;z-index:3;height:100vh;margin-top:calc(-1 * var(--hero-h));overflow:hidden;visibility:hidden;pointer-events:none}
-.dive-stage canvas{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:pan-y}
-.dive-stage.on canvas{pointer-events:auto;cursor:grab}
-.dive-stage.on canvas:active{cursor:grabbing}
-.dive-light{position:absolute;inset:0;pointer-events:none;mix-blend-mode:screen;opacity:0;
-  background:radial-gradient(55% 45% at 50% 52%,rgba(122,64,255,.26),rgba(122,64,255,.06) 55%,transparent 75%)}
-.dive-soft{position:absolute;pointer-events:none;visibility:hidden;-webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px);border-radius:60px;
-  -webkit-mask-image:radial-gradient(closest-side,#000 70%,transparent);mask-image:radial-gradient(closest-side,#000 70%,transparent);will-change:transform}
-.dive-type{position:absolute;left:0;top:0;pointer-events:none;transform-origin:0 0;visibility:hidden;will-change:transform,opacity}
-.dive-type svg{display:block}
-.dive-ui{position:absolute;left:0;right:0;bottom:0;padding:clamp(70px,12vh,130px) 0 clamp(18px,5vh,54px);background:linear-gradient(0deg,rgba(10,6,22,.92) 0%,rgba(10,6,22,.7) 45%,rgba(10,6,22,0) 100%);display:flex;align-items:center;justify-content:center;gap:clamp(14px,3vw,44px);
-  pointer-events:none;font-family:'Lia Element',sans-serif;font-weight:600}
-.dive-cap{text-align:center;color:#fff;opacity:0;min-width:min(62vw,440px)}
-.dive-cap .n{display:block;direction:ltr;unicode-bidi:isolate;font-size:13px;letter-spacing:.32em;color:#B9A6FF}
-.dive-cap .t{margin:8px 0 4px;font-size:clamp(22px,2.3vw,38px);line-height:1.1;font-weight:600}
-.dive-cap .s{margin:0 0 12px;font-size:clamp(14px,1.1vw,17px);color:#CFC4EC}
-.dive-cap .o{font-size:15px;color:#fff;text-decoration:none;padding-bottom:3px;border-bottom:1px solid rgba(200,170,255,.55)}
-.dive-ui button{flex:none;width:54px;height:54px;border-radius:50%;border:0;display:grid;place-items:center;cursor:pointer;color:#fff;opacity:0;
-  background:rgba(255,255,255,.06);box-shadow:inset 0 0 0 1px rgba(190,160,255,.4);transition:background .3s}
-.dive-ui button svg{width:22px;height:22px}
-.dive-ui button:hover{background:rgba(142,76,242,.45)}
-.dive-stage.on .dive-cap .o,.dive-stage.on .dive-ui button{pointer-events:auto}
-.dive-track{height:var(--track)}
-.dive-off>.hero{position:relative}
-.dive-off .dive-stage,.dive-off .dive-track{display:none}
-@media (max-width:700px){.dive-ui{padding-bottom:96px;gap:10px}.dive-ui button{width:44px;height:44px}.dive-cap{min-width:0;max-width:62vw}}
+/* ---------- PROJECTS: warp carousel (assets/js/warp-carousel.js) ---------- */
+.wc{position:relative;background:#111113;padding:clamp(40px,6vw,90px) 0 clamp(30px,4vw,60px);font-family:'Lia Element',sans-serif;font-weight:600;color:#fff}
+.wc-kick{margin:0 0 clamp(6px,1vw,14px);text-align:center;font-size:clamp(15px,1.2vw,19px);letter-spacing:.04em;color:#D9B8FF}
+.wc-stage{position:relative;width:100%;height:min(88vh,64vw);min-height:460px;overflow:hidden;touch-action:pan-y;user-select:none;cursor:grab;outline:none}
+.wc-stage:active{cursor:grabbing}
+.wc-stage:focus-visible{outline:3px solid #FF9FFC;outline-offset:-3px}
+.wc-foot{display:flex;align-items:center;justify-content:center;gap:clamp(14px,3vw,40px);margin-top:clamp(8px,1.5vw,20px)}
+.wc-foot button{width:54px;height:54px;border-radius:50%;border:0;display:grid;place-items:center;cursor:pointer;color:#fff;background:rgba(255,255,255,.06);box-shadow:inset 0 0 0 1px rgba(190,160,255,.4);transition:background .3s}
+.wc-foot button:hover{background:rgba(142,76,242,.45)}
+.wc-foot button svg{width:22px;height:22px}
+.wc-all{font-size:16px;color:#fff;text-decoration:none;padding-bottom:3px;border-bottom:1px solid rgba(200,170,255,.55)}
+@media (max-width:700px){.wc-stage{height:max(420px,118vw);min-height:0}.wc-foot button{width:44px;height:44px}}
 /* the wrapper below: one background behind the ring carousel + WORKS */
 .wwrap{position:relative;isolation:isolate;background:linear-gradient(180deg,#111113 0%,#150E22 30%,#1D1133 75%,#2A1550 100%)}
 .wwrap>.waves{position:absolute;inset:0;z-index:-1;pointer-events:none}
@@ -486,7 +469,6 @@ html[data-a11y-size="3"] :is(p,blockquote,label,h3,.ct-nav a,.ct-links a,.menu-l
   addEventListener('keydown', e => { if (e.key === 'Escape' && head.classList.contains('open')) { set(false); btn.focus(); } });
 })();
 </script>
-<div class="dive" id="dive">
 <section class="hero hero-bg" id="hero" dir="ltr" tabindex="-1">
 <h1 class="sr" dir="rtl">הילה איבגי – בניית אתרים, עיצוב אתרים ומיתוג לעסקים. אין הזדמנות שניה לרושם ראשוני – בוא נבנה לך אתר יחודי שישאיר רושם בלתי נשכח.</h1>
 <svg aria-hidden="true" viewBox="0 0 2576 1449" preserveAspectRatio="xMidYMid slice" style="position: absolute; inset: 0; z-index: 2; pointer-events: none; width: 100%; height: 100%; display: block">
@@ -676,7 +658,7 @@ html[data-a11y-size="3"] :is(p,blockquote,label,h3,.ct-nav a,.ct-links a,.menu-l
     if (x1 < x0) return;
     const pad = 40, a = { x: x0 - pad, y: y0 - pad, width: x1 - x0 + 2 * pad, height: y1 - y0 + 2 * pad, rx: 120 };
     for (const k in a) { holeOut.setAttribute(k, a[k]); holeIn.setAttribute(k, a[k]); }
-    window.HERO_TEXT_BOX = a;                                            // dive3d.js blurs the same area while the camera flies in
+    window.HERO_TEXT_BOX = a;
   }
   const relayout = () => { layout(); soften(); };
   relayout();
@@ -694,24 +676,34 @@ if (window.GhostCursor && matchMedia('(hover: hover)').matches) GhostCursor(docu
   bloomStrength: 0.6, grainIntensity: 0.05, intro: false, zIndex: 45 });
 </script>
 
-<!-- INTO THE SCREEN: the camera flies into the hero, the leaf grid bends into a concave display and the projects
-     grow into its cells (assets/js/dive3d.js). The hero above stays exactly as it is; it is only pinned while this plays. -->
+<!-- PROJECTS: warp carousel (assets/js/warp-carousel.js, after "Warp Carousel" by Louis Studios) – each card is a project hero -->
 <script src="assets/projects.js"></script>
-<div class="dive-stage" id="diveStage">
-  <canvas id="diveCanvas" aria-hidden="true"></canvas>
-  <div class="dive-light" aria-hidden="true"></div>
-  <div class="dive-soft" aria-hidden="true"></div>
-  <div class="dive-type" id="diveType" aria-hidden="true"></div>
-  <div class="dive-ui" dir="rtl">
-    <button class="dive-prev" type="button" aria-label="לפרויקט הקודם"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
-    <div class="dive-cap" aria-live="polite"><span class="n"></span><h3 class="t"></h3><p class="s"></p><a class="o" href="works.html">לצפייה בפרויקט</a></div>
-    <button class="dive-next" type="button" aria-label="לפרויקט הבא"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"/></svg></button>
+<section class="wc" id="projects" dir="rtl" aria-labelledby="wcKick">
+  <p class="wc-kick" id="wcKick">עבודות נבחרות</p>
+  <div class="wc-stage" id="wcStage" tabindex="0" role="region" aria-roledescription="carousel" aria-label="פרויקטים נבחרים – חצים לדפדוף, אנטר לפתיחה"></div>
+  <div class="wc-foot">
+    <button class="wc-prev" type="button" aria-label="לפרויקט הקודם"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+    <a class="wc-all" href="works.html">לכל העבודות</a>
+    <button class="wc-next" type="button" aria-label="לפרויקט הבא"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"/></svg></button>
   </div>
-</div>
-<div class="dive-track" aria-hidden="true"></div>
-<nav class="sr" aria-label="פרויקטים נבחרים" dir="rtl"><a href="project.html?id=ravitz">RAVITZ</a> <a href="project.html?id=avney">אבני הכתר</a> <a href="project.html?id=hapisga">הפסגה</a> <a href="project.html?id=event">אירוע חד פעמי</a> <a href="project.html?id=vortex">VORTEX</a> <a href="project.html?id=biscotti">Biscotti</a> <a href="project.html?id=infinity">Infinity Cruises</a> <a href="project.html?id=trolist">TROLIST</a></nav>
-<script type="module" src="assets/js/dive3d.js"></script>
-</div><!-- /dive -->
+  <p class="sr" aria-live="polite" id="wcLive"></p>
+  <nav class="sr" aria-label="פרויקטים נבחרים"><a href="project.html?id=ravitz">RAVITZ</a> <a href="project.html?id=avney">אבני הכתר</a> <a href="project.html?id=hapisga">הפסגה</a> <a href="project.html?id=event">אירוע חד פעמי</a> <a href="project.html?id=vortex">VORTEX</a> <a href="project.html?id=biscotti">Biscotti</a> <a href="project.html?id=infinity">Infinity Cruises</a> <a href="project.html?id=trolist">TROLIST</a></nav>
+</section>
+<script src="assets/js/warp-carousel.js"></script>
+<script>
+(async () => {
+  const ACC = ['#8E4CF2', '#FF3DF2', '#6E5BF2', '#B46BFF'];
+  const cards = PROJECTS.filter(p => p.hero).map((p, i) => ({ id: p.id, name: p.name, short: p.short, hero: p.hero, accent: ACC[i % ACC.length] }));
+  const live = document.getElementById('wcLive');
+  const wc = await WarpCarousel(document.getElementById('wcStage'), {
+    cards, background: '#111113',
+    onOpen: c => { location.href = 'project.html?id=' + c.id; },
+    onChange: (c, i) => { live.textContent = `${i + 1} מתוך ${cards.length}: ${c.name} – ${c.short}`; }
+  });
+  document.querySelector('.wc-next').addEventListener('click', wc.next);
+  document.querySelector('.wc-prev').addEventListener('click', wc.prev);
+})();
+</script>
 
 <div class="wwrap">
 <div class="waves" aria-hidden="true"><div id="worksWaves"></div></div>
