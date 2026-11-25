@@ -1058,8 +1058,14 @@ if (window.GradientWaves) window.worksWaves = GradientWaves(document.getElementB
       <svg class="proc-big" viewBox="0 0 2576 470" aria-hidden="true">
         <defs><linearGradient id="procBigFade" x1="0" y1="60" x2="0" y2="400" gradientUnits="userSpaceOnUse">
           <stop offset="0" stop-color="#FFFFFF"/><stop offset=".45" stop-color="#FFFFFF"/><stop offset="1" stop-color="#FFFFFF" stop-opacity=".25"/></linearGradient></defs>
-        <text x="1288" y="440" text-anchor="middle" font-family="Lia Element, sans-serif" font-weight="600" font-size="560" textLength="2540" lengthAdjust="spacingAndGlyphs" fill="url(#procBigFade)">FAST TRACK</text>
+        <text x="1288" y="440" text-anchor="middle" font-family="Lia Element, sans-serif" font-weight="600" font-size="560" fill="url(#procBigFade)">FAST TRACK</text>
       </svg>
+      <script>
+      /* FAST TRACK in Lia Element at its natural proportions (no stretching): the viewBox hugs the word, so it fills the width */
+      (() => { const s = document.currentScript.previousElementSibling, tx = s.querySelector('text');
+        const fit = () => { try { const b = tx.getBBox(); if (b.width) s.setAttribute('viewBox', `${b.x.toFixed(1)} ${(b.y + b.height * .1).toFixed(1)} ${b.width.toFixed(1)} ${(b.height * .86).toFixed(1)}`); } catch (_) {} };
+        fit(); document.fonts && document.fonts.ready.then(fit); })();
+      </script>
     </div>
     <div class="proc-track" id="procTrack" dir="rtl">
       <article class="pcell sh1c"><span class="pnum" aria-hidden="true">1</span><div class="pstep sh1">
