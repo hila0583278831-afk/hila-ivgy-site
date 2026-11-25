@@ -83,7 +83,12 @@ body.menu-open .menu-dim{opacity:1;pointer-events:auto}
 
 /* ---------- projects wall (after tsivia.com's reel): cards fly in one by one and lock into a tilted grid ---------- */
 .reel{position:relative;height:620vh}
-/* reel + ring carousel + WORKS share one background: the purple gradient waves start right after the hero */
+/* leaving the hero: its shapes turn into glass and fall (script after the hero) */
+.glass-fall{position:fixed;inset:0;z-index:30;pointer-events:none;visibility:hidden;overflow:hidden}
+.glass-fall i{position:absolute;left:0;top:0;will-change:transform,opacity;
+  background:linear-gradient(140deg,rgba(255,255,255,.26) 0%,rgba(255,255,255,.07) 45%,rgba(190,150,255,.10) 100%);
+  -webkit-backdrop-filter:blur(6px) saturate(1.35);backdrop-filter:blur(6px) saturate(1.35);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.55),inset 0 0 0 1px rgba(255,255,255,.22),inset 0 -14px 30px rgba(120,80,255,.18),0 18px 40px -18px rgba(20,0,60,.55)}/* reel + ring carousel + WORKS share one background: the purple gradient waves start right after the hero */
 .wwrap{position:relative;isolation:isolate;background:linear-gradient(180deg,#111113 0%,#150E22 30%,#1D1133 75%,#2A1550 100%)}
 .wwrap>.waves{position:absolute;inset:0;z-index:-1;pointer-events:none}
 .wwrap>.waves>div{position:sticky;top:0;height:100vh}
@@ -656,6 +661,77 @@ html[data-a11y-size="3"] :is(p,blockquote,label,h3,.ct-nav a,.ct-links a,.menu-l
   document.fonts && document.fonts.ready.then(() => { mode = ''; relayout(); });
   mq.addEventListener('change', relayout);
   addEventListener('resize', () => { if (mq.matches) { mode = ''; } relayout(); });
+})();
+</script>
+<div class="glass-fall" id="glassFall" aria-hidden="true"></div>
+<script>
+/* Leaving the hero: the grid's shapes turn into glass tiles (same place, same rounded corners) and then all of
+   them fall together, out of the screen, before the projects wall starts. Everything follows the scroll, so
+   scrolling back up lifts the glass back into place and the shapes return. */
+(() => {
+  if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const hero = document.getElementById('hero'), svg = hero.querySelector('svg'), layer = document.getElementById('glassFall');
+  const PAT = window.HERO_PAT;
+  const clamp = v => Math.min(1, Math.max(0, v)), smooth = t => (t = clamp(t)) * t * (3 - 2 * t);
+  const hash = n => { const s = Math.sin(n * 12.9898 + 78.233) * 43758.5453; return s - Math.floor(s); };
+  let tiles = [], sig = '', type = null;
+  // one glass tile per grid shape, read from the hero's own SVG (cell box in SVG units + its corner pattern)
+  function read(force) {
+    const paths = [...svg.querySelectorAll('.hero-grid path')];
+    if (!paths.length) return;
+    const boxes = paths.map(p => p.getBBox());
+    const s = paths.length + ':' + boxes[0].width.toFixed(1) + ':' + svg.getAttribute('viewBox');
+    if (s === sig && !force) return;
+    sig = s;
+    const cols = boxes.filter(b => Math.abs(b.y - boxes[0].y) < 1).length;
+    layer.textContent = '';
+    tiles = boxes.map((b, n) => {
+      const i = n % cols, j = Math.floor(n / cols), m = PAT[j % 6][i % 2];
+      const el = document.createElement('i'); layer.appendChild(el);
+      return { el, b, m, r1: hash(n * 1.7), r2: hash(n * 3.1 + 2), r3: hash(n * 5.3 + 7) };
+    });
+    // the headline stays sharp on top of the glass: a copy of it sits above the tiles, exactly over the original
+    type = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    type.setAttribute('viewBox', svg.getAttribute('viewBox'));
+    type.setAttribute('preserveAspectRatio', svg.getAttribute('preserveAspectRatio') || 'xMidYMid meet');
+    type.style.cssText = 'position:absolute;left:0;top:0;overflow:visible';
+    const words = svg.querySelector('.hero-type').cloneNode(true);
+    words.querySelectorAll('tspan').forEach(s => { s.removeAttribute('fill-opacity'); s.removeAttribute('stroke-opacity'); s.style.cssText = ''; });
+    type.appendChild(words); layer.appendChild(type);
+  }
+  // the grid lines in the hero (sharp layer + the softly blurred copy behind the words)
+  const lines = () => [svg.querySelector('g[mask="url(#gmOut)"]'), svg.querySelector('use[href="#heroGrid"]')].filter(Boolean);
+  let last = -1;
+  function frame() {
+    const H = hero.offsetHeight, vh = innerHeight, y = scrollY;
+    const p = y / Math.max(1, H);                                      // 0 at the top, 1 once the hero has scrolled away
+    if (p === last) return; last = p;
+    const g = smooth((p - .04) / .22);                                  // shapes → glass
+    const fall = clamp((p - .22) / .62);                                // then everything falls
+    lines().forEach(e => e.style.opacity = (1 - g).toFixed(3));
+    const on = g > .001 && fall < 1;
+    layer.style.visibility = on ? 'visible' : 'hidden';
+    if (!on) return;
+    const R0 = svg.getBoundingClientRect();
+    if (type) { const ts = type.style; ts.width = R0.width + 'px'; ts.height = R0.height + 'px'; ts.transform = `translate(${R0.left}px,${R0.top}px)`; }
+    const M = svg.getScreenCTM(), k = M.a;                              // SVG units → screen px
+    tiles.forEach(T => {
+      const x = M.e + T.b.x * k, top = M.f + T.b.y * k, w = T.b.width * k, h = T.b.height * k, r = h / 2;
+      const ft = clamp((fall - T.r1 * .08) / .92), f2 = ft * ft;        // fall together, a hair apart
+      const dy = f2 * (vh * 1.25 + H * .6) * (.9 + .25 * T.r2), dx = (T.r3 - .5) * 90 * ft;
+      const rot = (T.r2 - .5) * 34 * ft, sc = 1 - .06 * ft;
+      const st = T.el.style;
+      st.width = w.toFixed(1) + 'px'; st.height = h.toFixed(1) + 'px';
+      st.borderRadius = [...T.m].map(c => c === 'R' ? r.toFixed(1) + 'px' : '0').join(' ');
+      st.transform = `translate3d(${(x + dx).toFixed(1)}px,${(top + dy).toFixed(1)}px,0) rotate(${rot.toFixed(2)}deg) scale(${sc.toFixed(3)})`;
+      st.opacity = (g * (1 - smooth((ft - .75) / .25))).toFixed(3);
+    });
+  }
+  const tick = () => { frame(); };
+  read(); frame();
+  addEventListener('scroll', () => requestAnimationFrame(tick), { passive: true });
+  addEventListener('resize', () => setTimeout(() => { read(true); last = -1; frame(); }, 120));
+  document.fonts && document.fonts.ready.then(() => { read(true); last = -1; frame(); });
 })();
 </script>
 <div class="ghost-layer" id="ghostLayer" aria-hidden="true"></div>
