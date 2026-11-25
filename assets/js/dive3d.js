@@ -37,8 +37,8 @@ function start() {
   const out3 = t => 1 - Math.pow(1 - clamp(t), 3);
   const smooth = t => (t = clamp(t)) * t * (3 - 2 * t);
   const N = PROJ.length, FOV = 35;
-  const PH = { dive: 1.7, fill: 1.0, step: .75, away: 1.4, side: 1.4, back: 1.4, updown: 1.4, hold: .5 };
-  const TOTAL = PH.dive + PH.fill + PH.step * (N - 1) + PH.away + PH.side + PH.back + PH.updown + PH.hold;
+  const PH = { dive: 1.7, fill: 1.0, step: .75, away: 1.4, scatter: 2.0, hold: .6 };
+  const TOTAL = PH.dive + PH.fill + PH.step * (N - 1) + PH.away + PH.scatter + PH.hold;
 
   const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true, powerPreference: 'high-performance' });
   renderer.outputColorSpace = THREE.LinearSRGBColorSpace;          // no colour management: sRGB values pass straight through
@@ -49,10 +49,14 @@ function start() {
   const U = {
     uPan: { value: 0 }, uK: { value: 0 }, uR: { value: 1000 }, uCw: { value: 200 }, uCh: { value: 180 },
     uOy: { value: 0 }, uVh: { value: 900 }, uEx: { value: 0 }, uRowY: { value: 0 },
-    uF0: { value: 1.05 }, uF1: { value: 1.6 }, uAway: { value: 0 }, uRowB: { value: 0 }, uSX: { value: 0 }, uSY: { value: 0 }
+    uF0: { value: 1.05 }, uF1: { value: 1.6 }, uAway: { value: 0 }, uRowB: { value: 0 }, uSX: { value: 0 }, uSY: { value: 0 },
+    uScat: { value: 0 }, uSpan: { value: new THREE.Vector2(1600, 900) }
   };
   const SURF = /* glsl */`
-    uniform float uPan, uK, uR, uCw, uCh, uOy, uVh, uEx, uRowY, uF0, uF1, uAway, uRowB, uSX, uSY;
+    uniform float uPan, uK, uR, uCw, uCh, uOy, uVh, uEx, uRowY, uF0, uF1, uAway, uRowB, uSX, uSY, uScat;
+    uniform vec2 uSpan;
+    attribute vec2 aCell;                                                  // the cell a vertex belongs to (cells are separate quads)
+    float h1(vec2 c) { return fract(sin(dot(c, vec2(12.9898, 78.233))) * 43758.5453); }
     float band(float y) { return 1.0; }
     // the overview's slides: every other row moves sideways (uSX cells, alternating directions), then every other
     // column moves up / down (uSY). The cells keep their place on the curved display; their contents travel.
@@ -75,6 +79,32 @@ function start() {
       p.z += dy * dy / (uR * 4.4) * uK;                                    // a touch of vertical concavity
       p += vec3(-sin(th), 0.0, cos(th)) * lift;                            // lift along the surface normal
       return p;
+    }
+    // SCATTER (after the overview): most cells sink away into the black; about one in five drifts off to its own
+    // spot in the dark space – spread over the whole screen at different depths, flat to the camera, a little
+    // smaller – and floats there (the reference: sites hanging in a dark room at different distances).
+    vec3 scatter(vec2 cell, vec3 p, out float alive) {
+      alive = 1.0;
+      if (uScat <= 0.0) return p;
+      float th; vec3 c = surf(cell + 0.5, 0.0, th);
+      float r1 = h1(cell), r2 = h1(cell + 7.31), r3 = h1(cell + 13.17), r4 = h1(cell + 21.9);
+      bool front = abs(th) < 1.1;                                          // only cells facing the camera (no mirrored backs)
+      bool keep = front && r1 < 0.14;                                      // ≈ 15–20 cards stay
+      float t = clamp((uScat - r4 * 0.3) / 0.7, 0.0, 1.0); t = t * t * (3.0 - 2.0 * t);
+      vec3 l = p - c;
+      l.z = 0.0;                                                           // un-bend: the card faces the camera
+      float a = (r2 - 0.5) * 0.35 * t;
+      l.xy = mat2(cos(a), sin(a), -sin(a), cos(a)) * l.xy;
+      vec3 to;
+      if (keep) {
+        // spread over the whole frame (some cut by the edges), at different depths, and bigger than a cell
+        to = vec3((r2 * 2.0 - 1.0) * uSpan.x * 1.3, uRowY + (r3 * 2.0 - 1.0) * uSpan.y * 1.2, (0.4 - r4) * uCw * 9.0);
+        l *= 1.0 + 0.3 * t;
+      } else {
+        to = vec3(c.x * 0.6, uRowY + (c.y - uRowY) * 0.6, -uCw * (30.0 + 40.0 * r3));
+        alive = 1.0 - smoothstep(front ? 0.15 : 0.0, front ? 0.7 : 0.2, t);   // the far sides go at once
+      }
+      return mix(c, to, t) + mix(p - c, l, t);
     }`;
 
   // ---------- the leaf cell as a texture (white = line), coloured in the shader like the hero's gradients ----------
@@ -101,10 +131,10 @@ function start() {
     vertexShader: SURF + /* glsl */`
       uniform float uPanI; varying vec2 vG; varying float vFade; varying float vX;
       void main() {
-        float th; vec2 gh = vec2(position.x + uPanI, position.y);
-        vec3 p = surf(gh, 0.0, th);
+        float th, alive; vec2 gh = vec2(position.x + uPanI, position.y);
+        vec3 p = scatter(aCell + vec2(uPanI, 0.0), surf(gh, 0.0, th), alive);
         vG = gh; vX = p.x;
-        vFade = (1.0 - smoothstep(uF0, uF1, abs(th))) * band(gh.y);
+        vFade = (1.0 - smoothstep(uF0, uF1, abs(th))) * alive * (1.0 - smoothstep(0.0, 0.35, uScat));   // the frames go first
         gl_Position = projectionMatrix * modelViewMatrix * vec4(p, 1.0);
       }`,
     fragmentShader: /* glsl */`
@@ -118,8 +148,7 @@ function start() {
         return g;
       }
       void main() {
-        vec2 g = shifted(vG);
-        float a = texture2D(uMap, vec2(g.x, -g.y)).a * uAlpha * vFade;
+        float a = texture2D(uMap, vec2(vG.x, -vG.y)).a * uAlpha * vFade;
         vec3 col = mix(uC1, uC2, clamp(vX / uVw + 0.5, 0.0, 1.0)) * (1.0 + uGlow * 0.35) + vec3(0.05, 0.0, 0.1) * uGlow;
         gl_FragColor = vec4(col * a, a);
       }`
@@ -134,11 +163,12 @@ function start() {
   const fillMat = new THREE.ShaderMaterial({
     uniforms: Object.assign(fillU, U), side: THREE.DoubleSide, transparent: true, depthWrite: false, premultipliedAlpha: true,
     vertexShader: SURF + /* glsl */`
-      uniform float uPanI; varying vec2 vG; varying float vFade;
+      uniform float uPanI; varying vec2 vG; varying vec2 vCell; varying float vFade;
       void main() {
-        float th; vec2 gh = vec2(position.x + uPanI, position.y);
-        vec3 p = surf(gh, 0.0, th);
-        vG = gh; vFade = (1.0 - smoothstep(uF0, uF1, abs(th))) * band(gh.y);
+        float th, alive; vec2 gh = vec2(position.x + uPanI, position.y), cell = aCell + vec2(uPanI, 0.0);
+        vec3 p = scatter(cell, surf(gh, 0.0, th), alive);
+        vG = gh; vCell = cell;
+        vFade = mix(1.0 - smoothstep(uF0, uF1, abs(th)), 1.0, smoothstep(0.0, 0.5, uScat)) * alive;   // floating cards ignore the edge fade
         gl_Position = projectionMatrix * modelViewMatrix * vec4(p, 1.0);
       }`,
     fragmentShader: /* glsl */`
@@ -150,15 +180,16 @@ function start() {
         g.y -= (mod(c, 2.0) < 0.5 ? -1.0 : 1.0) * uSY;
         return g;
       }
-      varying vec2 vG; varying float vFade;
-      float leaf(vec2 uv) {
+      uniform float uScat;
+      varying vec2 vG; varying vec2 vCell; varying float vFade;
+      float leaf(vec2 uv) {                     // the leaf softens into a plain card while they scatter
         vec2 p = (uv - 0.5) * uPx, h = uPx * 0.5;
-        float r = (p.x * p.y > 0.0) ? uRad : 0.0;
+        float r = (p.x * p.y > 0.0) ? mix(uRad, 6.0, smoothstep(0.0, 0.6, uScat)) : mix(0.0, 6.0, smoothstep(0.0, 0.6, uScat));
         vec2 q = abs(p) - h + r;
         return length(max(q, 0.0)) + min(max(q.x, q.y), 0.0) - r;
       }
       void main() {
-        vec2 g = shifted(vG), cell = floor(g), f = fract(g);
+        vec2 cell = vCell, f = clamp(vG - vCell, 0.0, 1.0);
         bool gal = abs(cell.y - uRow) < 0.5 && cell.x < 0.5 && cell.x > -uN + 0.5;            // the gallery row's project cells
         if (gal && uAll < 0.5) discard;                                                       // real project meshes live there
         float dist = length(vec2(cell.x + 0.5 - uPan, cell.y - uRow));
@@ -240,6 +271,28 @@ function start() {
     return m;
   });
 
+  // one separate quad per cell (6 × 3 segments so it bends with the display), each tagged with its cell –
+  // so every cell can leave the display on its own when they scatter
+  function cellsGeometry(C, r0, r1, sx = 6, sy = 3) {
+    const n = 2 * C * (r1 - r0), vp = (sx + 1) * (sy + 1);
+    const pos = new Float32Array(n * vp * 3), cel = new Float32Array(n * vp * 2), idx = new Uint32Array(n * sx * sy * 6);
+    let v = 0, k = 0;
+    for (let cy = r0; cy < r1; cy++) for (let cx = -C; cx < C; cx++) {
+      const base = v;
+      for (let j = 0; j <= sy; j++) for (let i = 0; i <= sx; i++) {
+        pos[v * 3] = cx + i / sx; pos[v * 3 + 1] = cy + j / sy; cel[v * 2] = cx; cel[v * 2 + 1] = cy; v++;
+      }
+      for (let j = 0; j < sy; j++) for (let i = 0; i < sx; i++) {
+        const a = base + j * (sx + 1) + i, d = a + sx + 1; idx.set([a, d, a + 1, a + 1, d, d + 1], k); k += 6;
+      }
+    }
+    const g = new THREE.BufferGeometry();
+    g.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+    g.setAttribute('aCell', new THREE.BufferAttribute(cel, 2));
+    g.setIndex(new THREE.BufferAttribute(idx, 1));
+    return g;
+  }
+
   // ---------- layout: read the hero grid off the SVG ----------
   let G = null;
   function measure() {
@@ -265,9 +318,7 @@ function start() {
     // h measured from the lattice origin row 0; the mesh spans enough columns/rows to cover every camera position
     const C = phone ? 9 : 15, r0 = -3, r1 = Math.ceil((vh - oy) / ch) + 3;
     if (gridMesh) { gridMesh.geometry.dispose(); scene.remove(gridMesh); }
-    const geo = new THREE.PlaneGeometry(2 * C, r1 - r0, 2 * C * 8, (r1 - r0) * 4);
-    const pos = geo.attributes.position;
-    for (let i = 0; i < pos.count; i++) pos.setXY(i, pos.getX(i), -(pos.getY(i)) + (r0 + r1) / 2);   // x: −C..C, y: rows top→bottom
+    const geo = cellsGeometry(C, r0, r1);
     gridMesh = new THREE.Mesh(geo, gridMat); gridMesh.frustumCulled = false; gridMesh.renderOrder = 1; scene.add(gridMesh);
     if (fillMesh) scene.remove(fillMesh);
     fillMesh = new THREE.Mesh(geo, fillMat); fillMesh.frustumCulled = false; fillMesh.renderOrder = 0; scene.add(fillMesh);   // under the grid lines
@@ -309,16 +360,15 @@ function start() {
     const aw = io3((q - PH.dive - PH.fill - PH.step * (N - 1)) / PH.away);   // AWAY: pull back to the whole display
     U.uK.value = io2((q - .12) / (PH.dive - .12)) * (1 + .15 * aw);
     U.uF0.value = lerp(1.05, 1.35, aw); U.uF1.value = lerp(1.6, 1.8, aw); U.uAway.value = aw;
-    // SIDE / BACK / UPDOWN: odd rows one way, even rows the other; back again; then columns up / down
-    let t0 = PH.dive + PH.fill + PH.step * (N - 1) + PH.away;
-    const sA = io3((q - t0) / PH.side); t0 += PH.side;
-    const sB = io3((q - t0) / PH.back); t0 += PH.back;
-    const sC = io3((q - t0) / PH.updown);
-    U.uSX.value = (G.phone ? 2 : 3) * (sA - sB); U.uSY.value = 2 * sC;
+    // SCATTER: the sites leave the display and hang in the dark at different depths; then the next section arrives
+    const sc = clamp((q - PH.dive - PH.fill - PH.step * (N - 1) - PH.away) / PH.scatter);
+    U.uScat.value = sc;
     fillU.uAll.value = aw > .5 ? 1 : 0;
     const camZ = lerp(G.D, G.Dend, dv), camY = lerp(0, G.rowY, dv);
     const zFar = G.Dend * (G.phone ? 2.4 : 3);                         // stop here: the whole display, cells about a tenth of the width
-    camera.position.set(0, lerp(camY, G.rowY + vhOf() * .06, aw), lerp(camZ, zFar, aw));
+    camera.position.set(0, lerp(camY, G.rowY + vhOf() * .06, aw), lerp(camZ, zFar, aw) - G.Dend * .35 * io2(sc));   // a slow drift into the space
+    // the floating cards spread over what the camera sees at the display's depth
+    const zs = zFar - G.Dend * .35; U.uSpan.value.set(vw / 2 * zs / G.D * .92, vhOf() / 2 * zs / G.D * .8);
     camera.lookAt(0, camY, 0);
     // FILL + BROWSE
     const fq = q - PH.dive, bq = clamp((fq - PH.fill) / PH.step, 0, N - 1);
