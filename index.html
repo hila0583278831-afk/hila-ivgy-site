@@ -715,6 +715,13 @@ if (window.GhostCursor && matchMedia('(hover: hover)').matches) GhostCursor(docu
   const leaf = (x, y, tlbr) => tlbr
     ? `M${f1(x + R)},${f1(y)} H${f1(x + CWD)} V${f1(y + CHT - R)} A${R},${R} 0 0 1 ${f1(x + CWD - R)},${f1(y + CHT)} H${f1(x)} V${f1(y + R)} A${R},${R} 0 0 1 ${f1(x + R)},${f1(y)} Z`
     : `M${f1(x)},${f1(y)} H${f1(x + CWD - R)} A${R},${R} 0 0 1 ${f1(x + CWD)},${f1(y + R)} V${f1(y + CHT)} H${f1(x + R)} A${R},${R} 0 0 1 ${f1(x)},${f1(y + CHT - R)} Z`;
+  // corner patterns (TL TR BR BL): the design's two leaves first, then the shapes they morph through
+  const SEQ = ['R.R.', '.R.R', 'RRRR', 'R..R', '.RR.', '.R.R'];
+  const rad = m => [...m].map(c => c === 'R' ? R : 0);
+  const arcs = (x, y, r) => `M${f1(x + r[0])},${f1(y)} H${f1(x + CWD - r[1])} A${f1(r[1])},${f1(r[1])} 0 0 1 ${f1(x + CWD)},${f1(y + r[1])} V${f1(y + CHT - r[2])}` +
+    ` A${f1(r[2])},${f1(r[2])} 0 0 1 ${f1(x + CWD - r[2])},${f1(y + CHT)} H${f1(x + r[3])} A${f1(r[3])},${f1(r[3])} 0 0 1 ${f1(x)},${f1(y + CHT - r[3])}` +
+    ` V${f1(y + r[0])} A${f1(r[0])},${f1(r[0])} 0 0 1 ${f1(x + r[0])},${f1(y)} Z`;
+  let grid = [], shift = 0;
   let size = 0;
   function layout() {
     const w = innerWidth, h = innerHeight, ratio = w / h, phone = w < 700;
@@ -723,10 +730,14 @@ if (window.GhostCursor && matchMedia('(hover: hover)').matches) GhostCursor(docu
     if (phone) { VW = 1580; VH = VW / ratio; } else if (ratio >= 16 / 9) { VH = 1125; VW = VH * ratio; } else { VW = 2000; VH = VW / ratio; }
     const ox = (VW - 2000) / 2, oy = (VH - 1125) / 2;
     svg.setAttribute('viewBox', `0 0 ${f1(VW)} ${f1(VH)}`);
-    let d = '';
+    // one path per cell, so each shape can morph on its own (see below)
     const k0 = Math.floor(-ox / PX) - 1, k1 = Math.ceil((VW - ox) / PX), j0 = Math.floor((-oy - 3) / PY) - 1, j1 = Math.ceil((VH - oy) / PY);
-    for (let j = j0; j <= j1; j++) for (let k = k0; k <= k1; k++) d += leaf(ox + k * PX, oy + 3 + j * PY, ((k + j) % 2 + 2) % 2 === 0);
-    cells.innerHTML = `<path d="${d}"/>`;
+    cells.textContent = ''; grid = [];
+    for (let j = j0; j <= j1; j++) for (let k = k0; k <= k1; k++) {
+      const p = document.createElementNS('http://www.w3.org/2000/svg', 'path'), base = ((k + j) % 2 + 2) % 2;
+      const c = { p, x: ox + k * PX, y: oy + 3 + j * PY, base, r: rad(SEQ[(base + shift) % SEQ.length]) };
+      p.setAttribute('d', arcs(c.x, c.y, c.r)); cells.appendChild(p); grid.push(c);
+    }
     g('rwGrid').setAttribute('x1', f1(ox)); g('rwGrid').setAttribute('x2', f1(ox + 2000));
     g('rwText').setAttribute('x1', f1(ox + 480)); g('rwText').setAttribute('x2', f1(ox + 1550));
     g('rwEdge').setAttribute('x1', f1(ox + 240)); g('rwEdge').setAttribute('x2', f1(ox + 1760));
@@ -738,6 +749,21 @@ if (window.GhostCursor && matchMedia('(hover: hover)').matches) GhostCursor(docu
   layout();
   addEventListener('resize', layout);
   document.fonts && document.fonts.ready.then(() => { size = 0; layout(); });
+  // like the testimonials and the hero: every 2 seconds the shapes glide into the next shape (only while the slide is showing)
+  if (!matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    const white = document.getElementById('rWhite'), ease = t => t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+    setInterval(() => {
+      if (document.hidden || +white.style.opacity < .3) return;
+      shift++;
+      const from = grid.map(c => c.r.slice()), to = grid.map(c => rad(SEQ[(c.base + shift) % SEQ.length])), t0 = performance.now();
+      const step = now => {
+        const k = ease(Math.min(1, (now - t0) / 900));
+        grid.forEach((c, n) => { c.r = from[n].map((v, q) => v + (to[n][q] - v) * k); c.p.setAttribute('d', arcs(c.x, c.y, c.r)); });
+        if (k < 1) requestAnimationFrame(step);
+      };
+      requestAnimationFrame(step);
+    }, 2000);
+  }
 })();
 </script>
 <script>
