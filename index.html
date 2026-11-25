@@ -110,19 +110,6 @@ body.menu-open .menu-dim{opacity:1;pointer-events:auto}
 .reel .flyer{position:absolute;left:0;top:0;z-index:5;border-radius:6px;overflow:hidden;visibility:hidden;pointer-events:none;
   background:#1A1424 center/cover no-repeat;box-shadow:0 30px 70px -25px rgba(0,0,0,.7)}
 
-.cg{position:relative;height:640vh}
-.cg .stage{position:sticky;top:0;z-index:2;height:100vh;overflow:hidden;perspective:1200px;perspective-origin:50% 50%}
-.cg .scene{position:absolute;left:50%;top:50%;width:0;height:0;transform-style:preserve-3d}
-/* the orbit runs on a strong diagonal */
-.cg .ring{position:absolute;left:0;top:0;transform-style:preserve-3d;transform:rotateZ(-15deg)}
-.cg .mk{position:absolute;left:0;top:0;transform-style:preserve-3d}
-.cg .sl{position:absolute;top:0;height:100%;background-repeat:no-repeat;backface-visibility:hidden}
-.cg .phrase{position:absolute;left:0;top:0;transform:translate(-50%,-50%);width:min(94vw,1700px);margin:0;text-align:center;
-  font-family:'Lia Element',sans-serif;font-weight:600;color:#fff;font-size:clamp(28px,min(5.5vw,12.5vh),116px);line-height:1;letter-spacing:-.01em;
-  -webkit-text-stroke:.012em currentColor;text-shadow:0 0 40px rgba(0,0,0,.55)}
-.cg .phrase .w{display:inline-block;opacity:0;filter:blur(8px)}
-.cg .phrase .accent{color:#9D6BFF}
-@media (max-width:700px){.cg{height:420vh}}
 /* ---------- WORKS (after shifragernetz.com) — sizes in 1920-wide design units ---------- */
 /* soft purple gradient fading out of the near-black above and into the purple About section below, with a faint grain */
 .works{--u:calc(100vw/1920);position:relative;isolation:isolate;
@@ -892,114 +879,6 @@ if (window.GhostCursor && matchMedia('(hover: hover)').matches) GhostCursor(docu
   build(); render(true);
   addEventListener('scroll', tick, { passive: true });
   let rt = 0; addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(() => { build(); render(true); }, 150); });
-})();
-</script>
-
-<section class="cg" id="works" aria-label="אתם יודעים כמה העסק שלכם טוב">
-  <div class="lines" aria-hidden="true"></div>
-  <div class="stage">
-    <div class="scene">
-      <div class="ring" id="ring" aria-hidden="true"></div>
-      <h2 class="phrase" id="phrase" dir="rtl">אתם יודעים כמה העסק שלכם טוב.<br>אני דואגת שמי שיכנס לאתר שלכם<br><span class="accent">ידע את זה</span></h2>
-    </div>
-  </div>
-</section>
-<script>
-/* Curved mockups orbit the statement on a tilted cylinder. Each mockup is cut into vertical slices that
-   rotate around the ring's axis, so the image bends with the ring. The ring turns with the scroll and the
-   words of the statement sharpen out of a blur one after another. */
-(() => {
-  const sec = document.getElementById('works'), ring = document.getElementById('ring'), phrase = document.getElementById('phrase');
-  const imgs = ['ravitz.webp','mock5.jpg','mock3.jpg','avney.webp','mock4.jpg','vortex.webp','mock2.jpg','biscotti.webp'];
-  const N = imgs.length, SL = 12;
-  let seed = 5; const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
-
-  // split the statement into words (keep the accent colour and line breaks)
-  const words = [];
-  const split = node => [...node.childNodes].forEach(n => {
-    if (n.nodeType === 3) {
-      const frag = document.createDocumentFragment();
-      n.textContent.split(/(\s+)/).forEach(t => {
-        if (!t) return;
-        if (/^\s+$/.test(t)) { frag.appendChild(document.createTextNode(t)); return; }
-        const s = document.createElement('span'); s.className = 'w'; s.textContent = t; frag.appendChild(s); words.push(s);
-      });
-      n.replaceWith(frag);
-    } else if (n.nodeType === 1 && n.tagName !== 'BR') split(n);
-  });
-  split(phrase);
-
-  const cards = imgs.map((src, i) => {
-    const mk = document.createElement('div'); mk.className = 'mk'; ring.appendChild(mk);
-    const slices = [];
-    for (let j = 0; j < SL; j++) { const s = document.createElement('div'); s.className = 'sl'; s.style.backgroundImage = `url(assets/shots/${src})`; mk.appendChild(s); slices.push(s); }
-    return { mk, slices, base: i / N * Math.PI * 2, side: 0 };
-  });
-
-  let W, H, R, cw, ch, sw;
-  function layout() {
-    W = innerWidth; H = innerHeight;
-    R = Math.min(W * .39, 640); cw = Math.max(150, Math.min(W * .15, 300)); ch = cw * .667; sw = cw / SL;
-    cards.forEach(c => {
-      c.mk.style.width = cw + 'px'; c.mk.style.height = ch + 'px';
-      c.slices.forEach((s, j) => {
-        s.style.width = (sw + .6) + 'px'; s.style.left = (cw / 2 - sw / 2) + 'px';
-        s.style.backgroundSize = `${cw}px ${ch}px`; s.style.backgroundPosition = `${-j * sw}px 0`;
-        if (j === 0) s.style.borderRadius = '6px 0 0 6px'; if (j === SL - 1) s.style.borderRadius = '0 6px 6px 0';
-      });
-      c.side = 0;
-    });
-  }
-  layout(); addEventListener('resize', layout);
-
-  let target = 0, cur = 0;
-  const read = () => { const r = sec.getBoundingClientRect(); target = Math.min(1, Math.max(0, -r.top / (r.height - innerHeight))); };
-  addEventListener('scroll', read, { passive: true }); read(); cur = target;
-  const clamp = v => Math.min(1, Math.max(0, v));
-  const easeOut = t => 1 - Math.pow(1 - t, 3), easeIn = t => t * t * t;
-
-  function frame() {
-    cur += (target - cur) * .09;
-    const r = sec.getBoundingClientRect();
-    if (r.bottom > 0 && r.top < innerHeight) {
-      const turn = cur * Math.PI * 2 * 1.15 + .35;
-      cards.forEach((c, i) => {
-        const a = c.base + turn, x = Math.sin(a) * R, z = Math.cos(a) * R;
-        const front = z >= 0 ? 1 : -1;
-        // sites join the ring one after another (flying up from below the page),
-        // ride it for a while, then leave one after another (flying up and out of the page)
-        const kin = easeOut(clamp((cur - (.02 + i * .035)) / .13));
-        const kout = easeIn(clamp((cur - (.62 + i * .035)) / .13));
-        const y = (1 - kin) * H * 1.05 - kout * H * 1.15;
-        const zz = Math.min(z + (1 - kin) * 120 + kout * 120, 700);   // capped so nothing gets too close to the camera
-        c.vis = kin * (1 - kout);
-        // front half faces outward (convex), back half faces the viewer from inside the ring (concave)
-        const yaw = front > 0 ? a : a + Math.PI;
-        c.mk.style.transform = `translate3d(${x - cw / 2}px,${y - ch / 2}px,${zz}px) rotateY(${yaw}rad)`;
-        if (c.side !== front) {
-          c.side = front;
-          c.slices.forEach((s, j) => {
-            s.style.transformOrigin = `50% 50% ${-front * R}px`;
-            s.style.transform = `rotateY(${front * ((j + .5) - SL / 2) * sw / R}rad)`;
-            s.style.filter = front > 0 ? 'none' : 'brightness(.62)';
-          });
-        }
-        // opacity goes on the flat slices – on the 3D container it would flatten the curve
-        const edge = Math.abs(Math.cos(a));                    // 0 at the sides (edge-on), 1 at front/back
-        const op = ((front > 0 ? 1 : .7) * clamp(edge * 3) * clamp(c.vis * 1.6)).toFixed(3);
-        if (c.op !== op) { c.op = op; c.slices.forEach(s => s.style.opacity = op); }
-      });
-      // words: blur → sharp, one after another
-      const p = clamp((cur - .08) / .55);
-      words.forEach((w, i) => {
-        const k = clamp(p * (words.length + 3) - i);
-        w.style.opacity = k.toFixed(3); w.style.filter = `blur(${((1 - k) * 8).toFixed(2)}px)`;
-      });
-      phrase.style.transform = `translate(-50%,calc(-50% + ${(1 - clamp(cur / .2)) * 60}px))` + (innerWidth < 700 ? ' translateZ(720px) scale(.4)' : '');
-    }
-    requestAnimationFrame(frame);
-  }
-  requestAnimationFrame(frame);
 })();
 </script>
 
