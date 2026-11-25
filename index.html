@@ -1364,7 +1364,6 @@ if (window.GradientWaves) window.worksWaves = GradientWaves(document.getElementB
   const letters = [];
   document.querySelectorAll('#hero .hero-type text, #about .about-type text').forEach(t => {
     const paint = t.getAttribute('fill');               // white, black, or the gradient url(#fade)
-    if (paint === '#000000') return;                    // only the white lines get the effect
     const chars = [...t.textContent]; t.textContent = '';
     t.setAttribute('stroke', paint);
     t.setAttribute('stroke-linejoin', 'round');
@@ -1392,7 +1391,7 @@ if (window.GradientWaves) window.worksWaves = GradientWaves(document.getElementB
       if (L.shown < .003) L.shown = 0; else active = true;
       const k = Math.min(1, L.shown * 1.25);
       L.el.setAttribute('fill-opacity', (1 - k).toFixed(3));
-      L.el.setAttribute('stroke-width', (k * 3.2).toFixed(2));
+      L.el.setAttribute('stroke-width', (k * 4.5).toFixed(2));
       L.el.setAttribute('stroke-opacity', Math.min(1, k * 1.6).toFixed(3));
     });
     if (active || mx > -1e4) requestAnimationFrame(loop); else running = false;
