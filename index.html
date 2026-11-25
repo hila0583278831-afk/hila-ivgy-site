@@ -236,19 +236,6 @@ body.menu-open .menu-dim{opacity:1;pointer-events:auto}
 @media (max-width:700px){.ct-foot{padding:0 20px 96px}
   .pcell .pnum{font-size:92px;top:-.34em;left:.12em}}
 
-/* ---------- IMPRESSION: growing purple dot + giant sentence sweeping with the scroll ---------- */
-.impress{position:relative;height:700vh;background:#EFE8FF}
-.imp-stage{position:sticky;top:0;height:100vh;overflow:hidden;background:#EFE8FF;
-  background-image:repeating-linear-gradient(90deg,rgba(110,90,220,.16) 0 1.5px,transparent 1.5px 12.5%)}
-.imp-dot{position:absolute;inset:0;clip-path:circle(7px at 50% 50%);will-change:clip-path;
-  background:#5C2696 url(assets/hero-bg.webp) center/cover no-repeat}
-/* the hero grid lines keep running inside the purple too */
-.imp-dot::after{content:"";position:absolute;inset:0;background:repeating-linear-gradient(90deg,rgba(84,70,236,.55) 0 2px,transparent 2px 12.5%)}
-.imp-text{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;gap:clamp(4px,1vh,16px);
-  font-family:'Lia Element',sans-serif;font-weight:600;color:#fff;pointer-events:none}
-.imp-line{white-space:nowrap;width:max-content;font-size:min(22vw,38vh);line-height:1;letter-spacing:-.02em;opacity:0;will-change:transform;direction:rtl}
-.imp-line b{font-weight:inherit;color:#0B0614}
-.imp-line b span{background:linear-gradient(100deg,#fff 0%,#FFD6FF 45%,#FF9FFC 100%);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent}
 
 /* ---------- TESTIMONIALS: white section, giant word, a purple grid of shapes with a reaction inside each ---------- */
 .tst{position:relative;overflow:hidden;color:#0E0A18;font-family:'Lia Element',sans-serif;font-weight:600;padding:clamp(200px,32vh,340px) 0 clamp(80px,10vw,160px);background:#fff}
@@ -1176,39 +1163,6 @@ if (window.GradientWaves) window.worksWaves = GradientWaves(document.getElementB
   }
   build();
   let rt; addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(build, 150); });
-})();
-</script>
-
-<section class="impress" id="impress" aria-label="אין צ'אנס שני לרושם ראשוני. בואו נעשה אותו נכון!">
-  <div class="imp-stage">
-    <div class="imp-dot" id="impDot" aria-hidden="true"></div>
-    <div class="imp-text" aria-hidden="true">
-      <div class="imp-line" id="impLine">אין צ'אנס שני לרושם ראשוני. <b>בואו נעשה אותו <span>נכון!</span></b></div>
-    </div>
-  </div>
-</section>
-<script>
-/* a purple dot in the middle grows until it covers the whole screen, then the sentence sweeps across in giant type */
-(() => {
-  const sec = document.getElementById('impress'), dot = document.getElementById('impDot'),
-        rows = [...sec.querySelectorAll('.imp-line')];
-  const ease = t => 1 - Math.pow(1 - t, 3);
-  const clamp = v => Math.min(1, Math.max(0, v)), io = t => t < .5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
-  const move = () => {
-    const b = sec.getBoundingClientRect(), p = clamp(-b.top / Math.max(1, b.height - innerHeight));
-    const full = Math.hypot(innerWidth, innerHeight) / 2 + 40;              // radius that covers the corners
-    const r = 7 + io(clamp(p / .38)) * full;
-    dot.style.clipPath = `circle(${r.toFixed(1)}px at 50% 50%)`;
-    // one giant line: it starts with the beginning of the sentence sitting on the right (rest cut off on the left)
-    // and slides right with the scroll until its end ("נכון!") arrives on the left – read naturally right-to-left
-    const line = rows[0], w = line.scrollWidth, W = innerWidth, m = W * .06;
-    const t = io(clamp((p - .3) / .66));
-    const x0 = W - m - w, x1 = m;
-    line.style.transform = `translate3d(${(x0 + t * (x1 - x0)).toFixed(1)}px,0,0)`;
-    line.style.opacity = clamp((p - .26) / .05).toFixed(3);
-  };
-  addEventListener('scroll', move, { passive: true }); addEventListener('resize', move); move();
-  document.fonts && document.fonts.ready.then(move);
 })();
 </script>
 
