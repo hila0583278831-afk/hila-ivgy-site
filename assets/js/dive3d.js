@@ -37,8 +37,8 @@ function start() {
   const out3 = t => 1 - Math.pow(1 - clamp(t), 3);
   const smooth = t => (t = clamp(t)) * t * (3 - 2 * t);
   const N = PROJ.length, FOV = 35;
-  const PH = { dive: 1.7, fill: 1.0, step: .75, away: 1.8, hold: .5 };
-  const TOTAL = PH.dive + PH.fill + PH.step * (N - 1) + PH.away + PH.hold;
+  const PH = { dive: 1.7, fill: 1.0, step: .75, away: 1.4, side: 1.4, back: 1.4, updown: 1.4, hold: .5 };
+  const TOTAL = PH.dive + PH.fill + PH.step * (N - 1) + PH.away + PH.side + PH.back + PH.updown + PH.hold;
 
   const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true, powerPreference: 'high-performance' });
   renderer.outputColorSpace = THREE.LinearSRGBColorSpace;          // no colour management: sRGB values pass straight through
@@ -49,12 +49,20 @@ function start() {
   const U = {
     uPan: { value: 0 }, uK: { value: 0 }, uR: { value: 1000 }, uCw: { value: 200 }, uCh: { value: 180 },
     uOy: { value: 0 }, uVh: { value: 900 }, uEx: { value: 0 }, uRowY: { value: 0 },
-    uF0: { value: 1.05 }, uF1: { value: 1.6 }, uAway: { value: 0 }, uRowB: { value: 0 }
+    uF0: { value: 1.05 }, uF1: { value: 1.6 }, uAway: { value: 0 }, uRowB: { value: 0 }, uSX: { value: 0 }, uSY: { value: 0 }
   };
   const SURF = /* glsl */`
-    uniform float uPan, uK, uR, uCw, uCh, uOy, uVh, uEx, uRowY, uF0, uF1, uAway, uRowB;
-    // in the overview only a band of rows around the gallery row stays: the carousel ring
-    float band(float y) { return mix(1.0, smoothstep(uRowB - 2.6, uRowB - 2.1, y) * (1.0 - smoothstep(uRowB + 3.1, uRowB + 3.6, y)), uAway); }
+    uniform float uPan, uK, uR, uCw, uCh, uOy, uVh, uEx, uRowY, uF0, uF1, uAway, uRowB, uSX, uSY;
+    float band(float y) { return 1.0; }
+    // the overview's slides: every other row moves sideways (uSX cells, alternating directions), then every other
+    // column moves up / down (uSY). The cells keep their place on the curved display; their contents travel.
+    vec2 shifted(vec2 g) {
+      float r = floor(g.y);
+      g.x -= (mod(r - uRowB, 2.0) < 0.5 ? 1.0 : -1.0) * uSX;
+      float c = floor(g.x);
+      g.y -= (mod(c, 2.0) < 0.5 ? -1.0 : 1.0) * uSY;
+      return g;
+    }
     // grid coords (g = columns from the centre seam, h = rows from the hero grid's top) -> point on the bent display
     vec3 surf(vec2 gh, float lift, out float th) {
       float xs = (gh.x - uPan) * uCw + uEx;
@@ -91,19 +99,27 @@ function start() {
   const gridMat = new THREE.ShaderMaterial({
     uniforms: Object.assign(gridU, U), side: THREE.DoubleSide, transparent: true, depthWrite: false, premultipliedAlpha: true,
     vertexShader: SURF + /* glsl */`
-      uniform float uPanI; varying vec2 vUv; varying float vFade; varying float vX;
+      uniform float uPanI; varying vec2 vG; varying float vFade; varying float vX;
       void main() {
         float th; vec2 gh = vec2(position.x + uPanI, position.y);
         vec3 p = surf(gh, 0.0, th);
-        vUv = vec2(gh.x, -gh.y); vX = p.x;
+        vG = gh; vX = p.x;
         vFade = (1.0 - smoothstep(uF0, uF1, abs(th))) * band(gh.y);
         gl_Position = projectionMatrix * modelViewMatrix * vec4(p, 1.0);
       }`,
     fragmentShader: /* glsl */`
-      uniform sampler2D uMap; uniform float uAlpha, uGlow, uVw; uniform vec3 uC1, uC2;
-      varying vec2 vUv; varying float vFade; varying float vX;
+      uniform sampler2D uMap; uniform float uAlpha, uGlow, uVw, uSX, uSY, uRowB; uniform vec3 uC1, uC2;
+      varying vec2 vG; varying float vFade; varying float vX;
+      vec2 shifted(vec2 g) {
+        float r = floor(g.y);
+        g.x -= (mod(r - uRowB, 2.0) < 0.5 ? 1.0 : -1.0) * uSX;
+        float c = floor(g.x);
+        g.y -= (mod(c, 2.0) < 0.5 ? -1.0 : 1.0) * uSY;
+        return g;
+      }
       void main() {
-        float a = texture2D(uMap, vUv).a * uAlpha * vFade;
+        vec2 g = shifted(vG);
+        float a = texture2D(uMap, vec2(g.x, -g.y)).a * uAlpha * vFade;
         vec3 col = mix(uC1, uC2, clamp(vX / uVw + 0.5, 0.0, 1.0)) * (1.0 + uGlow * 0.35) + vec3(0.05, 0.0, 0.1) * uGlow;
         gl_FragColor = vec4(col * a, a);
       }`
@@ -111,10 +127,10 @@ function start() {
   let gridMesh = null;
 
   // ---------- every other cell of the display filled with a site (one atlas of the project heroes) ----------
-  // cell (x, y) shows project (3x + 5y) mod N: no two neighbours (incl. diagonals) repeat. The cells of the gallery
+  // cell (x, y) shows project (3x + y) mod N: no two neighbours (incl. diagonals) repeat. The cells of the gallery
   // row that hold the real project meshes are skipped. Cells grow in from their centres, outward from the middle.
   const fillU = { uAtlas: { value: null }, uPanI: gridU.uPanI, uN: { value: PROJ.length }, uFill: { value: 0 }, uRow: { value: 0 },
-    uCellA: { value: 1.1 }, uImgA: { value: 1.5 }, uRad: { value: 85 }, uPx: { value: new THREE.Vector2(200, 180) }, uFA: { value: 0 } };
+    uCellA: { value: 1.1 }, uImgA: { value: 1.5 }, uRad: { value: 85 }, uPx: { value: new THREE.Vector2(200, 180) }, uFA: { value: 0 }, uAll: { value: 0 } };
   const fillMat = new THREE.ShaderMaterial({
     uniforms: Object.assign(fillU, U), side: THREE.DoubleSide, transparent: true, depthWrite: false, premultipliedAlpha: true,
     vertexShader: SURF + /* glsl */`
@@ -126,7 +142,14 @@ function start() {
         gl_Position = projectionMatrix * modelViewMatrix * vec4(p, 1.0);
       }`,
     fragmentShader: /* glsl */`
-      uniform sampler2D uAtlas; uniform float uN, uFill, uRow, uCellA, uImgA, uRad, uFA, uPan, uAway; uniform vec2 uPx;
+      uniform sampler2D uAtlas; uniform float uN, uFill, uRow, uCellA, uImgA, uRad, uFA, uPan, uAway, uAll, uSX, uSY, uRowB; uniform vec2 uPx;
+      vec2 shifted(vec2 g) {
+        float r = floor(g.y);
+        g.x -= (mod(r - uRowB, 2.0) < 0.5 ? 1.0 : -1.0) * uSX;
+        float c = floor(g.x);
+        g.y -= (mod(c, 2.0) < 0.5 ? -1.0 : 1.0) * uSY;
+        return g;
+      }
       varying vec2 vG; varying float vFade;
       float leaf(vec2 uv) {
         vec2 p = (uv - 0.5) * uPx, h = uPx * 0.5;
@@ -135,8 +158,9 @@ function start() {
         return length(max(q, 0.0)) + min(max(q.x, q.y), 0.0) - r;
       }
       void main() {
-        vec2 cell = floor(vG), f = fract(vG);
-        if (abs(cell.y - uRow) < 0.5 && cell.x < 0.5 && cell.x > -uN + 0.5) discard;          // real project meshes live there
+        vec2 g = shifted(vG), cell = floor(g), f = fract(g);
+        bool gal = abs(cell.y - uRow) < 0.5 && cell.x < 0.5 && cell.x > -uN + 0.5;            // the gallery row's project cells
+        if (gal && uAll < 0.5) discard;                                                       // real project meshes live there
         float dist = length(vec2(cell.x + 0.5 - uPan, cell.y - uRow));
         float e = clamp((uFill - 0.12 - dist * 0.09) / 0.6, 0.0, 1.0); e = 1.0 - pow(1.0 - e, 3.0);
         if (e <= 0.0) discard;
@@ -148,8 +172,8 @@ function start() {
         vec2 c = uv;
         if (uImgA > uCellA) c.x = 0.5 + (uv.x - 0.5) * uCellA / uImgA; else c.y = 1.0 - (1.0 - uv.y) * uImgA / uCellA;
         c = clamp(c, 0.006, 0.994);
-        float idx = mod(cell.x * 3.0 + cell.y * 5.0, uN);
-        float col = mod(idx, 4.0), row = floor(idx / 4.0);
+        float idx = gal ? -cell.x : mod(floor(mod(cell.x * 3.0 + cell.y, uN) + 0.5), uN);   // 3x + y: no neighbour (incl. diagonals) repeats for N = 7 or 8; rounded: float mod can land on N − ε
+        float row = floor(idx / 4.0 + 0.001), col = idx - row * 4.0;
         vec3 rgb = texture2D(uAtlas, vec2((col + c.x) / 4.0, 1.0 - (row + 1.0) * 0.5 + c.y * 0.5)).rgb;
         rgb *= mix(mix(0.78, 0.42, smoothstep(0.5, 3.5, dist)), 0.86, uAway);            // the middle reads first; all even in the overview
         float a = m * smoothstep(0.0, 0.35, e) * uFA * vFade;
@@ -283,17 +307,24 @@ function start() {
     // DIVE
     const dv = io3(q / PH.dive);
     const aw = io3((q - PH.dive - PH.fill - PH.step * (N - 1)) / PH.away);   // AWAY: pull back to the whole display
-    U.uK.value = io2((q - .12) / (PH.dive - .12)) * (1 + .55 * aw);
-    U.uF0.value = lerp(1.05, 1.5, aw); U.uF1.value = lerp(1.6, 1.85, aw); U.uAway.value = aw;
+    U.uK.value = io2((q - .12) / (PH.dive - .12)) * (1 + .15 * aw);
+    U.uF0.value = lerp(1.05, 1.35, aw); U.uF1.value = lerp(1.6, 1.8, aw); U.uAway.value = aw;
+    // SIDE / BACK / UPDOWN: odd rows one way, even rows the other; back again; then columns up / down
+    let t0 = PH.dive + PH.fill + PH.step * (N - 1) + PH.away;
+    const sA = io3((q - t0) / PH.side); t0 += PH.side;
+    const sB = io3((q - t0) / PH.back); t0 += PH.back;
+    const sC = io3((q - t0) / PH.updown);
+    U.uSX.value = (G.phone ? 2 : 3) * (sA - sB); U.uSY.value = 2 * sC;
+    fillU.uAll.value = aw > .5 ? 1 : 0;
     const camZ = lerp(G.D, G.Dend, dv), camY = lerp(0, G.rowY, dv);
-    const zFar = G.Dend + G.R * (G.phone ? 3.2 : 2.5);
-    camera.position.set(0, lerp(camY, G.rowY + vhOf() * .34, aw), lerp(camZ, zFar, aw));
-    camera.lookAt(0, lerp(camY, G.rowY, aw), lerp(0, G.R * .42, aw));
+    const zFar = G.Dend * (G.phone ? 2.4 : 3);                         // stop here: the whole display, cells about a tenth of the width
+    camera.position.set(0, lerp(camY, G.rowY + vhOf() * .06, aw), lerp(camZ, zFar, aw));
+    camera.lookAt(0, camY, 0);
     // FILL + BROWSE
     const fq = q - PH.dive, bq = clamp((fq - PH.fill) / PH.step, 0, N - 1);
     const seg = Math.min(Math.floor(bq), N - 2), fr = bq - Math.max(seg, 0);
     const browse = N > 1 ? Math.max(seg, 0) + io3((fr - .12) / .76) : 0;
-    const pan = .5 * dv - browse - aw * 1.6;                                     // .5: centre a cell (the hero centre is a seam)
+    const pan = .5 * dv - browse;                                     // .5: centre a cell (the hero centre is a seam)
     U.uPan.value = pan; gridU.uPanI.value = Math.floor(pan);
     U.uEx.value = G.ex * (1 - dv);
 
@@ -331,11 +362,12 @@ function start() {
       const off = (.5 - i) - pan;                                     // cells from the centre
       const f = 1 - smooth(Math.abs(off));                            // focus
       const g = f * enter;
-      u.uScale.value = lerp(.14, 1, enter) * (1 + (G.phone ? .1 : .2) * g * (1 - aw));
-      u.uLift.value = g * G.cw * (G.phone ? .35 : .55) * (1 - aw);
-      u.uAlpha.value = smooth(enter / .35);
-      u.uDim.value = lerp(lerp(.55, 1, g), .9, aw);
-      u.uEdge.value = g * (1 - aw);
+      const back = 1 - smooth(aw / .45);                             // settled back into its cell before the hand-over
+      u.uScale.value = lerp(.14, 1, enter) * (1 + (G.phone ? .1 : .2) * g * back);
+      u.uLift.value = g * G.cw * (G.phone ? .35 : .55) * back;
+      u.uAlpha.value = smooth(enter / .35) * (aw > .5 ? 0 : 1);       // past half-way the fill layer shows these cells (same image)
+      u.uDim.value = lerp(lerp(.55, 1, g), .86, 1 - back);
+      u.uEdge.value = g * back;
       projMeshes[i].renderOrder = 2 + Math.round(f * 10);
       if (f > bestF) { bestF = f; best = i; }
     });
