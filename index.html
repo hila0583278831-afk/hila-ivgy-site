@@ -583,32 +583,8 @@ html[data-a11y-size="3"] :is(p,blockquote,label,h3,.ct-nav a,.ct-links a,.menu-l
   const grid = svg.querySelector('.hero-grid'), texts = svg.querySelectorAll('.hero-type text'), fade = svg.querySelector('#fade');
   const orig = { vb: svg.getAttribute('viewBox'), grid: grid.innerHTML, t: [...texts].map(t => ['x', 'y', 'font-size', 'letter-spacing', 'text-anchor'].map(a => t.getAttribute(a))), f: [fade.getAttribute('y1'), fade.getAttribute('y2')] };
   const CW = 322, CH = 289.8, R = 137;
-  // the grid from the design: 10 × 6 cells, each a box outline + a shape whose rounded corners (radius = half the
-  // cell height) follow this pattern – row (repeats every 6), then even / odd column; corners TL TR BR BL, R = round
-  const PAT = [['.R..', '..R.'], ['..R.', 'R.RR'], ['.R.R', '..R.'], ['..R.', 'RRRR'], ['.R..', '..R.'], ['..R.', 'RRRR']];
-  const f1 = v => +v.toFixed(1);
-  const shape = (x, y, w, h, m) => {
-    const r = h / 2, c = i => m[i] === 'R';
-    let d = `M${f1(x + (c(0) ? r : 0))},${f1(y)} H${f1(x + w - (c(1) ? r : 0))}`;
-    if (c(1)) d += ` A${f1(r)},${f1(r)} 0 0 1 ${f1(x + w)},${f1(y + r)}`;
-    d += ` V${f1(y + h - (c(2) ? r : 0))}`;
-    if (c(2)) d += ` A${f1(r)},${f1(r)} 0 0 1 ${f1(x + w - r)},${f1(y + h)}`;
-    d += ` H${f1(x + (c(3) ? r : 0))}`;
-    if (c(3)) d += ` A${f1(r)},${f1(r)} 0 0 1 ${f1(x)},${f1(y + h - r)}`;
-    d += ` V${f1(y + (c(0) ? r : 0))}`;
-    if (c(0)) d += ` A${f1(r)},${f1(r)} 0 0 1 ${f1(x + r)},${f1(y)}`;
-    return d + ' Z';
-  };
-  const buildGrid = (cols, rows, w, h) => {
-    let g = '';
-    for (let j = 0; j < rows; j++) for (let i = 0; i < cols; i++) {
-      const x = i * w, y = j * h;
-      g += `<rect x="${f1(x)}" y="${f1(y)}" width="${f1(w)}" height="${f1(h)}" fill="none" stroke="url(#gl)" stroke-width="1.6"/>` +
-        `<path d="${shape(x, y, w, h, PAT[j % 6][i % 2])}" fill="none" stroke="url(#gs)" stroke-width="2.4"/>`;
-    }
-    return g;
-  };
-  const DESK = buildGrid(10, 6, 2576 / 10, 1449 / 6);
+  const cell = (x, y) => `<rect x="${x}" y="${y}" width="${CW}" height="${CH}" fill="none" stroke="url(#gl)" stroke-width="2.2"/>` +
+    `<path d="M${x},${y} H${x + CW - R} A${R},${R} 0 0 1 ${x + CW},${y + R} V${y + CH} H${x + R} A${R},${R} 0 0 1 ${x},${y + CH - R} Z" fill="none" stroke="url(#gs)" stroke-width="2.6"/>`;
   let mode = '';
   // all lines one size: the widest one fills k of the width; lines stacked around cy
   // maxH: the block (all lines) never gets taller than this, so it always fits the visible hero
@@ -623,7 +599,7 @@ html[data-a11y-size="3"] :is(p,blockquote,label,h3,.ct-nav a,.ct-links a,.menu-l
   function layout() {
     const want = mq.matches ? 'm' : 'd';
     if (want === 'd') {
-      if (mode !== 'd') { mode = 'd'; svg.setAttribute('viewBox', orig.vb); grid.innerHTML = DESK; }
+      if (mode !== 'd') { mode = 'd'; svg.setAttribute('viewBox', orig.vb); grid.innerHTML = orig.grid; }
       // the hero keeps the 16:9 box, so on wide/short screens its bottom is below the fold –
       // fit the text into the part of the box that is on screen in the first view
       const r = hero.getBoundingClientRect(), vis = Math.min(1449, 1449 * innerHeight / Math.max(r.height, 1));
@@ -633,66 +609,15 @@ html[data-a11y-size="3"] :is(p,blockquote,label,h3,.ct-nav a,.ct-links a,.menu-l
     }
     mode = 'm';
     const r = hero.getBoundingClientRect(), W = 4 * CW;
-    const MCH = CW * (1449 / 6) / (2576 / 10);          // same cell proportion as the desktop grid
-    const rows = Math.max(6, Math.ceil(W * r.height / Math.max(r.width, 1) / MCH));
-    const H = rows * MCH;
+    const rows = Math.max(6, Math.ceil(W * r.height / Math.max(r.width, 1) / CH));
+    const H = rows * CH;
     svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
-    const g = buildGrid(4, rows, CW, MCH);
+    let g = ''; for (let y = 0; y < rows; y++) for (let x = 0; x < 4; x++) g += cell(x * CW, +(y * CH).toFixed(1));
     grid.innerHTML = g;
-    fit(W, H / 2, .9, 260, .114);
+    fit(W, Math.round(rows / 2) * CH, .9, 260, .114);
   }
-  // soften the grid behind the words: the sharp grid is masked out around the text block and a blurred,
-  // fainter copy shows there instead, with feathered edges
-  const NS = 'http://www.w3.org/2000/svg', defs = svg.querySelector('defs');
-  const mk = (tag, attrs, parent) => { const e = document.createElementNS(NS, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); parent && parent.appendChild(e); return e; };
-  mk('filter', { id: 'gsoft', x: '-5%', y: '-5%', width: '110%', height: '110%' }, defs).appendChild(mk('feGaussianBlur', { stdDeviation: 5 }));
-  const feather = mk('filter', { id: 'gfeather', x: '-50%', y: '-50%', width: '200%', height: '200%' }, defs); feather.appendChild(mk('feGaussianBlur', { stdDeviation: 70 }));
-  const mOut = mk('mask', { id: 'gmOut', maskUnits: 'userSpaceOnUse', x: -500, y: -500, width: 9000, height: 9000 }, defs);
-  mk('rect', { x: -500, y: -500, width: 9000, height: 9000, fill: '#fff' }, mOut);
-  const holeOut = mk('rect', { fill: '#000', filter: 'url(#gfeather)' }, mOut);
-  const mIn = mk('mask', { id: 'gmIn', maskUnits: 'userSpaceOnUse', x: -500, y: -500, width: 9000, height: 9000 }, defs);
-  const holeIn = mk('rect', { fill: '#fff', filter: 'url(#gfeather)' }, mIn);
-  grid.id = 'heroGrid';
-  const wrap = mk('g', { mask: 'url(#gmOut)' }); grid.parentNode.insertBefore(wrap, grid); wrap.appendChild(grid);
-  const soft = mk('use', { href: '#heroGrid', filter: 'url(#gsoft)', mask: 'url(#gmIn)', opacity: '.45' }); wrap.after(soft);
-  function soften() {
-    let x0 = 1e9, y0 = 1e9, x1 = -1e9, y1 = -1e9;
-    texts.forEach(t => { try { const b = t.getBBox(); x0 = Math.min(x0, b.x); y0 = Math.min(y0, b.y); x1 = Math.max(x1, b.x + b.width); y1 = Math.max(y1, b.y + b.height); } catch (_) {} });
-    if (x1 < x0) return;
-    const pad = 60, a = { x: x0 - pad, y: y0 - pad, width: x1 - x0 + 2 * pad, height: y1 - y0 + 2 * pad, rx: 120 };
-    for (const k in a) { holeOut.setAttribute(k, a[k]); holeIn.setAttribute(k, a[k]); }
-  }
-  // reveal: the hero opens with no grid; moving the mouse uncovers the shapes with a soft brush, and the trail
-  // fades back out behind it. Phones / reduced motion keep the grid simply visible.
-  if (matchMedia('(hover: hover)').matches && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
-    const rg = mk('radialGradient', { id: 'revealDot' }, defs);
-    mk('stop', { offset: 0, 'stop-color': '#fff', 'stop-opacity': 1 }, rg);
-    mk('stop', { offset: .5, 'stop-color': '#fff', 'stop-opacity': .7 }, rg);
-    mk('stop', { offset: 1, 'stop-color': '#fff', 'stop-opacity': 0 }, rg);
-    const rmask = mk('mask', { id: 'heroReveal', maskUnits: 'userSpaceOnUse', x: -500, y: -500, width: 9000, height: 9000 }, defs);
-    const holder = mk('g', { mask: 'url(#heroReveal)' }); wrap.before(holder); holder.appendChild(wrap); holder.appendChild(soft);
-    const dots = [], LIFE = 2400; let lx = -1e4, ly = -1e4, rraf = 0;
-    const tick = now => {
-      rraf = 0;
-      for (let i = dots.length - 1; i >= 0; i--) {
-        const d = dots[i], k = (now - d.t) / LIFE;
-        if (k >= 1) { d.c.remove(); dots.splice(i, 1); continue; }
-        d.c.setAttribute('opacity', (k < .1 ? k / .1 : 1 - Math.pow((k - .1) / .9, 1.6)).toFixed(3));   // quick in, slow out
-      }
-      if (dots.length) rraf = requestAnimationFrame(tick);
-    };
-    addEventListener('pointermove', e => {
-      const r = hero.getBoundingClientRect(); if (e.clientY < r.top || e.clientY > r.bottom) return;
-      const m = svg.getScreenCTM(); if (!m) return;
-      const p = new DOMPoint(e.clientX, e.clientY).matrixTransform(m.inverse());
-      if (Math.hypot(p.x - lx, p.y - ly) < 45) return; lx = p.x; ly = p.y;
-      const vb = svg.viewBox.baseVal, R = Math.max(vb.width, vb.height) * .15;
-      dots.push({ c: mk('circle', { cx: p.x.toFixed(1), cy: p.y.toFixed(1), r: R.toFixed(1), fill: 'url(#revealDot)', opacity: 0 }, rmask), t: performance.now() });
-      if (dots.length > 70) dots.shift().c.remove();
-      if (!rraf) rraf = requestAnimationFrame(tick);
-    }, { passive: true });
-  }
-  const relayout = () => { layout(); soften(); };
+  // the grid stays sharp and visible everywhere, behind the words too
+  const relayout = () => { layout(); };
   relayout();
   document.fonts && document.fonts.ready.then(() => { mode = ''; relayout(); });
   mq.addEventListener('change', relayout);
