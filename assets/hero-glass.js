@@ -1,9 +1,6 @@
-/* Hero headline – after Noomo Labs:
-   1. a clear glass sphere built from curved panels (latitude rows × longitude slices, slowly spinning) follows the
-      cursor over the words; each panel refracts the letters behind it, the gaps between panels show them straight
-   2. sentence change: the whole headline slides off to the right while the next one rises in from the bottom-left,
-      tilted as if on a curved surface, and settles
-   – hovering across the words for a while triggers the change; with no hover (phones, idle) it changes every 7s
+/* Hero headline – after Noomo Labs: a clear glass sphere built from curved panels (latitude rows × longitude
+   slices, slowly spinning) follows the cursor over the words; each panel refracts the letters behind it, the gaps
+   between panels show them straight. Off once the page is scrolled (hero-scroll.js moves the hero then).
    The words stay real SVG text (layout, blur mask, SEO); while the sphere is up the canvas draws them instead. */
 (() => {
   const hero = document.getElementById('hero'); if (!hero) return;
@@ -12,14 +9,6 @@
   const texts = [...group.querySelectorAll('text')];
   const hover = matchMedia('(hover: hover)').matches;
   const stopped = () => document.documentElement.classList.contains('a11y-stop');
-
-  // each sentence is three lines; the first line is the black one
-  const SENTENCES = [
-    ['אתר שנראה', 'כמו שהעסק שלך', 'באמת שווה'],
-    ['מיתוג שגורם', 'ללקוחות לבחור', 'דווקא בך'],
-    ['אתר שמוכר', 'בשבילך', 'גם בשתיים בלילה'],
-  ];
-  let idx = 0;
 
   const cv = document.createElement('canvas'); cv.className = 'hero-glass'; cv.setAttribute('aria-hidden', 'true'); hero.appendChild(cv);
   const ctx = cv.getContext('2d');
@@ -49,7 +38,7 @@
   }
 
   // ---------- the glass sphere ----------
-  let px = -1e4, py = -1e4, sx = 0, sy = 0, show = 0, target = 0, charge = 0, spin = 0, lastT = 0, raf = 0;
+  let px = -1e4, py = -1e4, sx = 0, sy = 0, show = 0, target = 0, spin = 0, lastT = 0, raf = 0;
   const ROWS = 8, COLS = 14, GAP = .07;
   function drawSphere(now) {
     const dt = lastT ? Math.min(.05, (now - lastT) / 1000) : 0; lastT = now; spin += dt * .35;
@@ -97,56 +86,22 @@
     raf = 0; ctx.setTransform(dpr, 0, 0, dpr, 0, 0); ctx.clearRect(0, 0, W, H);
     show += (target - show) * .12; if (show < .004 && target === 0) show = 0;
     sx += (px - sx) * .15; sy += (py - sy) * .15;
-    if (show > 0 && !sliding) { group.style.visibility = 'hidden'; drawSphere(now); raf = requestAnimationFrame(frame); }
+    if (show > 0) { group.style.visibility = 'hidden'; drawSphere(now); raf = requestAnimationFrame(frame); }
     else { group.style.visibility = ''; lastT = 0; }
   }
   const kick = () => { if (!raf) raf = requestAnimationFrame(frame); };
 
-  // ---------- sentence change: slide right, next one rises in tilted from the bottom-left ----------
-  let sliding = false, lastAuto = performance.now();
-  function next() {
-    if (sliding || stopped()) return;
-    sliding = true; charge = 0; target = 0; show = 0;
-    group.style.visibility = ''; ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.clearRect(0, 0, cv.width, cv.height);
-    const vb = svg.viewBox.baseVal, VW = vb.width, VH = vb.height;
-    const old = group.cloneNode(true); old.removeAttribute('class'); old.setAttribute('aria-hidden', 'true'); group.after(old);
-    idx = (idx + 1) % SENTENCES.length;
-    texts.forEach((t, i) => { t.textContent = SENTENCES[idx][i] || ''; });
-    window.heroRelayout && window.heroRelayout();
-    for (const g of [old, group]) { g.style.transformBox = 'fill-box'; g.style.transformOrigin = '50% 50%'; }
-    const D = 1300;
-    old.animate([{ transform: 'none' }, { transform: `translate(${VW * .8}px, ${-VH * .04}px) skewX(-8deg)` }],
-      { duration: D * .7, easing: 'cubic-bezier(.6,0,.8,.3)', fill: 'forwards' });
-    const a = group.animate([
-      { transform: `translate(${-VW * .42}px, ${VH * .5}px) rotate(-10deg) skewY(7deg) scale(1.08)` },
-      { transform: 'none' }],
-      { duration: D, delay: D * .28, easing: 'cubic-bezier(.16,.8,.24,1)', fill: 'backwards' });
-    a.finished.then(() => {
-      old.remove(); a.cancel(); sliding = false; lastAuto = performance.now(); paintScene();
-    });
-  }
-
   if (hover) {
-    let wasOver = false;
+    const scrolled = () => scrollY > 8;
     addEventListener('pointermove', e => {
       const r = hero.getBoundingClientRect(), x = e.clientX - r.left, y = e.clientY - r.top, pad = 40;
-      const over = !sliding && !stopped() && x > box.x0 - pad && x < box.x1 + pad && y > box.y0 - pad && y < box.y1 + pad;
+      const over = !scrolled() && !stopped() && x > box.x0 - pad && x < box.x1 + pad && y > box.y0 - pad && y < box.y1 + pad;
       if (over && show === 0) { sx = x; sy = y; }
-      if (over && wasOver) {
-        charge += Math.hypot(x - px, y - py); lastAuto = performance.now();
-        if (charge > (box.x1 - box.x0) * 2.2) { wasOver = false; px = x; py = y; next(); return; }
-      }
-      px = x; py = y; wasOver = over; target = over ? 1 : 0; if (over || show > 0) kick();
+      px = x; py = y; target = over ? 1 : 0; if (over || show > 0) kick();
     }, { passive: true });
-    document.addEventListener('pointerleave', () => { target = 0; wasOver = false; });
+    document.addEventListener('pointerleave', () => { target = 0; });
+    addEventListener('scroll', () => { if (scrolled() && target) { target = 0; kick(); } }, { passive: true });
   }
-
-  // nobody touching it → next sentence every 7s, only while the hero is on screen
-  let inView = true;
-  new IntersectionObserver(e => { inView = e[0].isIntersecting; }).observe(hero);
-  setInterval(() => {
-    if (!sliding && inView && target === 0 && show === 0 && !document.hidden && !stopped() && performance.now() - lastAuto > 7000) next();
-  }, 500);
 
   size();
   addEventListener('resize', () => setTimeout(size, 0));
