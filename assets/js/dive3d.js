@@ -37,8 +37,8 @@ function start() {
   const out3 = t => 1 - Math.pow(1 - clamp(t), 3);
   const smooth = t => (t = clamp(t)) * t * (3 - 2 * t);
   const N = PROJ.length, FOV = 35;
-  const PH = { dive: 1.7, fill: 1.0, step: .75, hold: .6 };
-  const TOTAL = PH.dive + PH.fill + PH.step * (N - 1) + PH.hold;
+  const PH = { dive: 1.7, fill: 1.0, step: .75, away: 1.8, hold: .5 };
+  const TOTAL = PH.dive + PH.fill + PH.step * (N - 1) + PH.away + PH.hold;
 
   const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true, powerPreference: 'high-performance' });
   renderer.outputColorSpace = THREE.LinearSRGBColorSpace;          // no colour management: sRGB values pass straight through
@@ -48,10 +48,13 @@ function start() {
   // ---------- shared surface uniforms + GLSL ----------
   const U = {
     uPan: { value: 0 }, uK: { value: 0 }, uR: { value: 1000 }, uCw: { value: 200 }, uCh: { value: 180 },
-    uOy: { value: 0 }, uVh: { value: 900 }, uEx: { value: 0 }, uRowY: { value: 0 }
+    uOy: { value: 0 }, uVh: { value: 900 }, uEx: { value: 0 }, uRowY: { value: 0 },
+    uF0: { value: 1.05 }, uF1: { value: 1.6 }, uAway: { value: 0 }, uRowB: { value: 0 }
   };
   const SURF = /* glsl */`
-    uniform float uPan, uK, uR, uCw, uCh, uOy, uVh, uEx, uRowY;
+    uniform float uPan, uK, uR, uCw, uCh, uOy, uVh, uEx, uRowY, uF0, uF1, uAway, uRowB;
+    // in the overview only a band of rows around the gallery row stays: the carousel ring
+    float band(float y) { return mix(1.0, smoothstep(uRowB - 2.6, uRowB - 2.1, y) * (1.0 - smoothstep(uRowB + 3.1, uRowB + 3.6, y)), uAway); }
     // grid coords (g = columns from the centre seam, h = rows from the hero grid's top) -> point on the bent display
     vec3 surf(vec2 gh, float lift, out float th) {
       float xs = (gh.x - uPan) * uCw + uEx;
@@ -93,7 +96,7 @@ function start() {
         float th; vec2 gh = vec2(position.x + uPanI, position.y);
         vec3 p = surf(gh, 0.0, th);
         vUv = vec2(gh.x, -gh.y); vX = p.x;
-        vFade = 1.0 - smoothstep(1.05, 1.6, abs(th));
+        vFade = (1.0 - smoothstep(uF0, uF1, abs(th))) * band(gh.y);
         gl_Position = projectionMatrix * modelViewMatrix * vec4(p, 1.0);
       }`,
     fragmentShader: /* glsl */`
@@ -119,11 +122,11 @@ function start() {
       void main() {
         float th; vec2 gh = vec2(position.x + uPanI, position.y);
         vec3 p = surf(gh, 0.0, th);
-        vG = gh; vFade = 1.0 - smoothstep(1.05, 1.6, abs(th));
+        vG = gh; vFade = (1.0 - smoothstep(uF0, uF1, abs(th))) * band(gh.y);
         gl_Position = projectionMatrix * modelViewMatrix * vec4(p, 1.0);
       }`,
     fragmentShader: /* glsl */`
-      uniform sampler2D uAtlas; uniform float uN, uFill, uRow, uCellA, uImgA, uRad, uFA, uPan; uniform vec2 uPx;
+      uniform sampler2D uAtlas; uniform float uN, uFill, uRow, uCellA, uImgA, uRad, uFA, uPan, uAway; uniform vec2 uPx;
       varying vec2 vG; varying float vFade;
       float leaf(vec2 uv) {
         vec2 p = (uv - 0.5) * uPx, h = uPx * 0.5;
@@ -148,7 +151,7 @@ function start() {
         float idx = mod(cell.x * 3.0 + cell.y * 5.0, uN);
         float col = mod(idx, 4.0), row = floor(idx / 4.0);
         vec3 rgb = texture2D(uAtlas, vec2((col + c.x) / 4.0, 1.0 - (row + 1.0) * 0.5 + c.y * 0.5)).rgb;
-        rgb *= mix(0.78, 0.42, smoothstep(0.5, 3.5, dist));                               // the middle reads first
+        rgb *= mix(mix(0.78, 0.42, smoothstep(0.5, 3.5, dist)), 0.86, uAway);            // the middle reads first; all even in the overview
         float a = m * smoothstep(0.0, 0.35, e) * uFA * vFade;
         gl_FragColor = vec4(rgb * a, a);
       }`
@@ -184,7 +187,7 @@ function start() {
         void main() {
           float th; vec2 gh = uCell + vec2(position.x, -position.y) * uScale;
           vec3 p = surf(gh, uLift, th);
-          vUv = uv; vFade = 1.0 - smoothstep(1.1, 1.55, abs(th));
+          vUv = uv; vFade = 1.0 - smoothstep(uF0 + 0.05, uF1 - 0.05, abs(th));
           gl_Position = projectionMatrix * modelViewMatrix * vec4(p, 1.0);
         }`,
       fragmentShader: /* glsl */`
@@ -234,9 +237,9 @@ function start() {
     G = { vw, vh, phone, cw, ch, ox, oy, c0, ex, rg, D, Dend, R: Dend * (phone ? 1.35 : 1.5),
       rowY: vh / 2 - (oy + (rg + .5) * ch), rad: 137 * cw / 322 };
     U.uCw.value = cw; U.uCh.value = ch; U.uOy.value = oy - 0; U.uVh.value = vh; U.uR.value = G.R;
-    U.uRowY.value = G.rowY; gridU.uVw.value = vw;
+    U.uRowY.value = G.rowY; U.uRowB.value = rg; gridU.uVw.value = vw;
     // h measured from the lattice origin row 0; the mesh spans enough columns/rows to cover every camera position
-    const C = phone ? 7 : 11, r0 = -3, r1 = Math.ceil((vh - oy) / ch) + 3;
+    const C = phone ? 9 : 15, r0 = -3, r1 = Math.ceil((vh - oy) / ch) + 3;
     if (gridMesh) { gridMesh.geometry.dispose(); scene.remove(gridMesh); }
     const geo = new THREE.PlaneGeometry(2 * C, r1 - r0, 2 * C * 8, (r1 - r0) * 4);
     const pos = geo.attributes.position;
@@ -269,6 +272,7 @@ function start() {
   const heroType = () => hero.querySelector('svg .hero-type'), heroGrid = () => hero.querySelector('svg .hero-grid');
   let E = null, dirty = true, focusIdx = -1;
   const scrollFor = idx => dive.offsetTop + (PH.dive + PH.fill + PH.step * idx) * G.vh;
+  const vhOf = () => G.vh;
   function progress() { return clamp(-dive.getBoundingClientRect().top / G.vh, 0, TOTAL); }
 
   function render() {
@@ -278,14 +282,18 @@ function start() {
 
     // DIVE
     const dv = io3(q / PH.dive);
-    U.uK.value = io2((q - .12) / (PH.dive - .12));
+    const aw = io3((q - PH.dive - PH.fill - PH.step * (N - 1)) / PH.away);   // AWAY: pull back to the whole display
+    U.uK.value = io2((q - .12) / (PH.dive - .12)) * (1 + .55 * aw);
+    U.uF0.value = lerp(1.05, 1.5, aw); U.uF1.value = lerp(1.6, 1.85, aw); U.uAway.value = aw;
     const camZ = lerp(G.D, G.Dend, dv), camY = lerp(0, G.rowY, dv);
-    camera.position.set(0, camY, camZ); camera.lookAt(0, camY, 0);
+    const zFar = G.Dend + G.R * (G.phone ? 3.2 : 2.5);
+    camera.position.set(0, lerp(camY, G.rowY + vhOf() * .34, aw), lerp(camZ, zFar, aw));
+    camera.lookAt(0, lerp(camY, G.rowY, aw), lerp(0, G.R * .42, aw));
     // FILL + BROWSE
     const fq = q - PH.dive, bq = clamp((fq - PH.fill) / PH.step, 0, N - 1);
     const seg = Math.min(Math.floor(bq), N - 2), fr = bq - Math.max(seg, 0);
     const browse = N > 1 ? Math.max(seg, 0) + io3((fr - .12) / .76) : 0;
-    const pan = .5 * dv - browse;                                     // .5: centre a cell (the hero centre is a seam)
+    const pan = .5 * dv - browse - aw * 1.6;                                     // .5: centre a cell (the hero centre is a seam)
     U.uPan.value = pan; gridU.uPanI.value = Math.floor(pan);
     U.uEx.value = G.ex * (1 - dv);
 
@@ -323,17 +331,17 @@ function start() {
       const off = (.5 - i) - pan;                                     // cells from the centre
       const f = 1 - smooth(Math.abs(off));                            // focus
       const g = f * enter;
-      u.uScale.value = lerp(.14, 1, enter) * (1 + (G.phone ? .1 : .2) * g);
-      u.uLift.value = g * G.cw * (G.phone ? .35 : .55);
+      u.uScale.value = lerp(.14, 1, enter) * (1 + (G.phone ? .1 : .2) * g * (1 - aw));
+      u.uLift.value = g * G.cw * (G.phone ? .35 : .55) * (1 - aw);
       u.uAlpha.value = smooth(enter / .35);
-      u.uDim.value = lerp(.55, 1, g) ;
-      u.uEdge.value = g;
+      u.uDim.value = lerp(lerp(.55, 1, g), .9, aw);
+      u.uEdge.value = g * (1 - aw);
       projMeshes[i].renderOrder = 2 + Math.round(f * 10);
       if (f > bestF) { bestF = f; best = i; }
     });
 
     // caption + controls
-    const ui = smooth((fq - PH.fill * .55) / .4) * (1 - smooth((q - TOTAL + .15) / .15));
+    const ui = smooth((fq - PH.fill * .55) / .4) * (1 - smooth(aw / .25));
     cap.style.opacity = ui.toFixed(3); stage.querySelector('.dive-ui').style.opacity = ui.toFixed(3);
     const on = ui > .5; stage.classList.toggle('on', on);
     if (best !== focusIdx) {
