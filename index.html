@@ -253,7 +253,7 @@ body.menu-open .menu-dim{opacity:1;pointer-events:auto}
 .tst-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));width:min(1700px,96vw);margin:0 auto;gap:0}
 .tcell{position:relative;aspect-ratio:395/370;box-sizing:border-box;border:1px solid rgba(98,78,235,.32);margin:-.5px}
 .tshape{position:absolute;inset:3px;box-sizing:border-box;border:1.5px solid #6A4BEA;display:flex;flex-direction:column;align-items:center;justify-content:center;
-  padding:12% 14%;text-align:center;transition:background .4s,border-color .4s}
+  padding:12% 14%;text-align:center;transition:background .4s,border-color .4s,border-radius .9s cubic-bezier(.65,0,.35,1)}
 .tcell:hover .tshape{background:rgba(142,76,242,.07);border-color:#B046F2}
 .tc-mark{display:block;font-size:clamp(40px,3.2vw,62px);line-height:.6;height:.42em;margin-bottom:.35em;
   -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent}
@@ -1243,6 +1243,20 @@ if (window.GradientWaves) window.worksWaves = GradientWaves(document.getElementB
   }
   build();
   let rt; addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(build, 150); });
+  // every 2 seconds the shapes trade places: each cell morphs into the shape of the next cell in the pattern
+  if (!matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    let shift = 0, seen = false;
+    new IntersectionObserver(e => { seen = e[0].isIntersecting; }).observe(grid);
+    setInterval(() => {
+      if (!seen || document.hidden) return;
+      shift++;
+      const cols = getComputedStyle(grid).gridTemplateColumns.split(' ').length;
+      grid.querySelectorAll('.tshape').forEach((el, i) => {
+        const r = Math.floor(i / cols), c = i % cols;
+        el.style.borderRadius = radius(SHAPES[(r + shift) % 3][(c + shift) % 5]);
+      });
+    }, 2000);
+  }
 })();
 </script>
 
