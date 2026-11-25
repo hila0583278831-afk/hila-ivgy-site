@@ -82,18 +82,30 @@ body.menu-open .menu-dim{opacity:1;pointer-events:auto}
 @media (max-width:700px){.hero{aspect-ratio:auto;height:100svh;min-height:540px;max-height:900px}}
 
 /* ---------- statement + curved mockup ring (after tsivia.com) ---------- */
-/* ---------- PROJECTS: warp carousel (assets/js/warp-carousel.js) ---------- */
-.wc{position:relative;background:#111113;padding:clamp(40px,6vw,90px) 0 clamp(30px,4vw,60px);font-family:'Lia Element',sans-serif;font-weight:600;color:#fff}
-.wc-kick{margin:0 0 clamp(6px,1vw,14px);text-align:center;font-size:clamp(15px,1.2vw,19px);letter-spacing:.04em;color:#D9B8FF}
-.wc-stage{position:relative;width:100%;height:min(88vh,64vw);min-height:460px;overflow:hidden;touch-action:pan-y;user-select:none;cursor:grab;outline:none}
-.wc-stage:active{cursor:grabbing}
-.wc-stage:focus-visible{outline:3px solid #FF9FFC;outline-offset:-3px}
-.wc-foot{display:flex;align-items:center;justify-content:center;gap:clamp(14px,3vw,40px);margin-top:clamp(8px,1.5vw,20px)}
-.wc-foot button{width:54px;height:54px;border-radius:50%;border:0;display:grid;place-items:center;cursor:pointer;color:#fff;background:rgba(255,255,255,.06);box-shadow:inset 0 0 0 1px rgba(190,160,255,.4);transition:background .3s}
-.wc-foot button:hover{background:rgba(142,76,242,.45)}
-.wc-foot button svg{width:22px;height:22px}
-.wc-all{font-size:16px;color:#fff;text-decoration:none;padding-bottom:3px;border-bottom:1px solid rgba(200,170,255,.55)}
-@media (max-width:700px){.wc-stage{height:max(420px,118vw);min-height:0}.wc-foot button{width:44px;height:44px}}
+/* ---------- PROJECTS: gallery wall receding in perspective (text on the right, the wall fades into it) ---------- */
+.gw{position:relative;height:100vh;min-height:640px;max-height:1100px;overflow:hidden;background:#111113;color:#fff;font-family:'Lia Element',sans-serif;font-weight:600}
+.gw-box{position:absolute;left:0;top:0;width:60%;height:100%;perspective-origin:100% 50%;direction:ltr}
+.gw-wall{position:absolute;left:0;top:50%;transform-origin:0 0;transform-style:preserve-3d}
+.gw-row{position:absolute;left:0}
+.gw-tile{position:absolute;left:0;top:0;overflow:hidden;background:#1C1828;box-shadow:inset 0 0 0 1px rgba(255,255,255,.06);will-change:transform}
+.gw-tile img{width:100%;height:100%;object-fit:cover;opacity:.85;transition:opacity .4s}
+.gw-tile:hover img{opacity:1}
+.gw-fade{position:absolute;top:0;bottom:0;left:30%;right:0;pointer-events:none;background:linear-gradient(to left,#111113 0,#111113 30%,rgba(17,17,19,.88) 55%,rgba(17,17,19,0) 100%)}
+.gw-copy{position:absolute;right:clamp(24px,6vw,110px);top:50%;transform:translateY(-50%);width:min(560px,38%);text-align:right}
+.gw-copy h2{margin:0 0 clamp(14px,1.6vw,24px);font-size:clamp(44px,5vw,92px);line-height:1;letter-spacing:-.02em}
+.gw-copy p{margin:0 0 clamp(22px,2.4vw,36px);font-size:clamp(17px,1.35vw,23px);line-height:1.45;color:#CFC4EC}
+.gw-cta{display:flex;align-items:center;gap:clamp(16px,2vw,28px);flex-wrap:wrap}
+.gw-btn{padding:14px 28px;border-radius:999px;background:#fff;color:#2A1460;text-decoration:none;font-size:clamp(15px,1.1vw,18px);transition:background .3s,color .3s}
+.gw-btn:hover{background:#FF00FF;color:#fff}
+.gw-link{color:#fff;text-decoration:none;font-size:clamp(15px,1.1vw,18px)}
+.gw-link:hover{color:#FF9FFC}
+@media (max-width:759px){
+  .gw{height:auto;min-height:0;max-height:none}
+  .gw-box{position:relative;width:100%;height:clamp(340px,100vw,540px);overflow:hidden}
+  .gw-box::after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(to top,#111113 0,rgba(17,17,19,0) 40%),linear-gradient(to left,#111113 0,rgba(17,17,19,0) 45%)}
+  .gw-fade{display:none}
+  .gw-copy{position:relative;right:auto;top:auto;transform:none;width:auto;margin-top:-40px;padding:0 22px 70px}
+}
 /* the wrapper below: one background behind the ring carousel + WORKS */
 .wwrap{position:relative;isolation:isolate;background:linear-gradient(180deg,#111113 0%,#150E22 30%,#1D1133 75%,#2A1550 100%)}
 .wwrap>.waves{position:absolute;inset:0;z-index:-1;pointer-events:none}
@@ -676,32 +688,67 @@ if (window.GhostCursor && matchMedia('(hover: hover)').matches) GhostCursor(docu
   bloomStrength: 0.6, grainIntensity: 0.05, intro: false, zIndex: 45 });
 </script>
 
-<!-- PROJECTS: warp carousel (assets/js/warp-carousel.js, after "Warp Carousel" by Louis Studios) – each card is a project hero -->
+<!-- PROJECTS: a gallery wall of the project heroes receding in perspective, rows drifting in opposite directions -->
 <script src="assets/projects.js"></script>
-<section class="wc" id="projects" dir="rtl" aria-labelledby="wcKick">
-  <p class="wc-kick" id="wcKick">עבודות נבחרות</p>
-  <div class="wc-stage" id="wcStage" tabindex="0" role="region" aria-roledescription="carousel" aria-label="פרויקטים נבחרים – חצים לדפדוף, אנטר לפתיחה"></div>
-  <div class="wc-foot">
-    <button class="wc-prev" type="button" aria-label="לפרויקט הקודם"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
-    <a class="wc-all" href="works.html">לכל העבודות</a>
-    <button class="wc-next" type="button" aria-label="לפרויקט הבא"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"/></svg></button>
+<section class="gw" id="projects" dir="rtl" aria-labelledby="gwTitle">
+  <div class="gw-box" aria-hidden="true"><div class="gw-wall"></div></div>
+  <div class="gw-fade" aria-hidden="true"></div>
+  <div class="gw-copy">
+    <h2 id="gwTitle">עבודות נבחרות</h2>
+    <p>נדל״ן יוקרה, מותגי אוכל, חוויות ומוצרים חדשים – כל אתר נבנה סביב מה שמייחד את העסק.</p>
+    <div class="gw-cta"><a class="gw-btn" href="works.html">לכל העבודות</a><a class="gw-link" href="#contact">שנדבר? <span aria-hidden="true">←</span></a></div>
   </div>
-  <p class="sr" aria-live="polite" id="wcLive"></p>
   <nav class="sr" aria-label="פרויקטים נבחרים"><a href="project.html?id=ravitz">RAVITZ</a> <a href="project.html?id=avney">אבני הכתר</a> <a href="project.html?id=hapisga">הפסגה</a> <a href="project.html?id=event">אירוע חד פעמי</a> <a href="project.html?id=vortex">VORTEX</a> <a href="project.html?id=biscotti">Biscotti</a> <a href="project.html?id=infinity">Infinity Cruises</a> <a href="project.html?id=trolist">TROLIST</a></nav>
 </section>
-<script src="assets/js/warp-carousel.js"></script>
 <script>
-(async () => {
-  const ACC = ['#8E4CF2', '#FF3DF2', '#6E5BF2', '#B46BFF'];
-  const cards = PROJECTS.filter(p => p.hero).map((p, i) => ({ id: p.id, name: p.name, short: p.short, hero: p.hero, accent: ACC[i % ACC.length] }));
-  const live = document.getElementById('wcLive');
-  const wc = await WarpCarousel(document.getElementById('wcStage'), {
-    cards, background: '#111113',
-    onOpen: c => { location.href = 'project.html?id=' + c.id; },
-    onChange: (c, i) => { live.textContent = `${i + 1} מתוך ${cards.length}: ${c.name} – ${c.short}`; }
-  });
-  document.querySelector('.wc-next').addEventListener('click', wc.next);
-  document.querySelector('.wc-prev').addEventListener('click', wc.prev);
+(() => {
+  const sec = document.getElementById('projects'), box = sec.querySelector('.gw-box'), wall = sec.querySelector('.gw-wall');
+  const P = PROJECTS.filter(p => p.hero), ROWS = 5, PER = 6;
+  const rows = [];
+  for (let r = 0; r < ROWS; r++) {
+    const row = document.createElement('div'); row.className = 'gw-row';
+    const tiles = [];
+    for (let i = 0; i < PER; i++) {
+      const p = P[(r * 3 + i) % P.length], a = document.createElement('a');
+      a.className = 'gw-tile'; a.href = 'project.html?id=' + p.id; a.tabIndex = -1;
+      a.innerHTML = `<img src="${p.hero}" alt="" loading="lazy" decoding="async">`;
+      row.appendChild(a); tiles.push(a);
+    }
+    wall.appendChild(row);
+    rows.push({ row, tiles, off: r * 137, dir: r % 2 ? -1 : 1 });   // every other row drifts the other way
+  }
+  let tw = 0, step = 0, span = 0, speed = 0;
+  const place = () => rows.forEach(R => R.tiles.forEach((t, i) => {
+    const x = ((i * step + R.off) % span + span) % span - step;
+    t.style.transform = `translate3d(${x.toFixed(1)}px,0,0)`;
+  }));
+  const size = () => {
+    const W = sec.clientWidth, mob = W < 760;
+    tw = mob ? W * .6 : Math.min(W * .297, 540);
+    const th = tw * 2 / 3, gap = tw * .074, rstep = th + gap * .8;
+    step = tw + gap; span = PER * step; speed = tw * .063;
+    box.style.perspective = (mob ? W * 1.15 : W * .856).toFixed(0) + 'px';
+    wall.style.transform = `rotateY(${mob ? 38 : 44}deg)`;
+    rows.forEach((R, r) => {
+      R.row.style.top = ((r - (ROWS - 1) / 2) * rstep - th / 2).toFixed(1) + 'px';
+      R.tiles.forEach(t => { t.style.width = tw.toFixed(1) + 'px'; t.style.height = th.toFixed(1) + 'px'; t.style.borderRadius = (tw * .058).toFixed(1) + 'px'; });
+    });
+    place();
+  };
+  size();
+  new ResizeObserver(size).observe(sec);
+  if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  let on = false, last = 0, raf = 0;
+  const tick = now => {
+    const dt = Math.min(.05, (now - last) / 1000); last = now;
+    rows.forEach(R => { R.off += R.dir * speed * dt; });
+    place();
+    raf = on ? requestAnimationFrame(tick) : 0;
+  };
+  new IntersectionObserver(e => {
+    on = e[0].isIntersecting;
+    if (on && !raf) { last = performance.now(); raf = requestAnimationFrame(tick); }
+  }).observe(sec);
 })();
 </script>
 
