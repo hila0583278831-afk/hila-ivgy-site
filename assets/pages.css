@@ -76,12 +76,12 @@ a{color:inherit}
 @media (prefers-reduced-motion:reduce){.rv{opacity:1;transform:none;transition:none}}
 
 /* ---------- floating WhatsApp + accessibility menu (same as home) ---------- */
-.wa-float{position:fixed;left:clamp(14px,2vw,30px);bottom:clamp(14px,2vw,30px);z-index:55;width:60px;height:60px;border-radius:50%;display:grid;place-items:center;background:#25D366;box-shadow:0 12px 30px -8px rgba(37,211,102,.6)}
+.wa-float{position:fixed;right:clamp(14px,2vw,30px);bottom:clamp(14px,2vw,30px);z-index:55;width:60px;height:60px;border-radius:50%;display:grid;place-items:center;background:#25D366;box-shadow:0 12px 30px -8px rgba(37,211,102,.6)}
 .wa-float svg{width:32px;height:32px}
-.a11y-ui{position:fixed;right:clamp(14px,2vw,30px);bottom:clamp(14px,2vw,30px);z-index:60;font:600 16px/1.3 system-ui,"Segoe UI",Arial,sans-serif}
+.a11y-ui{position:fixed;left:clamp(14px,2vw,30px);bottom:clamp(14px,2vw,30px);z-index:60;font:600 16px/1.3 system-ui,"Segoe UI",Arial,sans-serif}
 .a11y-btn{width:56px;height:56px;border-radius:50%;border:0;cursor:pointer;display:grid;place-items:center;background:#4B3FC7;color:#fff;box-shadow:0 10px 26px -8px rgba(40,20,120,.7)}
 .a11y-btn svg{width:32px;height:32px}
-.a11y-panel{position:absolute;right:0;bottom:68px;width:min(330px,calc(100vw - 28px));max-height:min(78vh,620px);overflow:auto;padding:18px;border-radius:22px;background:#fff;color:#1D1530;box-shadow:0 30px 70px -20px rgba(0,0,0,.55)}
+.a11y-panel{position:absolute;left:0;bottom:68px;width:min(330px,calc(100vw - 28px));max-height:min(78vh,620px);overflow:auto;padding:18px;border-radius:22px;background:#fff;color:#1D1530;box-shadow:0 30px 70px -20px rgba(0,0,0,.55)}
 .a11y-panel[hidden]{display:none}
 .a11y-panel h2{margin:0 0 12px;font-size:20px;color:#2A1460;display:flex;justify-content:space-between;align-items:center}
 .a11y-x{width:34px;height:34px;border-radius:50%;border:0;background:#F1ECFF;color:#2A1460;font-size:20px;cursor:pointer}

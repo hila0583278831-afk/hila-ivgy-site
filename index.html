@@ -20,7 +20,7 @@ a{color:#FFFFFF}a:hover{color:#E9D9FF}
 .site-head{position:fixed;z-index:50;top:clamp(14px,1.6vw,26px);left:clamp(14px,2vw,34px);right:clamp(14px,2vw,34px);
   display:flex;align-items:center;justify-content:space-between;pointer-events:none;font-family:'Lia Element',system-ui,sans-serif;font-weight:600}
 .site-head>*{pointer-events:auto}
-.site-head .brand{display:block;line-height:0;flex:none}
+.site-head .brand{display:block;line-height:0;flex:none;padding:0;margin:0}   /* (the BRANDING section also uses .brand – keep its padding off the logo) */
 .site-head .brand img{height:clamp(18px,1.7vw,26px);width:auto;display:block}
 .hbtns{display:flex;align-items:center;gap:6px;--h:clamp(44px,3.4vw,56px);--pur:#6E5BF2}
 .hb{height:var(--h);display:grid;place-items:center;border:0;cursor:pointer;text-decoration:none;color:#fff;
@@ -229,7 +229,7 @@ body.menu-open .menu-dim{opacity:1;pointer-events:auto}
 .ct-note a,.ct-ok a{color:#5227FF}
 .hp{position:absolute!important;left:-9999px;width:1px;height:1px;overflow:hidden}
 /* floating WhatsApp button */
-.wa-float{position:fixed;left:clamp(14px,2vw,30px);bottom:clamp(14px,2vw,30px);z-index:55;width:60px;height:60px;border-radius:50%;display:grid;place-items:center;
+.wa-float{position:fixed;right:clamp(14px,2vw,30px);bottom:clamp(14px,2vw,30px);z-index:55;width:60px;height:60px;border-radius:50%;display:grid;place-items:center;
   background:#25D366;box-shadow:0 12px 30px -8px rgba(37,211,102,.6),0 0 0 0 rgba(37,211,102,.5);animation:waPulse 2.6s infinite;transition:transform .3s}
 .wa-float:hover{transform:scale(1.08)}
 .wa-float svg{width:32px;height:32px}
@@ -378,11 +378,11 @@ body.menu-open .menu-dim{opacity:1;pointer-events:auto}
 .ct-grid label:focus-within{box-shadow:0 2px 0 #5227FF}
 #hero:focus,#main:focus{outline:none}
 /* accessibility menu */
-.a11y-ui{position:fixed;right:clamp(14px,2vw,30px);bottom:clamp(14px,2vw,30px);z-index:60;font:600 16px/1.3 system-ui,"Segoe UI",Arial,sans-serif}
+.a11y-ui{position:fixed;left:clamp(14px,2vw,30px);bottom:clamp(14px,2vw,30px);z-index:60;font:600 16px/1.3 system-ui,"Segoe UI",Arial,sans-serif}
 .a11y-btn{width:56px;height:56px;border-radius:50%;border:0;cursor:pointer;display:grid;place-items:center;background:#4B3FC7;color:#fff;box-shadow:0 10px 26px -8px rgba(40,20,120,.7)}
 .a11y-btn svg{width:32px;height:32px}
 .a11y-btn:hover{background:#5227FF}
-.a11y-panel{position:absolute;right:0;bottom:68px;width:min(330px,calc(100vw - 28px));max-height:min(78vh,620px);overflow:auto;padding:18px;border-radius:22px;background:#fff;color:#1D1530;box-shadow:0 30px 70px -20px rgba(0,0,0,.55)}
+.a11y-panel{position:absolute;left:0;bottom:68px;width:min(330px,calc(100vw - 28px));max-height:min(78vh,620px);overflow:auto;padding:18px;border-radius:22px;background:#fff;color:#1D1530;box-shadow:0 30px 70px -20px rgba(0,0,0,.55)}
 .a11y-panel[hidden]{display:none}
 .a11y-panel h2{margin:0 0 12px;font-size:20px;color:#2A1460;display:flex;justify-content:space-between;align-items:center}
 .a11y-x{width:34px;height:34px;border-radius:50%;border:0;background:#F1ECFF;color:#2A1460;font-size:20px;cursor:pointer}
