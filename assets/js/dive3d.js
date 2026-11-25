@@ -107,6 +107,64 @@ function start() {
   });
   let gridMesh = null;
 
+  // ---------- every other cell of the display filled with a site (one atlas of the project heroes) ----------
+  // cell (x, y) shows project (3x + 5y) mod N: no two neighbours (incl. diagonals) repeat. The cells of the gallery
+  // row that hold the real project meshes are skipped. Cells grow in from their centres, outward from the middle.
+  const fillU = { uAtlas: { value: null }, uPanI: gridU.uPanI, uN: { value: PROJ.length }, uFill: { value: 0 }, uRow: { value: 0 },
+    uCellA: { value: 1.1 }, uImgA: { value: 1.5 }, uRad: { value: 85 }, uPx: { value: new THREE.Vector2(200, 180) }, uFA: { value: 0 } };
+  const fillMat = new THREE.ShaderMaterial({
+    uniforms: Object.assign(fillU, U), side: THREE.DoubleSide, transparent: true, depthWrite: false, premultipliedAlpha: true,
+    vertexShader: SURF + /* glsl */`
+      uniform float uPanI; varying vec2 vG; varying float vFade;
+      void main() {
+        float th; vec2 gh = vec2(position.x + uPanI, position.y);
+        vec3 p = surf(gh, 0.0, th);
+        vG = gh; vFade = 1.0 - smoothstep(1.05, 1.6, abs(th));
+        gl_Position = projectionMatrix * modelViewMatrix * vec4(p, 1.0);
+      }`,
+    fragmentShader: /* glsl */`
+      uniform sampler2D uAtlas; uniform float uN, uFill, uRow, uCellA, uImgA, uRad, uFA, uPan; uniform vec2 uPx;
+      varying vec2 vG; varying float vFade;
+      float leaf(vec2 uv) {
+        vec2 p = (uv - 0.5) * uPx, h = uPx * 0.5;
+        float r = (p.x * p.y > 0.0) ? uRad : 0.0;
+        vec2 q = abs(p) - h + r;
+        return length(max(q, 0.0)) + min(max(q.x, q.y), 0.0) - r;
+      }
+      void main() {
+        vec2 cell = floor(vG), f = fract(vG);
+        if (abs(cell.y - uRow) < 0.5 && cell.x < 0.5 && cell.x > -uN + 0.5) discard;          // real project meshes live there
+        float dist = length(vec2(cell.x + 0.5 - uPan, cell.y - uRow));
+        float e = clamp((uFill - 0.12 - dist * 0.09) / 0.6, 0.0, 1.0); e = 1.0 - pow(1.0 - e, 3.0);
+        if (e <= 0.0) discard;
+        float s = mix(0.14, 1.0, e);
+        vec2 q = (f - 0.5) / s + 0.5;
+        if (q.x < 0.0 || q.x > 1.0 || q.y < 0.0 || q.y > 1.0) discard;
+        vec2 uv = vec2(q.x, 1.0 - q.y);
+        float d = leaf(uv), aa = fwidth(d) * 1.2, m = 1.0 - smoothstep(-aa, aa, d);
+        vec2 c = uv;
+        if (uImgA > uCellA) c.x = 0.5 + (uv.x - 0.5) * uCellA / uImgA; else c.y = 1.0 - (1.0 - uv.y) * uImgA / uCellA;
+        c = clamp(c, 0.006, 0.994);
+        float idx = mod(cell.x * 3.0 + cell.y * 5.0, uN);
+        float col = mod(idx, 4.0), row = floor(idx / 4.0);
+        vec3 rgb = texture2D(uAtlas, vec2((col + c.x) / 4.0, 1.0 - (row + 1.0) * 0.5 + c.y * 0.5)).rgb;
+        rgb *= mix(0.78, 0.42, smoothstep(0.5, 3.5, dist));                               // the middle reads first
+        float a = m * smoothstep(0.0, 0.35, e) * uFA * vFade;
+        gl_FragColor = vec4(rgb * a, a);
+      }`
+  });
+  let fillMesh = null;
+  function buildAtlas() {
+    const imgs = projU.map(u => u.uMap.value && u.uMap.value.image);
+    if (imgs.some(i => !i || !i.width)) return;
+    const cw = 1024, ch = Math.round(cw / (imgs[0].width / imgs[0].height));
+    const c = document.createElement('canvas'); c.width = cw * 4; c.height = ch * 2; const x = c.getContext('2d');
+    imgs.forEach((im, i) => x.drawImage(im, (i % 4) * cw, Math.floor(i / 4) * ch, cw, ch));
+    const t = new THREE.CanvasTexture(c);
+    t.anisotropy = renderer.capabilities.getMaxAnisotropy(); t.minFilter = THREE.LinearMipmapLinearFilter;
+    fillU.uAtlas.value = t; fillU.uImgA.value = imgs[0].width / imgs[0].height; dirty = true; tick();
+  }
+
   // ---------- projects ----------
   const loader = new THREE.TextureLoader();
   const projU = PROJ.map(() => ({
@@ -116,7 +174,7 @@ function start() {
   }));
   const projMeshes = PROJ.map((p, i) => {
     const u = projU[i];
-    const tex = loader.load(p.hero, t => { u.uImgA.value = t.image.width / t.image.height; dirty = true; });
+    const tex = loader.load(p.hero, t => { u.uImgA.value = t.image.width / t.image.height; dirty = true; buildAtlas(); });
     tex.anisotropy = renderer.capabilities.getMaxAnisotropy(); tex.minFilter = THREE.LinearMipmapLinearFilter;
     u.uMap.value = tex;
     const m = new THREE.Mesh(new THREE.PlaneGeometry(1, 1, 24, 6), new THREE.ShaderMaterial({
@@ -184,6 +242,9 @@ function start() {
     const pos = geo.attributes.position;
     for (let i = 0; i < pos.count; i++) pos.setXY(i, pos.getX(i), -(pos.getY(i)) + (r0 + r1) / 2);   // x: −C..C, y: rows top→bottom
     gridMesh = new THREE.Mesh(geo, gridMat); gridMesh.frustumCulled = false; gridMesh.renderOrder = 1; scene.add(gridMesh);
+    if (fillMesh) scene.remove(fillMesh);
+    fillMesh = new THREE.Mesh(geo, fillMat); fillMesh.frustumCulled = false; fillMesh.renderOrder = 0; scene.add(fillMesh);   // under the grid lines
+    fillU.uRow.value = rg; fillU.uCellA.value = cw / ch; fillU.uRad.value = G.rad; fillU.uPx.value.set(cw, ch);
     if (gridU.uMap.value) gridU.uMap.value.dispose();
     gridU.uMap.value = cellTexture(cw, ch, G.rad);
     projU.forEach((u, i) => {
@@ -253,6 +314,7 @@ function start() {
     light.style.opacity = bg.toFixed(3);
     gridU.uAlpha.value = live ? clamp(q / .1) : 0;
     gridU.uGlow.value = bg;
+    fillU.uFill.value = fq; fillU.uFA.value = fillU.uAtlas.value ? 1 : 0;
 
     // projects
     let best = 0, bestF = -1;
@@ -272,7 +334,7 @@ function start() {
 
     // caption + controls
     const ui = smooth((fq - PH.fill * .55) / .4) * (1 - smooth((q - TOTAL + .15) / .15));
-    cap.style.opacity = ui.toFixed(3);
+    cap.style.opacity = ui.toFixed(3); stage.querySelector('.dive-ui').style.opacity = ui.toFixed(3);
     const on = ui > .5; stage.classList.toggle('on', on);
     if (best !== focusIdx) {
       focusIdx = best; const p = PROJ[best];

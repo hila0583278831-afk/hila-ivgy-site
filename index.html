@@ -93,7 +93,7 @@ body.menu-open .menu-dim{opacity:1;pointer-events:auto}
   background:radial-gradient(55% 45% at 50% 52%,rgba(122,64,255,.26),rgba(122,64,255,.06) 55%,transparent 75%)}
 .dive-type{position:absolute;left:0;top:0;pointer-events:none;transform-origin:0 0;visibility:hidden;will-change:transform,opacity}
 .dive-type svg{display:block}
-.dive-ui{position:absolute;left:0;right:0;bottom:clamp(18px,5vh,54px);display:flex;align-items:center;justify-content:center;gap:clamp(14px,3vw,44px);
+.dive-ui{position:absolute;left:0;right:0;bottom:0;padding:clamp(70px,12vh,130px) 0 clamp(18px,5vh,54px);background:linear-gradient(0deg,rgba(10,6,22,.92) 0%,rgba(10,6,22,.7) 45%,rgba(10,6,22,0) 100%);display:flex;align-items:center;justify-content:center;gap:clamp(14px,3vw,44px);
   pointer-events:none;font-family:'Lia Element',sans-serif;font-weight:600}
 .dive-cap{text-align:center;color:#fff;opacity:0;min-width:min(62vw,440px)}
 .dive-cap .n{display:block;direction:ltr;unicode-bidi:isolate;font-size:13px;letter-spacing:.32em;color:#B9A6FF}
@@ -108,7 +108,7 @@ body.menu-open .menu-dim{opacity:1;pointer-events:auto}
 .dive-track{height:var(--track)}
 .dive-off>.hero{position:relative}
 .dive-off .dive-stage,.dive-off .dive-track{display:none}
-@media (max-width:700px){.dive-ui{bottom:96px;gap:10px}.dive-ui button{width:44px;height:44px}.dive-cap{min-width:0;max-width:62vw}}
+@media (max-width:700px){.dive-ui{padding-bottom:96px;gap:10px}.dive-ui button{width:44px;height:44px}.dive-cap{min-width:0;max-width:62vw}}
 /* the wrapper below: one background behind the ring carousel + WORKS */
 .wwrap{position:relative;isolation:isolate;background:linear-gradient(180deg,#111113 0%,#150E22 30%,#1D1133 75%,#2A1550 100%)}
 .wwrap>.waves{position:absolute;inset:0;z-index:-1;pointer-events:none}
