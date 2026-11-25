@@ -1127,15 +1127,14 @@ if (window.GradientWaves) window.worksWaves = GradientWaves(document.getElementB
         <div class="pbody"><h3>הבנייה ועלייה לאוויר</h3><p>אתר מהיר ומותאם לנייד. בודקים כל כפתור, ועולים לאוויר.</p></div>
       </div></article>
     </div>
-    <div class="proc-bar" aria-hidden="true"><i id="procFill"></i></div>
-  </div>
+ </div>
 </section>
 <script>
 /* Process: the section pins and the five shapes travel to the right as you scroll (RTL order 1 → 5).
    The step nearest the middle of the screen is the active one. After step 5 the shapes couple up like a train –
    one after another they run into the middle and lock together as the petals of a flower, which then turns. */
 (() => {
-  const sec = document.getElementById('process'), track = document.getElementById('procTrack'), fill = document.getElementById('procFill');
+  const sec = document.getElementById('process'), track = document.getElementById('procTrack'), head = sec.querySelector('.proc-head');
   const steps = [...track.children];
   const clamp = v => Math.min(1, Math.max(0, v)), lerp = (a, b, t) => a + (b - a) * t;
   const io = t => (t = clamp(t)) < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
@@ -1151,9 +1150,8 @@ if (window.GradientWaves) window.worksWaves = GradientWaves(document.getElementB
     const b = sec.getBoundingClientRect(), y = -b.top;
     const p = clamp(y / Math.max(1, run)), q = clamp((y - run) / Math.max(1, bloom));
     track.style.transform = `translate3d(${(p * dist).toFixed(1)}px,0,0)`;   // moves right
-    fill.style.transform = `scaleX(${clamp(y / Math.max(1, run + bloom))})`;
     if (q <= 0) {
-      if (flowerOn) { flowerOn = false; steps.forEach(s => { s.style.transform = ''; s.style.opacity = ''; s.style.transition = ''; s.style.zIndex = ''; s.querySelectorAll('.pbody,.pnum').forEach(e => e.style.opacity = ''); }); }
+      if (flowerOn) { flowerOn = false; head.style.transform = ''; head.style.opacity = ''; steps.forEach(s => { s.style.transform = ''; s.style.opacity = ''; s.style.transition = ''; s.style.zIndex = ''; }); }
       const mid = innerWidth / 2; let best = 0, bd = 1e9;
       steps.forEach((s, i) => { const r = s.getBoundingClientRect(), d = Math.abs(r.left + r.width / 2 - mid); if (d < bd) { bd = d; best = i; } });
       steps.forEach((s, i) => s.classList.toggle('on', i === best));
@@ -1162,8 +1160,10 @@ if (window.GradientWaves) window.worksWaves = GradientWaves(document.getElementB
     // the flower: petals around the middle of the track row
     flowerOn = true;
     const T = track.getBoundingClientRect(), w = steps[0].offsetWidth, h = steps[0].offsetHeight;
-    const cx = innerWidth / 2, cy = T.top + T.height / 2;
-    const sc = .5, rp = w * sc * .74;                                   // petal size and distance from the centre
+    // the heading makes room: it slides up and fades while the shapes gather, so the flower can sit in the middle of the screen
+    const hk = io(q / .35); head.style.transform = `translateY(${(-hk * innerHeight * .35).toFixed(1)}px)`; head.style.opacity = (1 - hk).toFixed(3);
+    const cx = innerWidth / 2, cy = innerHeight * .53;
+    const sc = Math.min(.7, innerHeight * .27 / h), rp = w * sc * .93;       // petal size and distance from the centre – text stays readable
     const spin = io((q - .55) / .45) * 216;                              // the whole flower turns once it is complete
     steps.forEach((s, i) => {
       // the train: step 5 (already in the middle) leads, 4, 3, 2, 1 follow one after another
@@ -1179,7 +1179,6 @@ if (window.GradientWaves) window.worksWaves = GradientWaves(document.getElementB
       s.style.transform = `translate3d(${dx.toFixed(1)}px,${dy.toFixed(1)}px,0) rotate(${rot.toFixed(2)}deg) scale(${s2.toFixed(3)})`;
       s.style.opacity = '1'; s.style.zIndex = String(10 - order);
       s.classList.add('on');
-      s.querySelectorAll('.pbody,.pnum').forEach(e => e.style.opacity = (1 - clamp(k * 1.6)).toFixed(3));
     });
   };
   size(); move();
