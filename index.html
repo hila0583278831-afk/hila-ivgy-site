@@ -108,18 +108,15 @@ body.menu-open .menu-dim{opacity:1;pointer-events:auto}
   background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 252 228'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%233A46EC'/%3E%3Cstop offset='1' stop-color='%238E4CF2'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cg fill='none' stroke='url(%23g)' stroke-width='1.3'%3E%3Crect x='1' y='1' width='236' height='218'/%3E%3Cpath d='M1 1H128A109 109 0 0 1 237 110V219H110A109 109 0 0 1 1 110Z'/%3E%3C/g%3E%3C/svg%3E") 50% 50%/12.5vw auto repeat}
 .reel .rpanel{width:76vw;box-sizing:border-box;padding:calc(var(--u)*3.6) calc(var(--u)*4) calc(var(--u)*4.2);border-radius:calc(var(--u)*6);text-align:center;
   border:1.5px solid transparent;background:linear-gradient(#fff,#fff) padding-box,linear-gradient(90deg,#8E4CF2,#FF3DF2 50%,#8E4CF2) border-box}
-.reel .rpanel h2{margin:0;font-size:calc(var(--u)*5.6);line-height:.92;letter-spacing:-.01em;color:#0E0B14;will-change:opacity,transform}
-.reel .rpanel h2 .gr{display:inline-block;padding-bottom:.08em}
+.reel .rpanel p{margin:0;font-size:calc(var(--u)*3.4);line-height:.96;color:#0E0B14;will-change:opacity,transform}
+.reel .rpanel p.gr{padding-bottom:.06em}
 .reel .rpanel .gr{background:linear-gradient(to left,#9A45E2,#3346E6);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent}
-.reel .rpanel p{margin:calc(var(--u)*1.4) 0 0;font-size:calc(var(--u)*2.75);line-height:1;will-change:opacity,transform}
 .reel .rpanel span{display:block}
 @media (max-width:700px){
   .reel .rtext{--u:1vw}
   .reel .rwhite{background-size:25vw auto}
   .reel .rpanel{width:90vw;padding:8vw 5vw 9vw;border-radius:9vw}
-  .reel .rpanel h2{font-size:6.2vw;line-height:1.05}
-  .reel .rpanel h2 span{white-space:nowrap}
-  .reel .rpanel p{margin-top:5vw;font-size:4.5vw;line-height:1.3}
+  .reel .rpanel p{font-size:5.2vw;line-height:1.18}
   .reel .rpanel p span{display:inline}
 }/* the mockup that travels down from the hero into the centre slot */
 .reel .flyer{position:absolute;left:0;top:0;z-index:5;border-radius:6px;overflow:hidden;visibility:hidden;pointer-events:none;
@@ -705,8 +702,8 @@ if (window.GhostCursor && matchMedia('(hover: hover)').matches) GhostCursor(docu
   <div class="lines" aria-hidden="true"></div>
   <div class="stage" id="reelStage"><div class="plane" id="plane"></div><div class="flyer" id="flyer"></div>
     <div class="rtext" dir="rtl"><div class="rwhite" id="rWhite"><div class="rpanel">
-      <h2 id="rHead"><span>הופכת את מה שמייחד אותך</span><span class="gr">לנוכחות שאי אפשר לפספס.</span></h2>
-      <p id="rPara" class="gr"><span>בעולם עמוס בתוכן ובתחרות, אתר יפה כבר לא מספיק.</span> <span>צריך ליצור נראות שמושכת את העין,</span> <span>משקפת את האיכות שלך</span> <span>ומעבירה את המסר הנכון מהרגע הראשון.</span> <span>אני כאן כדי לזהות את הייחודיות שלך</span> <span>ולהפוך אותה לשפה עיצובית מדויקת</span> <span>ולחוויה דיגיטלית בלתי נשכחת.</span></p>
+      <p id="rHead" class="gr"><span>בעולם עמוס בתוכן ובתחרות,</span> <span>אתר יפה כבר לא מספיק.</span> <span>צריך ליצור נראות שמושכת את העין,</span> <span>משקפת את האיכות שלך</span> <span>ומעבירה את המסר הנכון</span> <span>מהרגע הראשון.</span></p>
+      <p id="rPara"><span>אני כאן כדי לזהות את הייחודיות שלך</span> <span>ולהפוך אותה לשפה עיצובית מדויקת</span> <span>ולחוויה דיגיטלית בלתי נשכחת.</span></p>
     </div></div></div>
   </div>
 </section>
