@@ -13,6 +13,9 @@
 .a-hero{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);align-items:end;gap:clamp(20px,4vw,70px);padding-top:clamp(110px,14vh,170px)}
 .a-hero .p-big{text-align:start;font-size:clamp(80px,11.5vw,230px)}
 .a-hero .p-lead{margin:clamp(14px,2vw,28px) 0 0;text-align:start}
+/* the small English line sits flush with the right edge of ABOUT (its trailing letter-spacing pulled back), no dash */
+.a-hero .p-kick{text-align:right;margin-right:-.32em}
+.a-hero .p-kick::after{display:none}
 .a-ava{position:relative;justify-self:center;width:min(460px,80%);aspect-ratio:1/1.1}
 .a-ava::before{content:"";position:absolute;inset:8% 0 0;border-radius:var(--leaf);background:var(--grad);opacity:.9}
 .a-ava img{position:relative;width:100%;height:100%;object-fit:contain;object-position:bottom}

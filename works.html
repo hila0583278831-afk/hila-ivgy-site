@@ -43,8 +43,9 @@
 .screen.used .live-hint{opacity:0}
 .play-live{position:absolute;inset:0;z-index:3;display:grid;place-items:center;border:0;cursor:pointer;background:rgba(14,10,24,.35);color:#fff;font:inherit;font-size:clamp(16px,1.3vw,22px)}
 .play-live span{padding:14px 26px;border-radius:999px;background:var(--pink);box-shadow:0 12px 30px -8px rgba(255,0,255,.6)}
-.phone{position:absolute;left:-2%;bottom:0;width:clamp(90px,18%,190px);aspect-ratio:9/19;padding:2.2%;border-radius:22px;background:#1A1528;box-shadow:0 30px 60px -20px rgba(0,0,0,.8),inset 0 0 0 1.5px rgba(255,255,255,.14)}
-.phone img{width:100%;height:100%;object-fit:cover;border-radius:16px}
+/* the phone mockup is already a photo of a phone – shown as a rounded photo card (no drawn phone frame around it) */
+.phone{position:absolute;left:-2%;bottom:0;width:clamp(110px,22%,230px);aspect-ratio:3/4;border-radius:18px;overflow:hidden;background:#141018;box-shadow:0 30px 60px -20px rgba(0,0,0,.8),0 0 0 1px rgba(255,255,255,.14)}
+.phone img{display:block;width:100%;height:100%;object-fit:cover;object-position:50% 40%}
 .case:nth-of-type(even) .phone{left:auto;right:-2%}
 .mock{border-radius:22px;overflow:hidden;box-shadow:0 40px 90px -30px rgba(0,0,0,.8)}
 /* strip of inner pages */
@@ -94,9 +95,7 @@
       <span class="wip">האתר בעבודה – בקרוב באוויר</span>
     </div>
     <div class="case-visual rv">
-      <div class="laptop"><div class="lid"><div class="screen">
-        <img src="assets/works/ravitz-d.jpg" alt="ההירו של אתר RAVITZ" loading="lazy">
-      </div></div><div class="base"></div></div>
+      <div class="mock"><img src="assets/works/ravitz-d.jpg" alt="ההירו של אתר RAVITZ" loading="lazy"></div>
     </div>
   </div>
 </article>
