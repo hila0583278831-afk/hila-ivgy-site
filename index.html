@@ -350,6 +350,8 @@ body.menu-open .menu-dim{opacity:1;pointer-events:auto}
 .leaf .about-lead{margin:0;font-size:clamp(30px,3.4vw,66px);line-height:.98;letter-spacing:-.01em;font-weight:600}
 .leaf .about-lead .hl{background:linear-gradient(100deg,#C49BFF,#FF3DF2);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent}
 .leaf .about-text{margin:clamp(18px,2vw,34px) 0 0;font-size:clamp(18px,1.5vw,27px);line-height:1.5;color:#fff}
+.leaf .about-text + .about-text{margin-top:.75em}
+.leaf .about-end{font-size:clamp(21px,1.85vw,34px);line-height:1.25;background:linear-gradient(100deg,#C49BFF,#FF3DF2);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent}
 .leaf .about-text .one-line{white-space:nowrap}
 .leaf .about-text .mbr{display:none}
 @media (max-width:900px){.leaf .about-text .one-line{white-space:normal}.leaf .about-text .mbr{display:inline}}
@@ -1046,8 +1048,10 @@ if (window.GradientWaves) window.worksWaves = GradientWaves(document.getElementB
   </svg>
   <div class="about-stage" dir="rtl">
     <div class="leaf">
-      <h2 class="about-lead" id="aboutTitle">אני הילה, ואני מעצבת עסקים <span class="hl">מהלוגו ועד האתר.</span></h2>
-      <p class="about-text">אני מקשיבה לעסק, מוצאת את מה שמיוחד בו, ובונה לו מראה שמחזיק לאורך זמן.<br><span class="one-line">הלקוחות שלי מרוצים,<br class="mbr"> ורואים את זה גם בתוצאה.</span></p>
+      <h2 class="about-lead" id="aboutTitle">אני הילה, ואני מעצבת וממתגת עסקים <span class="hl">מהלוגו ועד האתר.</span></h2>
+      <p class="about-text">אני אוהבת להיכנס לעומק של כל עסק, לזהות את מה שמייחד אותו ולתרגם את זה לשפה חזותית מדויקת ומלאת אופי.</p>
+      <p class="about-text">בשילוב של חשיבה יצירתית, אסטרטגיה וכלים חדשניים, אני יוצרת מיתוג ואתרים שלא רק נראים אחרת — אלא מספרים את הסיפור הנכון, יוצרים חיבור ומשאירים רושם.</p>
+      <p class="about-text about-end">כי לכל עסק יש משהו ששווה לראות.</p>
       <a class="about-cta" href="#contact">בואו נדבר <svg width="22" height="12" viewBox="0 0 53 12" fill="none" stroke="currentColor" stroke-width="3"><path d="M53 6H1M7 1 1 6l6 5"/></svg></a>
     </div>
     <figure class="about-avatar"><img src="assets/avatar-toon.png" alt="הילה – אווטר מאויר"></figure>
