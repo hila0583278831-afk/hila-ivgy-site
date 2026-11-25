@@ -239,12 +239,34 @@ body.menu-open .menu-dim{opacity:1;pointer-events:auto}
   .pcell .pnum{font-size:92px;top:-.34em;left:.12em}}
 
 
-/* ---------- under WORKS: concave screen wall, sites drifting past (glowing screens) ---------- */
-.cwall{position:relative;padding:0 0 clamp(60px,8vw,140px);overflow:hidden}
-.cw-stage{position:relative;width:100%;perspective-origin:50% 50%}
-.cw-ring{position:absolute;left:50%;top:50%;width:0;height:0;transform-style:preserve-3d}
-.cw-card{position:absolute;left:0;top:0;border-radius:14px;background:#140C24 center top/cover no-repeat;will-change:transform,opacity;
-  box-shadow:0 0 0 2px rgba(205,175,255,.75),0 0 26px 2px rgba(150,95,255,.55),0 30px 60px -20px rgba(0,0,0,.6)}/* ---------- TESTIMONIALS: white section, giant word, a purple grid of shapes with a reaction inside each ---------- */
+/* ---------- under WORKS: 3D project gallery around the avatar ---------- */
+.pg3{position:relative;height:240vh}
+.pg-stage{position:sticky;top:0;height:100vh;overflow:hidden;perspective-origin:50% 42%;
+  background:radial-gradient(55% 45% at 50% 46%,rgba(150,95,255,.28),transparent 72%),radial-gradient(40% 30% at 50% 100%,rgba(196,120,255,.25),transparent 70%)}
+.pg-space{position:absolute;inset:0;transform-style:preserve-3d}
+.pg-ring{position:absolute;left:50%;top:46%;width:0;height:0;transform-style:preserve-3d}
+.pg-card{position:absolute;left:0;top:0;padding:0;border:0;cursor:pointer;border-radius:16px;background:#140C24 center top/cover no-repeat;will-change:transform,opacity;
+  box-shadow:0 0 0 1.5px rgba(215,190,255,.6),0 0 24px rgba(150,95,255,.35),0 40px 70px -30px rgba(10,0,30,.8);transition:box-shadow .35s}
+.pg-card.hot,.pg-card:focus-visible{box-shadow:0 0 0 2px #FF9FFC,0 0 40px rgba(255,120,255,.55),0 50px 80px -30px rgba(10,0,30,.9);outline:none}
+/* a soft lilac floor glow the avatar stands on */
+.pg-floor{position:absolute;left:50%;bottom:-12vh;width:min(1100px,110vw);height:34vh;transform:translateX(-50%);pointer-events:none;
+  background:radial-gradient(closest-side,rgba(205,160,255,.45),rgba(142,76,242,.18) 55%,transparent)}
+.pg-ava{position:absolute;left:50%;bottom:0;margin:0;width:min(30vw,52vh,440px);transform:translateX(-50%);pointer-events:none;z-index:2}
+.pg-ava img{display:block;width:100%;height:auto;filter:drop-shadow(0 30px 50px rgba(20,6,50,.6));
+  -webkit-mask-image:linear-gradient(180deg,#000 70%,transparent 100%);mask-image:linear-gradient(180deg,#000 70%,transparent 100%)}
+@media (max-width:700px){.pg3{height:200vh}.pg-ava{width:62vw}.pg-ring{top:34%}}
+/* large view */
+.pg-lb{position:fixed;inset:0;z-index:90;display:grid;place-items:center;padding:clamp(14px,3vw,50px);background:rgba(10,5,22,.9);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
+.pg-lb[hidden]{display:none}
+.pg-lb-in{position:relative;width:min(1200px,100%);border-radius:22px;overflow:hidden;background:#140C24;box-shadow:0 0 0 1.5px rgba(215,190,255,.5),0 40px 100px -30px #000}
+.pg-lb-in img{display:block;width:100%;max-height:72vh;object-fit:cover;object-position:top}
+.pg-lb-bar{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;padding:18px 24px;font-family:'Lia Element',sans-serif;font-weight:600;color:#fff}
+.pg-lb-bar h3{margin:0;font-size:clamp(22px,2vw,32px)}
+.pg-lb-btns{display:flex;gap:10px;flex-wrap:wrap}
+.pg-btn{padding:12px 22px;border-radius:999px;background:#fff;color:#2A1460;text-decoration:none;font-size:16px}
+.pg-btn.ghost{background:transparent;color:#fff;box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.5)}
+.pg-btn[hidden]{display:none}
+.pg-lb-x{position:absolute;top:12px;left:12px;z-index:2;width:44px;height:44px;border-radius:50%;border:0;cursor:pointer;font-size:26px;line-height:1;color:#fff;background:rgba(14,10,24,.7)}/* ---------- TESTIMONIALS: white section, giant word, a purple grid of shapes with a reaction inside each ---------- */
 .tst{position:relative;overflow:hidden;color:#0E0A18;font-family:'Lia Element',sans-serif;font-weight:600;padding:clamp(200px,32vh,340px) 0 clamp(80px,10vw,160px);background:#fff}
 /* transition: the deep purple of the process section melts into white */
 .tst-fade{position:absolute;left:0;right:0;top:0;height:clamp(260px,42vh,460px);pointer-events:none;
@@ -925,50 +947,100 @@ if (window.GhostCursor && matchMedia('(hover: hover)').matches) GhostCursor(docu
   </div>
   <p class="to-page"><a class="to-btn" href="works.html">לכל העבודות והסיפורים שמאחוריהן <svg width="34" height="10" viewBox="0 0 53 12" fill="none" stroke="currentColor" stroke-width="2.6" aria-hidden="true"><path d="M53 6H1M7 1 1 6l6 5"/></svg></a></p>
 </section>
-<!-- under WORKS: the sites drift past on a concave screen wall (we stand inside a cylinder – the sides curve towards us) -->
-<section class="cwall" id="cwall" aria-label="אתרים שעיצבתי">
-  <div class="cw-stage" id="cwStage" aria-hidden="true"><div class="cw-ring" id="cwRing"></div></div>
+<!-- under WORKS: a 3D project gallery – the avatar stands in the middle of a purple space and the real site screens
+     float around her on a gentle arc. Scroll moves the camera along the arc, the mouse tilts the space a little,
+     hover brings a screen forward, click opens it large with links to the live site / the project story. -->
+<section class="pg3" id="gallery3d" aria-label="תערוכת פרויקטים">
+  <div class="pg-stage" id="pgStage">
+    <div class="pg-space" id="pgSpace"><div class="pg-ring" id="pgRing"></div></div>
+    <div class="pg-floor" aria-hidden="true"></div>
+    <figure class="pg-ava" aria-hidden="true"><img src="assets/avatar-toon.png" alt="" decoding="async"></figure>
+  </div>
 </section>
+<div class="pg-lb" id="pgLb" role="dialog" aria-modal="true" aria-labelledby="pgLbT" hidden>
+  <div class="pg-lb-in">
+    <button class="pg-lb-x" type="button" aria-label="סגירה">×</button>
+    <img id="pgLbImg" alt="">
+    <div class="pg-lb-bar" dir="rtl"><h3 id="pgLbT"></h3><div class="pg-lb-btns"><a id="pgLbLive" class="pg-btn" target="_blank" rel="noopener">לאתר החי ↗</a><a id="pgLbStory" class="pg-btn ghost">הסיפור מאחורי הפרויקט</a></div></div>
+  </div>
+</div>
 <script>
 (() => {
-  const stage = document.getElementById('cwStage'), ring = document.getElementById('cwRing');
-  // flat site screenshots only (no device mockups)
-  const SH = ['in-avney-1.jpg', 'in-hapisga-2.jpg', 'in-event-0.jpg', 'in-vortex-0.jpg', 'mock1.jpg', 'in-hapisga-4.jpg', 'in-event-2.jpg',
-              'in-avney-2.jpg', 'mock3.jpg', 'in-vortex-b.jpg', 'in-hapisga-1.jpg', 'mock2.jpg', 'in-avney-3.jpg', 'in-hapisga-6.jpg'];
-  const cards = SH.map(s => { const d = document.createElement('div'); d.className = 'cw-card'; d.style.backgroundImage = `url(assets/shots/${s})`; ring.appendChild(d); return { d, op: null }; });
-  let W, R, cw, ch, step, span, off = 0, speed = .045, boost = 0, hover = false;
+  const sec = document.getElementById('gallery3d'), stage = document.getElementById('pgStage'), space = document.getElementById('pgSpace'), ring = document.getElementById('pgRing');
+  const P = {
+    avney: { name: 'אבני הכתר', url: 'https://hila0583278831-afk.github.io/avney-haketer-site/' },
+    hapisga: { name: 'הפסגה', url: 'https://hila0583278831-afk.github.io/hapisga-site/' },
+    event: { name: 'אירוע חד פעמי' }, vortex: { name: 'VORTEX' }
+  };
+  // the real site screenshots, each tied to its project
+  const SH = [['in-avney-1.jpg', 'avney'], ['in-hapisga-2.jpg', 'hapisga'], ['in-event-0.jpg', 'event'], ['in-vortex-0.jpg', 'vortex'], ['in-avney-5.jpg', 'avney'],
+              ['in-hapisga-4.jpg', 'hapisga'], ['in-event-2.jpg', 'event'], ['in-avney-2.jpg', 'avney'], ['in-hapisga-3.jpg', 'hapisga'], ['in-vortex-b.jpg', 'vortex'],
+              ['in-hapisga-1.jpg', 'hapisga'], ['in-event-c.jpg', 'event'], ['in-avney-3.jpg', 'avney'], ['in-hapisga-6.jpg', 'hapisga']];
+  const cards = SH.map(([img, id], i) => {
+    const b = document.createElement('button'); b.type = 'button'; b.className = 'pg-card';
+    b.style.backgroundImage = `url(assets/shots/${img})`; b.setAttribute('aria-label', `${P[id].name} – פתיחה בתצוגה גדולה`);
+    ring.appendChild(b);
+    const c = { b, img, id, hov: 0, hv: false, lift: (i % 3 - 1) * .16, ph: i * 1.7 };
+    b.addEventListener('pointerenter', () => c.hv = true); b.addEventListener('pointerleave', () => c.hv = false);
+    b.addEventListener('focus', () => c.hv = true); b.addEventListener('blur', () => c.hv = false);
+    b.addEventListener('click', () => open(c));
+    return c;
+  });
+  let W, H, R, cw, ch, step, span, phone;
   function layout() {
-    W = stage.clientWidth; const phone = W < 700;
-    cw = phone ? W * .62 : Math.min(W * .3, 560); ch = cw * .625;
-    R = phone ? W * .9 : W * .5;                            // cylinder radius (we look from its axis outwards)
-    step = (cw * 1.08) / R; span = cards.length * step;
-    stage.style.height = Math.round(ch * 1.75) + 'px';
-    stage.style.perspective = Math.round(phone ? W * 1.3 : W * .6) + 'px';
-    cards.forEach(c => { c.d.style.width = cw + 'px'; c.d.style.height = ch + 'px'; c.d.style.marginLeft = -cw / 2 + 'px'; c.d.style.marginTop = -ch / 2 + 'px'; });
+    W = stage.clientWidth; H = stage.clientHeight; phone = W < 700;
+    cw = phone ? W * .56 : Math.min(W * .26, 520); ch = cw * .625;
+    R = phone ? W * 1.05 : W * .62;                                   // the arc's radius around the avatar
+    step = (cw * 1.12) / R; span = cards.length * step;
+    stage.style.perspective = Math.round(phone ? W * 1.5 : W * .7) + 'px';
+    cards.forEach(c => { c.b.style.width = cw + 'px'; c.b.style.height = ch + 'px'; c.b.style.marginLeft = -cw / 2 + 'px'; c.b.style.marginTop = -ch / 2 + 'px'; });
   }
   layout(); addEventListener('resize', layout);
-  stage.addEventListener('pointerenter', () => hover = true); stage.addEventListener('pointerleave', () => hover = false);
-  let lastY = scrollY; addEventListener('scroll', () => { boost += (scrollY - lastY) * .00035; lastY = scrollY; }, { passive: true });
+  // mouse: the space tilts a little towards the pointer
+  let mx = 0, my = 0, tmx = 0, tmy = 0;
+  stage.addEventListener('pointermove', e => { const r = stage.getBoundingClientRect(); tmx = (e.clientX - r.left) / r.width - .5; tmy = (e.clientY - r.top) / r.height - .5; });
+  stage.addEventListener('pointerleave', () => { tmx = 0; tmy = 0; });
   const still = matchMedia('(prefers-reduced-motion: reduce)').matches;
-  let last = performance.now(), vis = true;
-  new IntersectionObserver(e => { vis = e[0].isIntersecting; if (vis) { last = performance.now(); requestAnimationFrame(frame); } }).observe(stage);
+  const clamp = v => Math.min(1, Math.max(0, v));
+  let cam = null, vis = false, t0 = performance.now();
+  new IntersectionObserver(e => { vis = e[0].isIntersecting; if (vis) requestAnimationFrame(frame); }).observe(stage);
   function frame(now) {
-    const dt = Math.min(.05, (now - last) / 1000); last = now;
-    boost *= .92;
-    if (!still) off += ((hover ? .25 : 1) * speed + boost) * dt;
+    const t = (now - t0) / 1000, r = sec.getBoundingClientRect();
+    const p = clamp(-r.top / Math.max(1, r.height - innerHeight));      // scroll: the camera travels along the arc
+    const target = (p - .5) * (span - step * 4);
+    cam = cam === null ? target : cam + (target - cam) * .08;
+    mx += (tmx - mx) * .06; my += (tmy - my) * .06;
+    space.style.transform = `rotateX(${(-my * 4).toFixed(3)}deg) rotateY(${(mx * 6).toFixed(3)}deg)`;
     cards.forEach((c, i) => {
-      let a = i * step - off; a = ((a + span / 2) % span + span) % span - span / 2;      // wrap around
-      const x = Math.sin(a) * R, z = (1 - Math.cos(a)) * R;                               // sides come towards us
-      c.d.style.transform = `translate3d(${x.toFixed(1)}px,0,${z.toFixed(1)}px) rotateY(${(-a).toFixed(4)}rad)`;
-      const op = Math.max(0, Math.min(1, (1.15 - Math.abs(a)) / .25)).toFixed(3);
-      if (op !== c.op) { c.op = op; c.d.style.opacity = op; c.d.style.visibility = op > 0 ? 'visible' : 'hidden'; }
+      let a = i * step - span / 2 + step / 2 - cam;
+      a = ((a + span / 2) % span + span) % span - span / 2;               // wrap around
+      c.hov += ((c.hv ? 1 : 0) - c.hov) * .15;
+      const bob = still ? 0 : Math.sin(t * .6 + c.ph) * ch * .03;         // a slow, small float
+      const x = Math.sin(a) * R, z = (1 - Math.cos(a)) * R * .9 + c.hov * cw * .35;
+      const y = c.lift * ch * (phone ? .5 : 1) - ch * .38 + bob;
+      c.b.style.transform = `translate3d(${x.toFixed(1)}px,${y.toFixed(1)}px,${z.toFixed(1)}px) rotateY(${(-a * .92).toFixed(4)}rad) scale(${(1 + c.hov * .06).toFixed(3)})`;
+      const op = Math.max(0, Math.min(1, (1.05 - Math.abs(a)) / .3));
+      c.b.style.opacity = op.toFixed(3); c.b.style.visibility = op > 0 ? 'visible' : 'hidden';
+      c.b.classList.toggle('hot', c.hov > .5);
     });
     if (vis) requestAnimationFrame(frame);
   }
-  requestAnimationFrame(frame);
+  // large view
+  const lb = document.getElementById('pgLb'), li = document.getElementById('pgLbImg'), lt = document.getElementById('pgLbT'),
+        live = document.getElementById('pgLbLive'), story = document.getElementById('pgLbStory');
+  let back = null;
+  function open(c) {
+    back = c.b; const pr = P[c.id];
+    li.src = `assets/shots/${c.img}`; li.alt = `צילום מסך מהאתר ${pr.name}`; lt.textContent = pr.name;
+    live.hidden = !pr.url; if (pr.url) live.href = pr.url;
+    story.href = `project.html?id=${c.id}`;
+    lb.hidden = false; document.body.style.overflow = 'hidden'; lb.querySelector('.pg-lb-x').focus();
+  }
+  function close() { lb.hidden = true; document.body.style.overflow = ''; back && back.focus(); }
+  lb.addEventListener('click', e => { if (e.target === lb || e.target.closest('.pg-lb-x')) close(); });
+  addEventListener('keydown', e => { if (e.key === 'Escape' && !lb.hidden) close(); });
 })();
-</script>
-<section class="brand" id="branding" aria-labelledby="brandTitle">
+</script><section class="brand" id="branding" aria-labelledby="brandTitle">
   <i class="tick" aria-hidden="true"></i>
   <h2 class="bk" id="brandTitle" lang="en">BRANDING</h2>
   <p class="bsub" dir="rtl">זהות שלמה למותג – לוגו, שפה ויזואלית, דפוס, שילוט ומדיה, הכל באותה שפה.</p>
