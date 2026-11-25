@@ -488,7 +488,7 @@ html[data-a11y-size="3"] :is(p,blockquote,label,h3,.ct-nav a,.ct-links a,.menu-l
 </script>
 <div class="dive" id="dive">
 <section class="hero hero-bg" id="hero" dir="ltr" tabindex="-1">
-<h1 class="sr" dir="rtl">הילה איבגי – בניית אתרים, עיצוב אתרים ומיתוג לעסקים. מתרגמת את היחודיות בעסק שלך לאתר בלתי נשכח שמביא תוצאות.</h1>
+<h1 class="sr" dir="rtl">הילה איבגי – בניית אתרים, עיצוב אתרים ומיתוג לעסקים. אין הזדמנות שניה לרושם ראשוני – בוא נבנה לך אתר יחודי שישאיר רושם בלתי נשכח.</h1>
 <svg aria-hidden="true" viewBox="0 0 2576 1449" preserveAspectRatio="xMidYMid slice" style="position: absolute; inset: 0; z-index: 2; pointer-events: none; width: 100%; height: 100%; display: block">
 <defs>
 <linearGradient id="gl" x1="0" y1="0" x2="2576" y2="1449" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#4C3BE6" stop-opacity=".85"></stop><stop offset="1" stop-color="#8A4DF0" stop-opacity=".9"></stop></linearGradient>
@@ -575,10 +575,10 @@ html[data-a11y-size="3"] :is(p,blockquote,label,h3,.ct-nav a,.ct-links a,.menu-l
 <path d="M2254.0,1159.2 H2439.0 A137,137 0 0 1 2576.0,1296.2 V1449.0 H2391.0 A137,137 0 0 1 2254.0,1312.0 Z" fill="none" stroke="url(#gs)" stroke-width="2.6"></path>
 </g>
 <g class="hero-type" font-family="Lia Element, sans-serif" font-weight="600" direction="rtl" text-anchor="middle">
-<text x="1288" y="480" font-size="230" fill="#FFFFFF">מתרגמת את היחודיות</text>
-<text x="1288" y="700" font-size="230" fill="#FFFFFF">בעסק שלך</text>
-<text x="1288" y="920" font-size="230" fill="#FFFFFF">לאתר בלתי נשכח</text>
-<text x="1288" y="1140" font-size="230" fill="#FFFFFF">שמביא תוצאות.</text></g>
+<text class="big" x="1288" y="540" font-size="230" fill="#FFFFFF">אין הזדמנות שניה</text>
+<text class="big" x="1288" y="752" font-size="230" fill="#FFFFFF">לרושם ראשוני</text>
+<text class="sub" x="1288" y="984" font-size="135" fill="#FFFFFF">בוא נבנה לך אתר יחודי</text>
+<text class="sub" x="1288" y="1120" font-size="135" fill="#FFFFFF">שישאיר רושם בלתי נשכח</text></g>
 </svg>
 </section>
 <script>
@@ -620,12 +620,21 @@ html[data-a11y-size="3"] :is(p,blockquote,label,h3,.ct-nav a,.ct-links a,.menu-l
   // all lines one size: the widest one fills k of the width; lines stacked around cy
   // maxH: the block (all lines) never gets taller than this, so it always fits the visible hero
   // pw: line pitch as a fraction of the widest line's width (so the spacing keeps the design's proportion)
-  function fit(W, cy, k, max, pw, maxH = 1e9) {
+  // two big headline lines + two smaller sub lines, measured from the design (2000×1125 mock):
+  // widest big line = 1425px, widest sub line = 1253px, baselines at 420 / 585 / 765 / 870, block centre at 587
+  const BASE = [420, 585, 765, 870], MID = 587, BIGW = 1425, SUBW = 1253, BLOCK = 600;
+  function fit(W, cy, k, maxH = 1e9) {
     texts.forEach(t => { t.setAttribute('x', W / 2); t.setAttribute('font-size', 100); t.setAttribute('letter-spacing', -2); });
-    let mw = 0; texts.forEach(t => { try { mw = Math.max(mw, t.getBBox().width); } catch (_) {} });
-    const lh = mw ? pw * mw / 100 : 1.1;
-    const S = Math.min(max, mw ? 100 * k * W / mw : max, maxH / ((texts.length - 1) * lh + .8)), L = S * lh;
-    texts.forEach((t, i) => { t.setAttribute('font-size', S.toFixed(1)); t.setAttribute('letter-spacing', (-S * .02).toFixed(1)); t.setAttribute('y', (cy + (i - (texts.length - 1) / 2) * L + S * .36).toFixed(1)); });
+    let mb = 0, ms = 0;
+    texts.forEach(t => { try { const w = t.getBBox().width; if (t.classList.contains('sub')) ms = Math.max(ms, w); else mb = Math.max(mb, w); } catch (_) {} });
+    let u = k * W / BIGW;                                // viewBox units per design px
+    u = Math.min(u, maxH / BLOCK);                       // never taller than the visible hero
+    const Sb = mb ? 100 * BIGW * u / mb : 200, Ss = ms ? 100 * SUBW * u / ms : 120;
+    texts.forEach((t, i) => {
+      const S = t.classList.contains('sub') ? Ss : Sb;
+      t.setAttribute('font-size', S.toFixed(1)); t.setAttribute('letter-spacing', (-S * .02).toFixed(1));
+      t.setAttribute('y', (cy + (BASE[i] - MID) * u).toFixed(1));
+    });
   }
   function layout() {
     const want = mq.matches ? 'm' : 'd';
@@ -635,7 +644,7 @@ html[data-a11y-size="3"] :is(p,blockquote,label,h3,.ct-nav a,.ct-links a,.menu-l
       // fit the text into the part of the box that is on screen in the first view
       const r = hero.getBoundingClientRect(), vis = Math.min(1449, 1449 * innerHeight / Math.max(r.height, 1));
       // measured from the design (2000×1125 mock): widest line = 83.5% of the width, pitch = 10.2% of it, block centre at 51.1% height
-      fit(2576, vis * .511, .835, 400, .102, vis * .66);
+      fit(2576, vis * .522, .7125, vis * .62);
       return;
     }
     mode = 'm';
@@ -645,7 +654,7 @@ html[data-a11y-size="3"] :is(p,blockquote,label,h3,.ct-nav a,.ct-links a,.menu-l
     const H = rows * MCH;
     svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
     grid.innerHTML = buildGrid(4, rows, CW, MCH);
-    fit(W, H / 2, .9, 260, .102);
+    fit(W, H / 2, .92);
   }
   // a light blur of the grid right behind the words: the sharp grid is masked out around the text block and a
   // softly blurred copy shows there instead, with feathered edges (the rest of the grid stays sharp)
