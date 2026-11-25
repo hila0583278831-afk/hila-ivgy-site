@@ -590,18 +590,21 @@ html[data-a11y-size="3"] :is(p,blockquote,label,h3,.ct-nav a,.ct-links a,.menu-l
     `<path d="M${x},${y} H${x + CW - R} A${R},${R} 0 0 1 ${x + CW},${y + R} V${y + CH} H${x + R} A${R},${R} 0 0 1 ${x},${y + CH - R} Z" fill="none" stroke="url(#gs)" stroke-width="2.6"/>`;
   let mode = '';
   // all lines one size: the widest one fills k of the width; lines stacked around cy
-  function fit(W, cy, k, max, lh = 1.1) {
+  // maxH: the block (all lines) never gets taller than this, so it always fits the visible hero
+  function fit(W, cy, k, max, lh = 1.1, maxH = 1e9) {
     texts.forEach(t => { t.setAttribute('x', W / 2); t.setAttribute('font-size', 100); t.setAttribute('letter-spacing', -2); });
     let mw = 0; texts.forEach(t => { try { mw = Math.max(mw, t.getBBox().width); } catch (_) {} });
-    const S = Math.min(max, mw ? 100 * k * W / mw : max), L = S * lh;
+    const S = Math.min(max, mw ? 100 * k * W / mw : max, maxH / ((texts.length - 1) * lh + .8)), L = S * lh;
     texts.forEach((t, i) => { t.setAttribute('font-size', S.toFixed(1)); t.setAttribute('letter-spacing', (-S * .02).toFixed(1)); t.setAttribute('y', (cy + (i - (texts.length - 1) / 2) * L + S * .36).toFixed(1)); });
   }
   function layout() {
     const want = mq.matches ? 'm' : 'd';
     if (want === 'd') {
-      if (mode === 'd') return; mode = 'd';
-      svg.setAttribute('viewBox', orig.vb); grid.innerHTML = orig.grid;
-      fit(2576, 1449 * .52, .56, 320, .93);
+      if (mode !== 'd') { mode = 'd'; svg.setAttribute('viewBox', orig.vb); grid.innerHTML = orig.grid; }
+      // the hero keeps the 16:9 box, so on wide/short screens its bottom is below the fold –
+      // fit the text into the part of the box that is on screen in the first view
+      const r = hero.getBoundingClientRect(), vis = Math.min(1449, 1449 * innerHeight / Math.max(r.height, 1));
+      fit(2576, vis * .53, .56, 320, .84, vis * .7);
       return;
     }
     mode = 'm';
@@ -611,7 +614,7 @@ html[data-a11y-size="3"] :is(p,blockquote,label,h3,.ct-nav a,.ct-links a,.menu-l
     svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
     let g = ''; for (let y = 0; y < rows; y++) for (let x = 0; x < 4; x++) g += cell(x * CW, +(y * CH).toFixed(1));
     grid.innerHTML = g;
-    fit(W, Math.round(rows / 2) * CH, .8, 260, .93);
+    fit(W, Math.round(rows / 2) * CH, .8, 260, .84);
   }
   // soften the grid behind the words: the sharp grid is masked out around the text block and a blurred,
   // fainter copy shows there instead, with feathered edges
