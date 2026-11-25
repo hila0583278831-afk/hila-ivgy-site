@@ -116,6 +116,8 @@ body.menu-open .menu-dim{opacity:1;pointer-events:auto}
              radial-gradient(45% 30% at 12% 62%,rgba(142,76,242,.22),transparent 72%),
              radial-gradient(40% 28% at 90% 78%,rgba(196,91,245,.16),transparent 72%),
              transparent;color:#fff;text-align:center;padding:calc(80*var(--u)) 0 max(calc(140*var(--u)),34vh);font-family:'Lia Element',sans-serif;font-weight:600}
+.works>.seam{position:absolute;left:0;right:0;top:0;height:clamp(240px,42vh,460px);z-index:0;pointer-events:none;
+  background:linear-gradient(180deg,#fff 0%,rgba(244,238,255,.92) 18%,rgba(196,170,250,.55) 48%,rgba(120,90,220,.18) 76%,rgba(120,90,220,0) 100%)}
 .works::before{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;opacity:.09;mix-blend-mode:overlay;
   background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
 /* GhostCursor (whole site) */
@@ -251,8 +253,8 @@ body.menu-open .menu-dim{opacity:1;pointer-events:auto}
 .tst-big{display:block;width:94%;height:auto;margin:0 auto clamp(30px,4vw,64px)}
 /* the grid: square-ish cells, each a thin outline + a shape whose corners follow the design's pattern */
 .tst-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));width:min(1700px,96vw);margin:0 auto;gap:0}
-.tcell{position:relative;aspect-ratio:395/370;box-sizing:border-box}
-.tshape{position:absolute;inset:3px;box-sizing:border-box;border:1.5px solid #6A4BEA;display:flex;flex-direction:column;align-items:center;justify-content:center;
+.tcell{position:relative;aspect-ratio:395/370;box-sizing:border-box;margin:0 -.75px -.75px 0}
+.tshape{position:absolute;inset:0;box-sizing:border-box;border:1.5px solid #6A4BEA;display:flex;flex-direction:column;align-items:center;justify-content:center;
   padding:12% 14%;text-align:center;transition:background .4s,border-color .4s,border-radius .9s cubic-bezier(.65,0,.35,1)}
 .tcell:hover .tshape{background:rgba(142,76,242,.07);border-color:#B046F2}
 .tc-mark{display:block;font-size:clamp(40px,3.2vw,62px);line-height:.6;height:.42em;margin-bottom:.35em;
@@ -332,10 +334,10 @@ body.menu-open .menu-dim{opacity:1;pointer-events:auto}
 .about .waves>div{position:sticky;top:0;height:100vh}
 /* the giant word fills the width exactly (SVG textLength) */
 .about-big{display:block;width:100%;height:auto;position:relative;z-index:0}
-.about-stage{position:relative;z-index:1;width:min(1500px,92vw);margin:calc(-15vw) auto 0;display:grid;
-  grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);align-items:end;gap:clamp(20px,3vw,60px)}
+.about-stage{position:relative;z-index:1;width:min(1680px,94vw);margin:calc(-15vw) auto 0;display:grid;
+  grid-template-columns:minmax(0,1.28fr) minmax(0,.72fr);align-items:end;gap:clamp(16px,2.4vw,48px)}
 /* cartoon avatar, cut out, rising in front of the word */
-.about-avatar{margin:0;position:relative;justify-self:center;width:min(100%,560px)}
+.about-avatar{margin:0 0 clamp(20px,4vw,70px);position:relative;justify-self:center;width:min(100%,600px)}
 .about-avatar img{display:block;width:100%;height:auto;filter:drop-shadow(0 40px 60px rgba(20,6,50,.55));
   -webkit-mask-image:linear-gradient(180deg,#000 78%,transparent 100%);mask-image:linear-gradient(180deg,#000 78%,transparent 100%)}
 .about-avatar .ava-talk{position:absolute;left:0;bottom:0;width:100%;height:100%;object-fit:contain;object-position:bottom;opacity:0;transform:scale(1.16);transform-origin:50% 100%;transition:opacity .5s;filter:drop-shadow(0 40px 60px rgba(20,6,50,.55));
@@ -351,9 +353,9 @@ body.menu-open .menu-dim{opacity:1;pointer-events:auto}
 .leaf::before{content:"";position:absolute;inset:0;border-radius:inherit;padding:2.5px;pointer-events:none;
   background:linear-gradient(120deg,#3A46EC,#8E4CF2 50%,#FF00FF);
   -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude}
-.leaf .about-lead{margin:0;font-size:clamp(30px,3.4vw,66px);line-height:.98;letter-spacing:-.01em;font-weight:600}
+.leaf .about-lead{margin:0;font-size:clamp(30px,3.1vw,62px);line-height:1;letter-spacing:-.01em;font-weight:600}
 .leaf .about-lead .hl{background:linear-gradient(100deg,#C49BFF,#FF3DF2);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent}
-.leaf .about-text{margin:clamp(18px,2vw,34px) 0 0;font-size:clamp(18px,1.5vw,27px);line-height:1.5;color:#fff}
+.leaf .about-text{margin:clamp(16px,1.6vw,28px) 0 0;font-size:clamp(17px,1.32vw,25px);line-height:1.5;color:#fff}
 .leaf .about-text + .about-text{margin-top:.75em}
 .leaf .about-end{font-size:clamp(21px,1.85vw,34px);line-height:1.25;background:linear-gradient(100deg,#C49BFF,#FF3DF2);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent}
 .leaf .about-text .one-line{white-space:nowrap}
@@ -851,6 +853,7 @@ if (window.GhostCursor && matchMedia('(hover: hover)').matches) GhostCursor(docu
 </script>
 
 <section class="works" id="works-list" aria-labelledby="worksTitle">
+  <div class="seam" aria-hidden="true"></div>
   <i class="tick" aria-hidden="true"></i>
   <h2 class="wk" id="worksTitle" lang="en">WORKS</h2>
   <div class="wl" id="wl">
