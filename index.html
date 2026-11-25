@@ -486,7 +486,7 @@ html[data-a11y-size="3"] :is(p,blockquote,label,h3,.ct-nav a,.ct-links a,.menu-l
 </script>
 <div class="dive" id="dive">
 <section class="hero hero-bg" id="hero" dir="ltr" tabindex="-1">
-<h1 class="sr" dir="rtl">הילה איבגי – בניית אתרים, עיצוב אתרים ומיתוג לעסקים. אתר שנראה כמו שהעסק שלך באמת שווה</h1>
+<h1 class="sr" dir="rtl">הילה איבגי – בניית אתרים, עיצוב אתרים ומיתוג לעסקים. מתרגמת את היחודיות בעסק שלך לאתר בלתי נשכח שמביא תוצאות.</h1>
 <svg aria-hidden="true" viewBox="0 0 2576 1449" preserveAspectRatio="xMidYMid slice" style="position: absolute; inset: 0; z-index: 2; pointer-events: none; width: 100%; height: 100%; display: block">
 <defs>
 <linearGradient id="gl" x1="0" y1="0" x2="2576" y2="1449" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#4C3BE6" stop-opacity=".85"></stop><stop offset="1" stop-color="#8A4DF0" stop-opacity=".9"></stop></linearGradient>
@@ -573,9 +573,10 @@ html[data-a11y-size="3"] :is(p,blockquote,label,h3,.ct-nav a,.ct-links a,.menu-l
 <path d="M2254.0,1159.2 H2439.0 A137,137 0 0 1 2576.0,1296.2 V1449.0 H2391.0 A137,137 0 0 1 2254.0,1312.0 Z" fill="none" stroke="url(#gs)" stroke-width="2.6"></path>
 </g>
 <g class="hero-type" font-family="Lia Element, sans-serif" font-weight="600" direction="rtl" text-anchor="middle">
-<text x="1288" y="585" font-size="230" fill="#000000">אתר שנראה</text>
-<text x="1288" y="830" font-size="230" fill="#FFFFFF">כמו שהעסק שלך</text>
-<text x="1288" y="1075" font-size="230" fill="#FFFFFF">באמת שווה</text></g>
+<text x="1288" y="480" font-size="230" fill="#FFFFFF">מתרגמת את היחודיות</text>
+<text x="1288" y="700" font-size="230" fill="#FFFFFF">בעסק שלך</text>
+<text x="1288" y="920" font-size="230" fill="#FFFFFF">לאתר בלתי נשכח</text>
+<text x="1288" y="1140" font-size="230" fill="#FFFFFF">שמביא תוצאות.</text></g>
 </svg>
 </section>
 <script>
@@ -586,8 +587,33 @@ html[data-a11y-size="3"] :is(p,blockquote,label,h3,.ct-nav a,.ct-links a,.menu-l
   const grid = svg.querySelector('.hero-grid'), texts = svg.querySelectorAll('.hero-type text'), fade = svg.querySelector('#fade');
   const orig = { vb: svg.getAttribute('viewBox'), grid: grid.innerHTML, t: [...texts].map(t => ['x', 'y', 'font-size', 'letter-spacing', 'text-anchor'].map(a => t.getAttribute(a))), f: [fade.getAttribute('y1'), fade.getAttribute('y2')] };
   const CW = 322, CH = 289.8, R = 137;
-  const cell = (x, y) => `<rect x="${x}" y="${y}" width="${CW}" height="${CH}" fill="none" stroke="url(#gl)" stroke-width="2.2"/>` +
-    `<path d="M${x},${y} H${x + CW - R} A${R},${R} 0 0 1 ${x + CW},${y + R} V${y + CH} H${x + R} A${R},${R} 0 0 1 ${x},${y + CH - R} Z" fill="none" stroke="url(#gs)" stroke-width="2.6"/>`;
+  // the grid from the design: 10 × 6 cells, each a box outline + a shape whose rounded corners (radius = half the
+  // cell height) follow this pattern – row (repeats every 6), then even / odd column; corners TL TR BR BL, R = round.
+  // assets/js/dive3d.js reads the same pattern (window.HERO_PAT) for the 3D display.
+  const PAT = window.HERO_PAT = [['.R..', '..R.'], ['..R.', 'R.RR'], ['.R.R', '..R.'], ['..R.', 'RRRR'], ['.R..', '..R.'], ['..R.', 'RRRR']];
+  const f1 = v => +v.toFixed(1);
+  const shape = (x, y, w, h, m) => {
+    const r = h / 2, c = i => m[i] === 'R';
+    let d = `M${f1(x + (c(0) ? r : 0))},${f1(y)} H${f1(x + w - (c(1) ? r : 0))}`;
+    if (c(1)) d += ` A${f1(r)},${f1(r)} 0 0 1 ${f1(x + w)},${f1(y + r)}`;
+    d += ` V${f1(y + h - (c(2) ? r : 0))}`;
+    if (c(2)) d += ` A${f1(r)},${f1(r)} 0 0 1 ${f1(x + w - r)},${f1(y + h)}`;
+    d += ` H${f1(x + (c(3) ? r : 0))}`;
+    if (c(3)) d += ` A${f1(r)},${f1(r)} 0 0 1 ${f1(x)},${f1(y + h - r)}`;
+    d += ` V${f1(y + (c(0) ? r : 0))}`;
+    if (c(0)) d += ` A${f1(r)},${f1(r)} 0 0 1 ${f1(x + r)},${f1(y)}`;
+    return d + ' Z';
+  };
+  const buildGrid = (cols, rows, w, h) => {
+    let g = '';
+    for (let j = 0; j < rows; j++) for (let i = 0; i < cols; i++) {
+      const x = i * w, y = j * h;
+      g += `<rect x="${f1(x)}" y="${f1(y)}" width="${f1(w)}" height="${f1(h)}" fill="none" stroke="url(#gl)" stroke-width="1.6"/>` +
+        `<path d="${shape(x, y, w, h, PAT[j % 6][i % 2])}" fill="none" stroke="url(#gs)" stroke-width="2.4"/>`;
+    }
+    return g;
+  };
+  const DESK = buildGrid(10, 6, 2576 / 10, 1449 / 6);
   let mode = '';
   // all lines one size: the widest one fills k of the width; lines stacked around cy
   // maxH: the block (all lines) never gets taller than this, so it always fits the visible hero
@@ -602,22 +628,22 @@ html[data-a11y-size="3"] :is(p,blockquote,label,h3,.ct-nav a,.ct-links a,.menu-l
   function layout() {
     const want = mq.matches ? 'm' : 'd';
     if (want === 'd') {
-      if (mode !== 'd') { mode = 'd'; svg.setAttribute('viewBox', orig.vb); grid.innerHTML = orig.grid; }
+      if (mode !== 'd') { mode = 'd'; svg.setAttribute('viewBox', orig.vb); grid.innerHTML = DESK; }
       // the hero keeps the 16:9 box, so on wide/short screens its bottom is below the fold –
       // fit the text into the part of the box that is on screen in the first view
       const r = hero.getBoundingClientRect(), vis = Math.min(1449, 1449 * innerHeight / Math.max(r.height, 1));
-      // measured from the design (2000×1125 mock): widest line = 83.5% of the width, pitch = 11.4% of it, block centre at 51.6% height
-      fit(2576, vis * .516, .835, 400, .114, vis * .62);
+      // measured from the design (2000×1125 mock): widest line = 83.5% of the width, pitch = 10.2% of it, block centre at 51.1% height
+      fit(2576, vis * .511, .835, 400, .102, vis * .66);
       return;
     }
     mode = 'm';
     const r = hero.getBoundingClientRect(), W = 4 * CW;
-    const rows = Math.max(6, Math.ceil(W * r.height / Math.max(r.width, 1) / CH));
-    const H = rows * CH;
+    const MCH = CW * (1449 / 6) / (2576 / 10);          // same cell proportion as the desktop grid
+    const rows = Math.max(6, Math.ceil(W * r.height / Math.max(r.width, 1) / MCH));
+    const H = rows * MCH;
     svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
-    let g = ''; for (let y = 0; y < rows; y++) for (let x = 0; x < 4; x++) g += cell(x * CW, +(y * CH).toFixed(1));
-    grid.innerHTML = g;
-    fit(W, Math.round(rows / 2) * CH, .9, 260, .114);
+    grid.innerHTML = buildGrid(4, rows, CW, MCH);
+    fit(W, H / 2, .9, 260, .102);
   }
   // the grid stays sharp and visible everywhere, behind the words too
   const relayout = () => { layout(); };

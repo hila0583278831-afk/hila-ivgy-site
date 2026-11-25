@@ -107,19 +107,48 @@ function start() {
       return mix(c, to, t) + mix(p - c, l, t);
     }`;
 
-  // ---------- the leaf cell as a texture (white = line), coloured in the shader like the hero's gradients ----------
-  function cellTexture(cw, ch, rad) {
-    const W = 512, H = Math.round(512 * ch / cw), s = W / cw, r = rad * s;
-    const c = document.createElement('canvas'); c.width = W; c.height = H; const x = c.getContext('2d');
-    const leaf = () => { x.beginPath(); x.moveTo(1, 1); x.lineTo(W - r, 1); x.arc(W - r, r, r - 1, -Math.PI / 2, 0); x.lineTo(W - 1, H - 1);
-      x.lineTo(r, H - 1); x.arc(r, H - r, r - 1, Math.PI / 2, Math.PI); x.closePath(); };
-    x.strokeStyle = '#fff';
-    x.shadowColor = 'rgba(255,255,255,.5)'; x.shadowBlur = 7;                   // soft glow
-    x.globalAlpha = .5; x.lineWidth = 2.2 * W / 322 * .6; x.strokeRect(0, 0, W, H);   // hero stroke widths, a bit finer: they get magnified
-    x.globalAlpha = 1; x.lineWidth = 2.6 * W / 322 * .6; leaf(); x.stroke();
+  // ---------- the hero grid's cell shapes ----------
+  // same pattern as the hero SVG (window.HERO_PAT, set by its layout script): row mod 6, column parity → which corners
+  // are rounded (TL TR BR BL), radius = half the cell height
+  const PAT = window.HERO_PAT || [['.R.R', '.R.R']];
+  const PR = PAT.length;
+  U.uPat = { value: [] }; U.uC0 = { value: 0 };
+  for (let r = 0; r < 6; r++) for (let c = 0; c < 2; c++) {
+    const m = PAT[r % PR][c]; U.uPat.value.push(new THREE.Vector4(...[0, 1, 2, 3].map(i => m[i] === 'R' ? 1 : 0)));
+  }
+  // fragment-side helpers: the corner flags of a cell, and the signed distance to its shape
+  const SHAPE = /* glsl */`
+    uniform vec4 uPat[12]; uniform float uC0;
+    vec4 corners(vec2 cell) {
+      int r = int(mod(floor(cell.y + 0.5), 6.0)), c = int(mod(floor(cell.x + uC0 + 0.5), 2.0));
+      return uPat[r * 2 + c];
+    }
+    float shapeSD(vec2 uv, vec2 px, vec4 fl, float rad, float soft) {   // uv: 0..1, y up
+      vec2 p = (uv - 0.5) * px, h = px * 0.5;
+      float f = p.x < 0.0 ? (p.y > 0.0 ? fl.x : fl.w) : (p.y > 0.0 ? fl.y : fl.z);
+      float r = mix(f * rad, 6.0, soft);
+      vec2 q = abs(p) - h + r;
+      return length(max(q, 0.0)) + min(max(q.x, q.y), 0.0) - r;
+    }`;
+  // line art of the 12 pattern cells (2 columns × 6 rows), white = line; coloured in the shader like the hero
+  function cellTexture(cw, ch) {
+    const W = 512, H = Math.round(512 * ch / cw), r = H / 2;
+    const c = document.createElement('canvas'); c.width = W * 2; c.height = H * 6; const x = c.getContext('2d');
+    x.strokeStyle = '#fff'; x.shadowColor = 'rgba(255,255,255,.5)'; x.shadowBlur = 7;       // soft glow
+    for (let j = 0; j < 6; j++) for (let i = 0; i < 2; i++) {
+      const ox = i * W, oy = j * H, m = PAT[j % PR][i], k = n => m[n] === 'R';
+      x.globalAlpha = .45; x.lineWidth = 1.6 * W / 257.6 * .6; x.strokeRect(ox + 1, oy + 1, W - 2, H - 2);
+      x.globalAlpha = 1; x.lineWidth = 2.4 * W / 257.6 * .6;
+      const L = ox + 1.5, T = oy + 1.5, R2 = ox + W - 1.5, B = oy + H - 1.5, rr = r - 1.5;
+      x.beginPath(); x.moveTo(L + (k(0) ? rr : 0), T);
+      x.lineTo(R2 - (k(1) ? rr : 0), T); if (k(1)) x.arc(R2 - rr, T + rr, rr, -Math.PI / 2, 0);
+      x.lineTo(R2, B - (k(2) ? rr : 0)); if (k(2)) x.arc(R2 - rr, B - rr, rr, 0, Math.PI / 2);
+      x.lineTo(L + (k(3) ? rr : 0), B); if (k(3)) x.arc(L + rr, B - rr, rr, Math.PI / 2, Math.PI);
+      x.lineTo(L, T + (k(0) ? rr : 0)); if (k(0)) x.arc(L + rr, T + rr, rr, Math.PI, Math.PI * 1.5);
+      x.closePath(); x.stroke();
+    }
     const t = new THREE.CanvasTexture(c);
-    t.wrapS = t.wrapT = THREE.RepeatWrapping; t.anisotropy = renderer.capabilities.getMaxAnisotropy(); t.generateMipmaps = true;
-    t.minFilter = THREE.LinearMipmapLinearFilter;
+    t.anisotropy = renderer.capabilities.getMaxAnisotropy(); t.generateMipmaps = true; t.minFilter = THREE.LinearMipmapLinearFilter;
     return t;
   }
 
@@ -129,26 +158,21 @@ function start() {
   const gridMat = new THREE.ShaderMaterial({
     uniforms: Object.assign(gridU, U), side: THREE.DoubleSide, transparent: true, depthWrite: false, premultipliedAlpha: true,
     vertexShader: SURF + /* glsl */`
-      uniform float uPanI; varying vec2 vG; varying float vFade; varying float vX;
+      uniform float uPanI; varying vec2 vG; varying vec2 vCell; varying float vFade; varying float vX;
       void main() {
-        float th, alive; vec2 gh = vec2(position.x + uPanI, position.y);
-        vec3 p = scatter(aCell + vec2(uPanI, 0.0), surf(gh, 0.0, th), alive);
-        vG = gh; vX = p.x;
+        float th, alive; vec2 gh = vec2(position.x + uPanI, position.y), cell = aCell + vec2(uPanI, 0.0);
+        vec3 p = scatter(cell, surf(gh, 0.0, th), alive);
+        vG = gh; vCell = cell; vX = p.x;
         vFade = (1.0 - smoothstep(uF0, uF1, abs(th))) * alive * (1.0 - smoothstep(0.0, 0.35, uScat));   // the frames go first
         gl_Position = projectionMatrix * modelViewMatrix * vec4(p, 1.0);
       }`,
     fragmentShader: /* glsl */`
-      uniform sampler2D uMap; uniform float uAlpha, uGlow, uVw, uSX, uSY, uRowB; uniform vec3 uC1, uC2;
-      varying vec2 vG; varying float vFade; varying float vX;
-      vec2 shifted(vec2 g) {
-        float r = floor(g.y);
-        g.x -= (mod(r - uRowB, 2.0) < 0.5 ? 1.0 : -1.0) * uSX;
-        float c = floor(g.x);
-        g.y -= (mod(c, 2.0) < 0.5 ? -1.0 : 1.0) * uSY;
-        return g;
-      }
+      uniform sampler2D uMap; uniform float uAlpha, uGlow, uVw, uC0; uniform vec3 uC1, uC2;
+      varying vec2 vG; varying vec2 vCell; varying float vFade; varying float vX;
       void main() {
-        float a = texture2D(uMap, vec2(vG.x, -vG.y)).a * uAlpha * vFade;
+        vec2 f = clamp(vG - vCell, 0.002, 0.998);
+        float tr = mod(floor(vCell.y + 0.5), 6.0), tc = mod(floor(vCell.x + uC0 + 0.5), 2.0);   // the cell's tile in the line atlas
+        float a = texture2D(uMap, vec2((tc + f.x) / 2.0, 1.0 - (tr + f.y) / 6.0)).a * uAlpha * vFade;
         vec3 col = mix(uC1, uC2, clamp(vX / uVw + 0.5, 0.0, 1.0)) * (1.0 + uGlow * 0.35) + vec3(0.05, 0.0, 0.1) * uGlow;
         gl_FragColor = vec4(col * a, a);
       }`
@@ -171,23 +195,10 @@ function start() {
         vFade = mix(1.0 - smoothstep(uF0, uF1, abs(th)), 1.0, smoothstep(0.0, 0.5, uScat)) * alive;   // floating cards ignore the edge fade
         gl_Position = projectionMatrix * modelViewMatrix * vec4(p, 1.0);
       }`,
-    fragmentShader: /* glsl */`
-      uniform sampler2D uAtlas; uniform float uN, uFill, uRow, uCellA, uImgA, uRad, uFA, uPan, uAway, uAll, uSX, uSY, uRowB; uniform vec2 uPx;
-      vec2 shifted(vec2 g) {
-        float r = floor(g.y);
-        g.x -= (mod(r - uRowB, 2.0) < 0.5 ? 1.0 : -1.0) * uSX;
-        float c = floor(g.x);
-        g.y -= (mod(c, 2.0) < 0.5 ? -1.0 : 1.0) * uSY;
-        return g;
-      }
+    fragmentShader: SHAPE + /* glsl */`
+      uniform sampler2D uAtlas; uniform float uN, uFill, uRow, uCellA, uImgA, uRad, uFA, uPan, uAway, uAll; uniform vec2 uPx;
       uniform float uScat;
       varying vec2 vG; varying vec2 vCell; varying float vFade;
-      float leaf(vec2 uv) {                     // the leaf softens into a plain card while they scatter
-        vec2 p = (uv - 0.5) * uPx, h = uPx * 0.5;
-        float r = (p.x * p.y > 0.0) ? mix(uRad, 6.0, smoothstep(0.0, 0.6, uScat)) : mix(0.0, 6.0, smoothstep(0.0, 0.6, uScat));
-        vec2 q = abs(p) - h + r;
-        return length(max(q, 0.0)) + min(max(q.x, q.y), 0.0) - r;
-      }
       void main() {
         vec2 cell = vCell, f = clamp(vG - vCell, 0.0, 1.0);
         bool gal = abs(cell.y - uRow) < 0.5 && cell.x < 0.5 && cell.x > -uN + 0.5;            // the gallery row's project cells
@@ -199,7 +210,8 @@ function start() {
         vec2 q = (f - 0.5) / s + 0.5;
         if (q.x < 0.0 || q.x > 1.0 || q.y < 0.0 || q.y > 1.0) discard;
         vec2 uv = vec2(q.x, 1.0 - q.y);
-        float d = leaf(uv), aa = fwidth(d) * 1.2, m = 1.0 - smoothstep(-aa, aa, d);
+        float d = shapeSD(uv, uPx, corners(cell), uRad, smoothstep(0.0, 0.6, uScat));    // the cell's shape; a plain card when scattered
+        float aa = fwidth(d) * 1.2, m = 1.0 - smoothstep(-aa, aa, d);
         vec2 c = uv;
         if (uImgA > uCellA) c.x = 0.5 + (uv.x - 0.5) * uCellA / uImgA; else c.y = 1.0 - (1.0 - uv.y) * uImgA / uCellA;
         c = clamp(c, 0.006, 0.994);
@@ -245,15 +257,10 @@ function start() {
           vUv = uv; vFade = 1.0 - smoothstep(uF0 + 0.05, uF1 - 0.05, abs(th));
           gl_Position = projectionMatrix * modelViewMatrix * vec4(p, 1.0);
         }`,
-      fragmentShader: /* glsl */`
-        uniform sampler2D uMap; uniform float uAlpha, uImgA, uCellA, uRad, uDim, uEdge; uniform vec2 uPx;
+      fragmentShader: SHAPE + /* glsl */`
+        uniform sampler2D uMap; uniform float uAlpha, uImgA, uCellA, uRad, uDim, uEdge; uniform vec2 uPx, uCell;
         varying vec2 vUv; varying float vFade;
-        float leaf(vec2 uv) {                       // signed distance to the leaf: rounded top-right + bottom-left
-          vec2 p = (uv - 0.5) * uPx, h = uPx * 0.5;
-          float r = (p.x * p.y > 0.0) ? uRad : 0.0;
-          vec2 q = abs(p) - h + r;
-          return length(max(q, 0.0)) + min(max(q.x, q.y), 0.0) - r;
-        }
+        float leaf(vec2 uv) { return shapeSD(uv, uPx, corners(floor(uCell)), uRad, 0.0); }   // the shape of the cell it sits in
         void main() {
           vec2 c = vUv;
           if (uImgA > uCellA) c.x = 0.5 + (vUv.x - 0.5) * uCellA / uImgA;           // wide image: crop the sides
@@ -312,7 +319,7 @@ function start() {
     const cellFrac = phone ? .68 : .29;                               // centre cell = this share of the screen width
     const Dend = D * cw / (cellFrac * vw);
     G = { vw, vh, phone, cw, ch, ox, oy, c0, ex, rg, D, Dend, R: Dend * (phone ? 1.35 : 1.5),
-      rowY: vh / 2 - (oy + (rg + .5) * ch), rad: 137 * cw / 322 };
+      rowY: vh / 2 - (oy + (rg + .5) * ch), rad: ch / 2 };              // the shapes round off at half the cell height
     U.uCw.value = cw; U.uCh.value = ch; U.uOy.value = oy - 0; U.uVh.value = vh; U.uR.value = G.R;
     U.uRowY.value = G.rowY; U.uRowB.value = rg; gridU.uVw.value = vw;
     // h measured from the lattice origin row 0; the mesh spans enough columns/rows to cover every camera position
@@ -324,7 +331,7 @@ function start() {
     fillMesh = new THREE.Mesh(geo, fillMat); fillMesh.frustumCulled = false; fillMesh.renderOrder = 0; scene.add(fillMesh);   // under the grid lines
     fillU.uRow.value = rg; fillU.uCellA.value = cw / ch; fillU.uRad.value = G.rad; fillU.uPx.value.set(cw, ch);
     if (gridU.uMap.value) gridU.uMap.value.dispose();
-    gridU.uMap.value = cellTexture(cw, ch, G.rad);
+    gridU.uMap.value = cellTexture(cw, ch); U.uC0.value = c0;          // c0: lattice column of the centre seam (pattern parity)
     projU.forEach((u, i) => {
       u.uCell.value.set(.5 - i, rg + .5);                              // project i: i cells to the left of the centre cell
       u.uPx.value.set(cw, ch); u.uRad.value = G.rad; u.uCellA.value = cw / ch;
