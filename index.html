@@ -103,22 +103,10 @@ body.menu-open .menu-dim{opacity:1;pointer-events:auto}
 .reel .rc{position:absolute;left:0;top:0;margin:0;border-radius:6px;overflow:hidden;background:#1A1424;backface-visibility:hidden}
 .reel .rc img{display:block;width:100%;height:100%;object-fit:cover}
 /* the statement that takes over as the cards sink away: a white slide with the leaf grid and a rounded panel */
-.reel .rtext{position:absolute;inset:0;z-index:6;pointer-events:none;font-family:'Lia Element',sans-serif;font-weight:600;--u:min(1vw,1.65vh)}
-.reel .rwhite{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;opacity:0;will-change:opacity,transform;
-  background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 252 228'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%233A46EC'/%3E%3Cstop offset='1' stop-color='%238E4CF2'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cg fill='none' stroke='url(%23g)' stroke-width='1.3'%3E%3Crect x='1' y='1' width='236' height='218'/%3E%3Cpath d='M1 1H128A109 109 0 0 1 237 110V219H110A109 109 0 0 1 1 110Z'/%3E%3C/g%3E%3C/svg%3E") 50% 50%/12.5vw auto repeat}
-.reel .rpanel{width:76vw;box-sizing:border-box;padding:calc(var(--u)*3.6) calc(var(--u)*4) calc(var(--u)*4.2);border-radius:calc(var(--u)*6);text-align:center;
-  border:1.5px solid transparent;background:linear-gradient(#fff,#fff) padding-box,linear-gradient(90deg,#8E4CF2,#FF3DF2 50%,#8E4CF2) border-box}
-.reel .rpanel p{margin:0;font-size:calc(var(--u)*3.4);line-height:.96;color:#0E0B14;will-change:opacity,transform}
-.reel .rpanel p.gr{padding-bottom:.06em}
-.reel .rpanel .gr{background:linear-gradient(to left,#9A45E2,#3346E6);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent}
-.reel .rpanel span{display:block}
-@media (max-width:700px){
-  .reel .rtext{--u:1vw}
-  .reel .rwhite{background-size:25vw auto}
-  .reel .rpanel{width:90vw;padding:8vw 5vw 9vw;border-radius:9vw}
-  .reel .rpanel p{font-size:5.2vw;line-height:1.18}
-  .reel .rpanel p span{display:inline}
-}/* the mockup that travels down from the hero into the centre slot */
+.reel .rtext{position:absolute;inset:0;z-index:6;pointer-events:none}
+.reel .rwhite{position:absolute;inset:0;background:#fff;opacity:0;will-change:opacity,transform}
+.reel .rwhite svg{display:block;width:100%;height:100%}
+.reel .rwhite svg g{will-change:opacity,transform}/* the mockup that travels down from the hero into the centre slot */
 .reel .flyer{position:absolute;left:0;top:0;z-index:5;border-radius:6px;overflow:hidden;visibility:hidden;pointer-events:none;
   background:#1A1424 center/cover no-repeat;box-shadow:0 30px 70px -25px rgba(0,0,0,.7)}
 
@@ -701,12 +689,60 @@ if (window.GhostCursor && matchMedia('(hover: hover)').matches) GhostCursor(docu
 <section class="reel" id="reel" aria-label="פרויקטים נבחרים">
   <div class="lines" aria-hidden="true"></div>
   <div class="stage" id="reelStage"><div class="plane" id="plane"></div><div class="flyer" id="flyer"></div>
-    <div class="rtext" dir="rtl"><div class="rwhite" id="rWhite"><div class="rpanel">
-      <p id="rHead" class="gr"><span>בעולם עמוס בתוכן ובתחרות,</span> <span>אתר יפה כבר לא מספיק.</span> <span>צריך ליצור נראות שמושכת את העין,</span> <span>משקפת את האיכות שלך</span> <span>ומעבירה את המסר הנכון</span> <span>מהרגע הראשון.</span></p>
-      <p id="rPara"><span>אני כאן כדי לזהות את הייחודיות שלך</span> <span>ולהפוך אותה לשפה עיצובית מדויקת</span> <span>ולחוויה דיגיטלית בלתי נשכחת.</span></p>
-    </div></div></div>
-  </div>
+    <div class="rtext" dir="rtl"><div class="rwhite" id="rWhite">
+      <svg id="rwSvg" aria-hidden="true" font-family="Lia Element, sans-serif" font-weight="600" direction="rtl" text-anchor="middle">
+        <defs>
+          <linearGradient id="rwGrid" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="2000" y2="0"><stop offset="0" stop-color="#4A44E6"/><stop offset="1" stop-color="#8E4CF2"/></linearGradient>
+          <linearGradient id="rwText" gradientUnits="userSpaceOnUse" x1="480" y1="0" x2="1550" y2="0"><stop offset="0" stop-color="#3540D2"/><stop offset=".55" stop-color="#4A3FD6"/><stop offset="1" stop-color="#7A3ADC"/></linearGradient>
+          <linearGradient id="rwEdge" gradientUnits="userSpaceOnUse" x1="240" y1="0" x2="1760" y2="0"><stop offset="0" stop-color="#B43CE6"/><stop offset=".5" stop-color="#E040E8"/><stop offset="1" stop-color="#B060E0"/></linearGradient>
+        </defs>
+        <g id="rwCells" fill="none" stroke="url(#rwGrid)" stroke-width="1.6"></g>
+        <rect id="rwPanel" width="1520" height="685" rx="105" fill="#fff" stroke="url(#rwEdge)" stroke-width="2"/>
+        <g id="rHead" fill="url(#rwText)"><text>בעולם עמוס בתוכן ובתחרות,</text><text>אתר יפה כבר לא מספיק.</text><text>צריך ליצור נראות שמושכת את העין,</text><text>משקפת את האיכות שלך</text><text>ומעבירה את המסר הנכון</text><text>מהרגע הראשון.</text></g>
+        <g id="rPara" fill="#000"><text>אני כאן כדי לזהות את הייחודיות שלך</text><text>ולהפוך אותה לשפה עיצובית מדויקת</text><text>ולחוויה דיגיטלית בלתי נשכחת.</text></g>
+      </svg>
+    </div>
+    <p class="sr">בעולם עמוס בתוכן ובתחרות, אתר יפה כבר לא מספיק. צריך ליצור נראות שמושכת את העין, משקפת את האיכות שלך ומעבירה את המסר הנכון מהרגע הראשון. אני כאן כדי לזהות את הייחודיות שלך ולהפוך אותה לשפה עיצובית מדויקת ולחוויה דיגיטלית בלתי נשכחת.</p></div>  </div>
 </section>
+<script>
+/* The white slide at the end of the projects wall, drawn 1:1 from the design (2000×1125): a grid of leaf cells
+   (one shape per cell, two opposite corners rounded, alternating like a checkerboard), a white rounded panel
+   and nine centred lines – six in the blue→purple gradient, three in black. Wider or taller screens just show
+   more of the grid around the same composition. */
+(() => {
+  const svg = document.getElementById('rwSvg'), cells = document.getElementById('rwCells'), panel = document.getElementById('rwPanel');
+  const lines = [...svg.querySelectorAll('text')], g = id => document.getElementById(id);
+  const PX = 251.5, PY = 226.5, CWD = 238, CHT = 217, R = 104;               // measured from the design
+  const BASE = [331, 394, 457, 520, 584, 647, 713, 777, 841], WIDE = 1060;   // baselines; width of the widest gradient line
+  const f1 = v => +v.toFixed(1);
+  const leaf = (x, y, tlbr) => tlbr
+    ? `M${f1(x + R)},${f1(y)} H${f1(x + CWD)} V${f1(y + CHT - R)} A${R},${R} 0 0 1 ${f1(x + CWD - R)},${f1(y + CHT)} H${f1(x)} V${f1(y + R)} A${R},${R} 0 0 1 ${f1(x + R)},${f1(y)} Z`
+    : `M${f1(x)},${f1(y)} H${f1(x + CWD - R)} A${R},${R} 0 0 1 ${f1(x + CWD)},${f1(y + R)} V${f1(y + CHT)} H${f1(x + R)} A${R},${R} 0 0 1 ${f1(x)},${f1(y + CHT - R)} Z`;
+  let size = 0;
+  function layout() {
+    const w = innerWidth, h = innerHeight, ratio = w / h, phone = w < 700;
+    // the design's 2000×1125 frame sits in the middle; phones zoom in on the panel
+    let VW, VH;
+    if (phone) { VW = 1580; VH = VW / ratio; } else if (ratio >= 16 / 9) { VH = 1125; VW = VH * ratio; } else { VW = 2000; VH = VW / ratio; }
+    const ox = (VW - 2000) / 2, oy = (VH - 1125) / 2;
+    svg.setAttribute('viewBox', `0 0 ${f1(VW)} ${f1(VH)}`);
+    let d = '';
+    const k0 = Math.floor(-ox / PX) - 1, k1 = Math.ceil((VW - ox) / PX), j0 = Math.floor((-oy - 3) / PY) - 1, j1 = Math.ceil((VH - oy) / PY);
+    for (let j = j0; j <= j1; j++) for (let k = k0; k <= k1; k++) d += leaf(ox + k * PX, oy + 3 + j * PY, ((k + j) % 2 + 2) % 2 === 0);
+    cells.innerHTML = `<path d="${d}"/>`;
+    g('rwGrid').setAttribute('x1', f1(ox)); g('rwGrid').setAttribute('x2', f1(ox + 2000));
+    g('rwText').setAttribute('x1', f1(ox + 480)); g('rwText').setAttribute('x2', f1(ox + 1550));
+    g('rwEdge').setAttribute('x1', f1(ox + 240)); g('rwEdge').setAttribute('x2', f1(ox + 1760));
+    panel.setAttribute('x', f1(ox + 240)); panel.setAttribute('y', f1(oy + 221));
+    // one font size for all nine lines: the widest gradient line is as wide as in the design
+    if (!size) { lines.forEach(t => t.setAttribute('font-size', 100)); try { size = 100 * WIDE / lines[2].getBBox().width; } catch (_) { size = 64; } }
+    lines.forEach((t, i) => { t.setAttribute('x', f1(ox + 1000)); t.setAttribute('y', f1(oy + BASE[i])); t.setAttribute('font-size', f1(size)); });
+  }
+  layout();
+  addEventListener('resize', layout);
+  document.fonts && document.fonts.ready.then(() => { size = 0; layout(); });
+})();
+</script>
 <script>
 /* Projects wall – same motion model as tsivia.com's reel, rebuilt for this site.
    Scroll is split into four phases measured in screen heights: TILT → SIDE → UPDOWN → AWAY.
