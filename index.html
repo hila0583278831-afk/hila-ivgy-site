@@ -91,6 +91,8 @@ body.menu-open .menu-dim{opacity:1;pointer-events:auto}
 .dive-stage.on canvas:active{cursor:grabbing}
 .dive-light{position:absolute;inset:0;pointer-events:none;mix-blend-mode:screen;opacity:0;
   background:radial-gradient(55% 45% at 50% 52%,rgba(122,64,255,.26),rgba(122,64,255,.06) 55%,transparent 75%)}
+.dive-soft{position:absolute;pointer-events:none;visibility:hidden;-webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px);border-radius:60px;
+  -webkit-mask-image:radial-gradient(closest-side,#000 70%,transparent);mask-image:radial-gradient(closest-side,#000 70%,transparent);will-change:transform}
 .dive-type{position:absolute;left:0;top:0;pointer-events:none;transform-origin:0 0;visibility:hidden;will-change:transform,opacity}
 .dive-type svg{display:block}
 .dive-ui{position:absolute;left:0;right:0;bottom:0;padding:clamp(70px,12vh,130px) 0 clamp(18px,5vh,54px);background:linear-gradient(0deg,rgba(10,6,22,.92) 0%,rgba(10,6,22,.7) 45%,rgba(10,6,22,0) 100%);display:flex;align-items:center;justify-content:center;gap:clamp(14px,3vw,44px);
@@ -645,8 +647,29 @@ html[data-a11y-size="3"] :is(p,blockquote,label,h3,.ct-nav a,.ct-links a,.menu-l
     grid.innerHTML = buildGrid(4, rows, CW, MCH);
     fit(W, H / 2, .9, 260, .102);
   }
-  // the grid stays sharp and visible everywhere, behind the words too
-  const relayout = () => { layout(); };
+  // a light blur of the grid right behind the words: the sharp grid is masked out around the text block and a
+  // softly blurred copy shows there instead, with feathered edges (the rest of the grid stays sharp)
+  const NS = 'http://www.w3.org/2000/svg', defs = svg.querySelector('defs');
+  const mk = (tag, attrs, parent) => { const e = document.createElementNS(NS, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); parent && parent.appendChild(e); return e; };
+  mk('filter', { id: 'gsoft', x: '-5%', y: '-5%', width: '110%', height: '110%' }, defs).appendChild(mk('feGaussianBlur', { stdDeviation: 3.5 }));
+  const feather = mk('filter', { id: 'gfeather', x: '-50%', y: '-50%', width: '200%', height: '200%' }, defs); feather.appendChild(mk('feGaussianBlur', { stdDeviation: 60 }));
+  const mOut = mk('mask', { id: 'gmOut', maskUnits: 'userSpaceOnUse', x: -500, y: -500, width: 9000, height: 9000 }, defs);
+  mk('rect', { x: -500, y: -500, width: 9000, height: 9000, fill: '#fff' }, mOut);
+  const holeOut = mk('rect', { fill: '#000', filter: 'url(#gfeather)' }, mOut);
+  const mIn = mk('mask', { id: 'gmIn', maskUnits: 'userSpaceOnUse', x: -500, y: -500, width: 9000, height: 9000 }, defs);
+  const holeIn = mk('rect', { fill: '#fff', filter: 'url(#gfeather)' }, mIn);
+  grid.id = 'heroGrid';
+  const wrap = mk('g', { mask: 'url(#gmOut)' }); grid.parentNode.insertBefore(wrap, grid); wrap.appendChild(grid);
+  const soft = mk('use', { href: '#heroGrid', filter: 'url(#gsoft)', mask: 'url(#gmIn)', opacity: '.6' }); wrap.after(soft);
+  function soften() {
+    let x0 = 1e9, y0 = 1e9, x1 = -1e9, y1 = -1e9;
+    texts.forEach(t => { try { const b = t.getBBox(); x0 = Math.min(x0, b.x); y0 = Math.min(y0, b.y); x1 = Math.max(x1, b.x + b.width); y1 = Math.max(y1, b.y + b.height); } catch (_) {} });
+    if (x1 < x0) return;
+    const pad = 40, a = { x: x0 - pad, y: y0 - pad, width: x1 - x0 + 2 * pad, height: y1 - y0 + 2 * pad, rx: 120 };
+    for (const k in a) { holeOut.setAttribute(k, a[k]); holeIn.setAttribute(k, a[k]); }
+    window.HERO_TEXT_BOX = a;                                            // dive3d.js blurs the same area while the camera flies in
+  }
+  const relayout = () => { layout(); soften(); };
   relayout();
   document.fonts && document.fonts.ready.then(() => { mode = ''; relayout(); });
   mq.addEventListener('change', relayout);
@@ -668,6 +691,7 @@ if (window.GhostCursor && matchMedia('(hover: hover)').matches) GhostCursor(docu
 <div class="dive-stage" id="diveStage">
   <canvas id="diveCanvas" aria-hidden="true"></canvas>
   <div class="dive-light" aria-hidden="true"></div>
+  <div class="dive-soft" aria-hidden="true"></div>
   <div class="dive-type" id="diveType" aria-hidden="true"></div>
   <div class="dive-ui" dir="rtl">
     <button class="dive-prev" type="button" aria-label="לפרויקט הקודם"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>

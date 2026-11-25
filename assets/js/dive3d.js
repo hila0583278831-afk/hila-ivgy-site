@@ -21,7 +21,7 @@ import * as THREE from 'three';
 
 const dive = document.getElementById('dive'), hero = document.getElementById('hero');
 const stage = document.getElementById('diveStage'), canvas = document.getElementById('diveCanvas');
-const typeLayer = document.getElementById('diveType'), light = stage.querySelector('.dive-light');
+const typeLayer = document.getElementById('diveType'), light = stage.querySelector('.dive-light'), softLayer = stage.querySelector('.dive-soft');
 const cap = stage.querySelector('.dive-cap'), capNum = cap.querySelector('.n'), capName = cap.querySelector('.t'), capShort = cap.querySelector('.s');
 const btnPrev = stage.querySelector('.dive-prev'), btnNext = stage.querySelector('.dive-next'), btnOpen = cap.querySelector('.o');
 const PROJ = (window.PROJECTS || []).filter(p => p.hero);
@@ -336,13 +336,22 @@ function start() {
       u.uCell.value.set(.5 - i, rg + .5);                              // project i: i cells to the left of the centre cell
       u.uPx.value.set(cw, ch); u.uRad.value = G.rad; u.uCellA.value = cw / ch;
     });
-    cloneType(); dirty = true;
+    cloneType(); placeSoft(); dirty = true;
   }
 
+  // the hero's light blur behind the words, kept while the camera flies in: a backdrop-blur box over the text
+  // block (the same box the hero uses), moved with the hero plane
+  function placeSoft() {
+    const a = window.HERO_TEXT_BOX, svg = hero.querySelector('svg'), m = svg.getScreenCTM(), hr = hero.getBoundingClientRect();
+    if (!a || !m) return;
+    const l = a.x * m.a + m.e - hr.left, t = a.y * m.d + m.f - hr.top;
+    Object.assign(softLayer.style, { left: l + 'px', top: t + 'px', width: a.width * m.a + 'px', height: a.height * m.d + 'px',
+      transformOrigin: `${-l}px ${-t}px` });                            // = the stage's top-left, like the hero's own transform
+  }
   // the headline is cloned above the canvas, so the grid never draws over the letters while the camera flies in
   function cloneType() {
     const svg = hero.querySelector('svg').cloneNode(true);
-    svg.querySelectorAll('.hero-grid').forEach(g => g.remove());
+    svg.querySelectorAll('.hero-grid, use').forEach(g => g.remove());   // the words only (the blurred grid copy is a <use>)
     svg.removeAttribute('style');
     const r = hero.getBoundingClientRect();
     svg.setAttribute('width', r.width); svg.setAttribute('height', r.height);
@@ -396,10 +405,11 @@ function start() {
       typeLayer.style.opacity = (1 - smooth((dv - .2) / .45)).toFixed(3);
       typeLayer.style.filter = dv > .2 ? `blur(${(smooth((dv - .2) / .5) * 10).toFixed(1)}px)` : '';
       typeLayer.style.visibility = 'visible';
+      softLayer.style.transform = tf; softLayer.style.opacity = typeLayer.style.opacity; softLayer.style.visibility = 'visible';
       const ht = heroType(); if (ht) ht.style.visibility = 'hidden';
       const hg = heroGrid(); if (hg) hg.style.opacity = (1 - clamp(q / .1)).toFixed(3);
     } else {
-      hero.style.transform = ''; typeLayer.style.visibility = 'hidden';
+      hero.style.transform = ''; typeLayer.style.visibility = 'hidden'; softLayer.style.visibility = 'hidden';
       const ht = heroType(); if (ht) ht.style.visibility = '';
       const hg = heroGrid(); if (hg) hg.style.opacity = '';
     }
