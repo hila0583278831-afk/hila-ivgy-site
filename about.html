@@ -7,6 +7,8 @@
 <meta name="description" content="נעים להכיר, אני הילה איבגי – מעצבת עסקים מהלוגו ועד האתר. הסיפור שלי, איך אני עובדת ומה חשוב לי בכל פרויקט.">
 <link rel="icon" href="assets/logo.png">
 <link rel="stylesheet" href="assets/pages.css">
+<script type="importmap">{"imports":{"three":"./assets/js/vendor/three.module.min.js"}}</script>
+<script type="module" src="assets/js/journey3d.js"></script>
 <style>
 .a-hero{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);align-items:end;gap:clamp(20px,4vw,70px);padding-top:clamp(110px,14vh,170px)}
 .a-hero .p-big{text-align:start;font-size:clamp(80px,11.5vw,230px)}
@@ -21,10 +23,31 @@
 .a-story .txt p strong{color:#fff;font-weight:600}
 /* three services as leaf cards */
 .serv{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(14px,2vw,30px);margin-top:clamp(28px,4vw,60px)}
-.serv article{padding:clamp(28px,3vw,50px);min-height:clamp(260px,24vw,380px);display:flex;flex-direction:column;justify-content:flex-end}
-.serv .n{font-size:clamp(60px,6vw,110px);line-height:.8;color:transparent;-webkit-text-stroke:2px rgba(255,255,255,.7);margin-bottom:auto}
-.serv h3{margin:18px 0 10px;font-size:clamp(24px,2vw,34px)}
-.serv p{margin:0;font-size:clamp(15px,1.1vw,18px);line-height:1.6;color:var(--soft);font-family:"Segoe UI",Arial,sans-serif;font-weight:400}
+/* the home page's step shapes: a hero-grid cell (322 × 289.8) with leaf-family corners, glass fill, gradient edge, 3D object on top */
+.serv{gap:clamp(24px,3vw,56px);margin-top:clamp(60px,7vw,110px)}
+.scell{position:relative;aspect-ratio:322/300}
+.sstep{position:absolute;inset:0;overflow:hidden;display:flex;flex-direction:column;justify-content:flex-end;
+  padding:clamp(16px,1.8vw,32px) clamp(20px,2.2vw,40px);
+  background:linear-gradient(150deg,rgba(142,76,242,.42),rgba(82,39,255,.28) 55%,rgba(255,0,255,.22));
+  -webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
+.sstep::before{content:"";position:absolute;inset:0;border-radius:inherit;padding:2.6px;pointer-events:none;z-index:2;
+  background:linear-gradient(90deg,#3A46EC,#4A43EA 50%,#8E4CF2);
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude}
+.sh1{border-radius:0 42.5% 0 42.5% / 0 47.3% 0 47.3%}
+.sh2{border-radius:42.5% 0 42.5% 0 / 47.3% 0 47.3% 0}
+.sh5{border-radius:42.5% / 47.3%}
+.s3d{position:absolute;left:0;right:0;top:0;height:52%;z-index:1}
+.s3d canvas{display:block;width:100%;height:100%}
+.snum{position:absolute;z-index:3;top:-.42em;left:-.06em;font-size:clamp(70px,8vw,150px);line-height:1;letter-spacing:-.03em;pointer-events:none;
+  color:transparent;-webkit-text-fill-color:transparent;-webkit-text-stroke:2px #FF9FFC;filter:drop-shadow(0 0 14px rgba(180,107,255,.45))}
+.sbody{position:relative;z-index:2}
+/* keep the text clear of the rounded bottom corners */
+.sh1 .sbody{padding-left:30%}
+.sh2 .sbody{padding-right:30%}
+.sh5 .sbody{text-align:center;padding:0 14% 10%}
+.sbody h3{margin:0 0 .3em;font-size:clamp(20px,1.7vw,32px);line-height:1.05}
+.sbody p{margin:0;font-size:clamp(13px,.95vw,17px);line-height:1.45;color:rgba(255,255,255,.92);font-weight:600}
+@media (max-width:900px){.serv{grid-template-columns:1fr;gap:70px}.scell{width:min(480px,100%);justify-self:center}.sbody p{font-size:15px}.sbody h3{font-size:24px}}
 /* how I work – big gradient blocks, one under the other, alternating sides */
 .steps{list-style:none;margin:clamp(28px,4vw,60px) 0 0;padding:0;display:flex;flex-direction:column;gap:clamp(16px,2vw,28px);counter-reset:s}
 .steps li{position:relative;overflow:hidden;width:min(900px,100%);display:grid;grid-template-columns:auto minmax(0,1fr);align-items:center;gap:clamp(20px,3vw,50px);
@@ -84,9 +107,16 @@
 <section class="wrap" aria-labelledby="servT">
   <h2 id="servT" class="sec-t rv">מה אני <span class="hl">עושה</span></h2>
   <div class="serv">
-    <article class="glass leaf rv"><span class="n" aria-hidden="true">01</span><h3>מיתוג</h3><p>שם, לוגו, צבעים, טיפוגרפיה ושפה ויזואלית – רעיון אחד חזק שממנו נולד כל השאר.</p></article>
-    <article class="glass leaf2 rv"><span class="n" aria-hidden="true">02</span><h3>עיצוב אתרים</h3><p>אתר שמספר את הסיפור שלכם, מוביל את הגולש צעד אחר צעד ונראה מושלם בכל מסך.</p></article>
-    <article class="glass leaf rv"><span class="n" aria-hidden="true">03</span><h3>בניית אתרים</h3><p>אתר מהיר, נגיש ומותאם לנייד – עם אנימציות שמרגישות כמו חוויה, לא כמו קישוט.</p></article>
+    <!-- the same shapes + 3D objects as the steps on the home page (assets/js/journey3d.js draws the objects) -->
+    <article class="scell rv"><span class="snum" aria-hidden="true">01</span><div class="sstep sh1">
+      <div class="s3d" aria-hidden="true"><canvas data-obj="bulb"></canvas></div>
+      <div class="sbody"><h3>מיתוג</h3><p>שם, לוגו, צבעים, טיפוגרפיה ושפה ויזואלית – רעיון אחד חזק שממנו נולד כל השאר.</p></div></div></article>
+    <article class="scell rv"><span class="snum" aria-hidden="true">02</span><div class="sstep sh2">
+      <div class="s3d" aria-hidden="true"><canvas data-obj="design"></canvas></div>
+      <div class="sbody"><h3>עיצוב אתרים</h3><p>אתר שמספר את הסיפור שלכם, מוביל את הגולש צעד אחר צעד ונראה מושלם בכל מסך.</p></div></div></article>
+    <article class="scell rv"><span class="snum" aria-hidden="true">03</span><div class="sstep sh5">
+      <div class="s3d" aria-hidden="true"><canvas data-obj="rocket"></canvas></div>
+      <div class="sbody"><h3>בניית אתרים</h3><p>אתר מהיר, נגיש ומותאם לנייד – עם אנימציות שמרגישות כמו חוויה, לא כמו קישוט.</p></div></div></article>
   </div>
 </section>
 
