@@ -237,7 +237,12 @@ body.menu-open .menu-dim{opacity:1;pointer-events:auto}
   .pcell .pnum{font-size:92px;top:-.34em;left:.12em}}
 
 
-/* ---------- TESTIMONIALS: white section, giant word, a purple grid of shapes with a reaction inside each ---------- */
+/* ---------- under WORKS: concave screen wall, sites drifting past (glowing screens) ---------- */
+.cwall{position:relative;padding:0 0 clamp(60px,8vw,140px);overflow:hidden}
+.cw-stage{position:relative;width:100%;perspective-origin:50% 50%}
+.cw-ring{position:absolute;left:50%;top:50%;width:0;height:0;transform-style:preserve-3d}
+.cw-card{position:absolute;left:0;top:0;border-radius:14px;background:#140C24 center top/cover no-repeat;will-change:transform,opacity;
+  box-shadow:0 0 0 2px rgba(205,175,255,.75),0 0 26px 2px rgba(150,95,255,.55),0 30px 60px -20px rgba(0,0,0,.6)}/* ---------- TESTIMONIALS: white section, giant word, a purple grid of shapes with a reaction inside each ---------- */
 .tst{position:relative;overflow:hidden;color:#0E0A18;font-family:'Lia Element',sans-serif;font-weight:600;padding:clamp(200px,32vh,340px) 0 clamp(80px,10vw,160px);background:#fff}
 /* transition: the deep purple of the process section melts into white */
 .tst-fade{position:absolute;left:0;right:0;top:0;height:clamp(260px,42vh,460px);pointer-events:none;
@@ -857,7 +862,49 @@ if (window.GhostCursor && matchMedia('(hover: hover)').matches) GhostCursor(docu
   </div>
   <p class="to-page"><a class="to-btn" href="works.html">לכל העבודות והסיפורים שמאחוריהן <svg width="34" height="10" viewBox="0 0 53 12" fill="none" stroke="currentColor" stroke-width="2.6" aria-hidden="true"><path d="M53 6H1M7 1 1 6l6 5"/></svg></a></p>
 </section>
-
+<!-- under WORKS: the sites drift past on a concave screen wall (we stand inside a cylinder – the sides curve towards us) -->
+<section class="cwall" id="cwall" aria-label="אתרים שעיצבתי">
+  <div class="cw-stage" id="cwStage" aria-hidden="true"><div class="cw-ring" id="cwRing"></div></div>
+</section>
+<script>
+(() => {
+  const stage = document.getElementById('cwStage'), ring = document.getElementById('cwRing');
+  // flat site screenshots only (no device mockups)
+  const SH = ['in-avney-1.jpg', 'in-hapisga-2.jpg', 'in-event-0.jpg', 'in-vortex-0.jpg', 'mock1.jpg', 'in-hapisga-4.jpg', 'in-event-2.jpg',
+              'in-avney-2.jpg', 'mock3.jpg', 'in-vortex-b.jpg', 'in-hapisga-1.jpg', 'mock2.jpg', 'in-avney-3.jpg', 'in-hapisga-6.jpg'];
+  const cards = SH.map(s => { const d = document.createElement('div'); d.className = 'cw-card'; d.style.backgroundImage = `url(assets/shots/${s})`; ring.appendChild(d); return { d, op: null }; });
+  let W, R, cw, ch, step, span, off = 0, speed = .045, boost = 0, hover = false;
+  function layout() {
+    W = stage.clientWidth; const phone = W < 700;
+    cw = phone ? W * .62 : Math.min(W * .3, 560); ch = cw * .625;
+    R = phone ? W * .9 : W * .5;                            // cylinder radius (we look from its axis outwards)
+    step = (cw * 1.08) / R; span = cards.length * step;
+    stage.style.height = Math.round(ch * 1.75) + 'px';
+    stage.style.perspective = Math.round(phone ? W * 1.3 : W * .6) + 'px';
+    cards.forEach(c => { c.d.style.width = cw + 'px'; c.d.style.height = ch + 'px'; c.d.style.marginLeft = -cw / 2 + 'px'; c.d.style.marginTop = -ch / 2 + 'px'; });
+  }
+  layout(); addEventListener('resize', layout);
+  stage.addEventListener('pointerenter', () => hover = true); stage.addEventListener('pointerleave', () => hover = false);
+  let lastY = scrollY; addEventListener('scroll', () => { boost += (scrollY - lastY) * .00035; lastY = scrollY; }, { passive: true });
+  const still = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let last = performance.now(), vis = true;
+  new IntersectionObserver(e => { vis = e[0].isIntersecting; if (vis) { last = performance.now(); requestAnimationFrame(frame); } }).observe(stage);
+  function frame(now) {
+    const dt = Math.min(.05, (now - last) / 1000); last = now;
+    boost *= .92;
+    if (!still) off += ((hover ? .25 : 1) * speed + boost) * dt;
+    cards.forEach((c, i) => {
+      let a = i * step - off; a = ((a + span / 2) % span + span) % span - span / 2;      // wrap around
+      const x = Math.sin(a) * R, z = (1 - Math.cos(a)) * R;                               // sides come towards us
+      c.d.style.transform = `translate3d(${x.toFixed(1)}px,0,${z.toFixed(1)}px) rotateY(${(-a).toFixed(4)}rad)`;
+      const op = Math.max(0, Math.min(1, (1.15 - Math.abs(a)) / .25)).toFixed(3);
+      if (op !== c.op) { c.op = op; c.d.style.opacity = op; c.d.style.visibility = op > 0 ? 'visible' : 'hidden'; }
+    });
+    if (vis) requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+})();
+</script>
 <section class="brand" id="branding" aria-labelledby="brandTitle">
   <i class="tick" aria-hidden="true"></i>
   <h2 class="bk" id="brandTitle" lang="en">BRANDING</h2>
