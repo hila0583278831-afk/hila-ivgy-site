@@ -569,7 +569,7 @@ html[data-a11y-size="3"] :is(p,blockquote,label,h3,.ct-nav a,.ct-links a,.menu-l
     for (let j = 0; j < rows; j++) for (let i = 0; i < cols; i++) {
       const x = i * w, y = j * h;
       g += `<rect x="${f1(x)}" y="${f1(y)}" width="${f1(w)}" height="${f1(h)}" fill="none" stroke="url(#gl)" stroke-width="1.6"/>` +
-        `<path d="${shape(x, y, w, h, PAT[j % 6][i % 2])}" fill="none" stroke="url(#gs)" stroke-width="2.4"/>`;
+        `<path d="${shape(x, y, w, h, PAT[j % 6][i % 2])}" data-g="${i},${j},${f1(x)},${f1(y)},${f1(w)},${f1(h)}" fill="none" stroke="url(#gs)" stroke-width="2.4"/>`;
     }
     return g;
   };
@@ -638,7 +638,35 @@ html[data-a11y-size="3"] :is(p,blockquote,label,h3,.ct-nav a,.ct-links a,.menu-l
   }
   const relayout = () => { layout(); soften(); };
   relayout();
-  document.fonts && document.fonts.ready.then(() => { mode = ''; relayout(); });
+  // like the testimonials: every 2 seconds each shape morphs into the shape of the next cell in the pattern.
+  // Every corner is always drawn as an arc (radius 0 = square corner), so the radii can glide from one shape to the next.
+  if (!matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    const arcPath = (x, y, w, h, r) => `M${f1(x + r[0])},${f1(y)} H${f1(x + w - r[1])} A${f1(r[1])},${f1(r[1])} 0 0 1 ${f1(x + w)},${f1(y + r[1])}` +
+      ` V${f1(y + h - r[2])} A${f1(r[2])},${f1(r[2])} 0 0 1 ${f1(x + w - r[2])},${f1(y + h)} H${f1(x + r[3])} A${f1(r[3])},${f1(r[3])} 0 0 1 ${f1(x)},${f1(y + h - r[3])}` +
+      ` V${f1(y + r[0])} A${f1(r[0])},${f1(r[0])} 0 0 1 ${f1(x + r[0])},${f1(y)} Z`;
+    const radii = (m, h) => [...m].map(c => c === 'R' ? h / 2 : 0);
+    let shift = 0, seen = true, cells = [];
+    new IntersectionObserver(e => { seen = e[0].isIntersecting; }).observe(hero);
+    const collect = () => {                                     // the grid is rebuilt on resize / phone layout: re-read it
+      const ps = [...grid.querySelectorAll('path[data-g]')];
+      if (cells.length && cells[0].el === ps[0]) return;
+      shift = 0;
+      cells = ps.map(el => { const [i, j, x, y, w, h] = el.dataset.g.split(',').map(Number); return { el, i, j, x, y, w, h, r: radii(PAT[j % 6][i % 2], h) }; });
+    };
+    const ease = t => t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+    setInterval(() => {
+      if (!seen || document.hidden) return;
+      collect(); shift++;
+      const from = cells.map(c => c.r.slice()), to = cells.map(c => radii(PAT[(c.j + shift) % 6][(c.i + shift) % 2], c.h));
+      const t0 = performance.now(), dur = 900;
+      const step = now => {
+        const k = ease(Math.min(1, (now - t0) / dur));
+        cells.forEach((c, n) => { c.r = from[n].map((v, q) => v + (to[n][q] - v) * k); c.el.setAttribute('d', arcPath(c.x, c.y, c.w, c.h, c.r)); });
+        if (k < 1) requestAnimationFrame(step);
+      };
+      requestAnimationFrame(step);
+    }, 2000);
+  }  document.fonts && document.fonts.ready.then(() => { mode = ''; relayout(); });
   mq.addEventListener('change', relayout);
   addEventListener('resize', () => { if (mq.matches) { mode = ''; } relayout(); });
 })();
