@@ -80,18 +80,6 @@ body.menu-open .menu-dim{opacity:1;pointer-events:auto}
 /* sized by width (2576:1449) so the 8-column leaf grid continues 1:1 into the next section */
 .hero{position:relative;width:100%;aspect-ratio:2576/1449;overflow:hidden;background-color:#5C2696;font-family:'Lia Element',sans-serif}
 @media (max-width:700px){.hero{aspect-ratio:auto;height:100svh;min-height:540px;max-height:900px}}
-/* hero: buttons + client logos under the headline, project pictures inside a few cells */
-.hero-ui{position:absolute;left:0;right:0;top:78%;z-index:3;display:flex;flex-direction:column;align-items:center;gap:clamp(18px,3vh,36px);font-family:'Lia Element',sans-serif;font-weight:600}
-.hero-cta{display:flex;gap:12px;flex-wrap:wrap;justify-content:center}
-.hero-cta a{padding:clamp(13px,1.1vw,18px) clamp(24px,2.2vw,38px);border-radius:999px;font-size:clamp(15px,1.1vw,19px);text-decoration:none;transition:background .3s,color .3s,box-shadow .3s}
-.hc-main{background:#fff;color:#3B1F8F;box-shadow:0 14px 30px -12px rgba(20,6,60,.6)}
-.hc-main:hover{background:#FF00FF;color:#fff}
-.hc-sub{color:#fff;box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.7)}
-.hc-sub:hover{background:rgba(255,255,255,.14)}
-.hero-logos{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:clamp(18px,3vw,54px);opacity:.72}
-.hero-logos img{height:clamp(18px,1.9vw,32px);width:auto;display:block}
-.hero .hshot{opacity:.9;transition:opacity .7s ease}
-@media (max-width:700px){.hero-logos{gap:14px 22px;padding:0 18px}.hero-logos img{height:18px}}
 
 /* ---------- projects wall (after tsivia.com's reel): cards fly in one by one and lock into a tilted grid ---------- */
 .reel{position:relative;height:620vh}
@@ -588,10 +576,6 @@ html[data-a11y-size="3"] :is(p,blockquote,label,h3,.ct-nav a,.ct-links a,.menu-l
 <text class="sub" x="1288" y="984" font-size="135" fill="#EFE6FF">בוא נבנה לך אתר ייחודי</text>
 <text class="sub" x="1288" y="1120" font-size="135" fill="#EFE6FF">שאי אפשר לשכוח</text></g>
 </svg>
-<div class="hero-ui" id="heroUi" dir="rtl">
-  <div class="hero-cta"><a class="hc-main" href="#contact">בואו נבנה את שלכם</a><a class="hc-sub" href="works.html">לעבודות שלי</a></div>
-  <div class="hero-logos" aria-label="לקוחות שעבדתי איתם"><img src="assets/branding/logos-w/trolist.png" alt="TROLIST"><img src="assets/branding/logos-w/ortal.png" alt="אורטל וייצמן"><img src="assets/branding/logos-w/zeroten.png" alt="ZERO TEN"><img src="assets/branding/logos-w/estilo.png" alt="ESTILO"><img src="assets/branding/logos-w/silverline.png" alt="סילבר ליין"><img src="assets/branding/logos-w/oshri.png" alt="משה אושרי"><img src="assets/branding/logos-w/biscotti.png" alt="Biscotti"><img src="assets/branding/logos-w/yona.png" alt="הרב אביגד יונה"></div>
-</div>
 </section>
 <script>
 /* phones: the landscape hero would be a thin strip, so rebuild it as a full-height portrait grid –
@@ -655,7 +639,7 @@ html[data-a11y-size="3"] :is(p,blockquote,label,h3,.ct-nav a,.ct-links a,.menu-l
       // fit the text into the part of the box that is on screen in the first view
       const r = hero.getBoundingClientRect(), vis = Math.min(1449, 1449 * innerHeight / Math.max(r.height, 1));
       // measured from the design (2000×1125 mock): widest line = 83.5% of the width, pitch = 10.2% of it, block centre at 51.1% height
-      fit(2576, vis * .44, .7125, vis * .55);
+      fit(2576, vis * .5, .7125, vis * .58);
       return;
     }
     mode = 'm';
@@ -665,7 +649,7 @@ html[data-a11y-size="3"] :is(p,blockquote,label,h3,.ct-nav a,.ct-links a,.menu-l
     const H = rows * MCH;
     svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
     grid.innerHTML = buildGrid(4, rows, CW, MCH);
-    fit(W, H * .42, .92);
+    fit(W, H / 2, .92);
   }
   // a light blur of the grid right behind the words: the sharp grid is masked out around the text block and a
   // softly blurred copy shows there instead, with feathered edges (the rest of the grid stays sharp)
@@ -689,36 +673,7 @@ html[data-a11y-size="3"] :is(p,blockquote,label,h3,.ct-nav a,.ct-links a,.menu-l
     for (const k in a) { holeOut.setAttribute(k, a[k]); holeIn.setAttribute(k, a[k]); }
     window.HERO_TEXT_BOX = a;
   }
-  // a few cells (never behind the words) show a project inside their shape; every few seconds one of them changes picture
-  const SHOTS = ['in-avney-1.jpg', 'in-hapisga-2.jpg', 'in-event-0.jpg', 'in-vortex-0.jpg', 'in-hapisga-4.jpg', 'in-avney-2.jpg', 'in-event-2.jpg', 'in-hapisga-6.jpg'];
-  let shotG = null, shotN = 0;
-  function shots() {
-    if (shotG) shotG.remove(); defs.querySelectorAll('.hshot-clip').forEach(c => c.remove());
-    const rows = grid.querySelectorAll('path[data-g]').length / (mode === 'm' ? 4 : 10);
-    const cells = mode === 'm' ? [[3, 1], [0, rows - 2], [3, rows - 1]] : [[0, 1], [9, 0], [1, 5], [8, 5], [9, 3]];   // away from the words, the logo and the buttons
-    const wrap = grid.parentNode; shotG = mk('g', { class: 'hero-shots' }); wrap.parentNode.insertBefore(shotG, wrap);
-    cells.forEach(([i, j], n) => {
-      const p = grid.querySelector(`path[data-g^="${i},${j},"]`); if (!p) return;
-      const [, , x, y, w, h] = p.dataset.g.split(',').map(Number);
-      p.id = `hc${i}_${j}`;
-      const cp = mk('clipPath', { id: `hcp${i}_${j}`, class: 'hshot-clip' }, defs); mk('use', { href: `#hc${i}_${j}` }, cp);
-      mk('image', { href: `assets/shots/${SHOTS[(n + shotN) % SHOTS.length]}`, x, y, width: w, height: h, preserveAspectRatio: 'xMidYMid slice', 'clip-path': `url(#hcp${i}_${j})`, class: 'hshot' }, shotG);
-    });
-  }
-  if (!matchMedia('(prefers-reduced-motion: reduce)').matches) setInterval(() => {
-    if (document.hidden || !shotG) return;
-    const ims = shotG.querySelectorAll('image'); if (!ims.length) return;
-    const im = ims[shotN % ims.length]; shotN++;
-    im.style.opacity = 0;
-    setTimeout(() => { im.setAttribute('href', `assets/shots/${SHOTS[(shotN * 3) % SHOTS.length]}`); im.style.opacity = ''; }, 700);
-  }, 2600);
-  // the buttons and the client logos sit right under the last line of the headline
-  const ui = document.getElementById('heroUi');
-  function placeUi() {
-    const hr = hero.getBoundingClientRect(), lr = texts[texts.length - 1].getBoundingClientRect();
-    ui.style.top = (lr.bottom - hr.top + Math.max(18, innerHeight * .035)) + 'px';
-  }
-  const relayout = () => { layout(); soften(); shots(); placeUi(); };
+  const relayout = () => { layout(); soften(); };
   relayout();
   // like the testimonials: every 2 seconds each shape morphs into the shape of the next cell in the pattern.
   // Every corner is always drawn as an arc (radius 0 = square corner), so the radii can glide from one shape to the next.
