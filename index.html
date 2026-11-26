@@ -571,10 +571,10 @@ html[data-a11y-size="3"] :is(p,blockquote,label,h3,.ct-nav a,.ct-links a,.menu-l
 <path d="M2254.0,1159.2 H2439.0 A137,137 0 0 1 2576.0,1296.2 V1449.0 H2391.0 A137,137 0 0 1 2254.0,1312.0 Z" fill="none" stroke="url(#gs)" stroke-width="2.6"></path>
 </g>
 <g class="hero-type" id="heroType" font-family="Lia Element, sans-serif" font-weight="600" direction="rtl" text-anchor="middle">
-<text class="big" x="1288" y="540" font-size="230" fill="#FFFFFF">אין הזדמנות שנייה</text>
-<text class="big" x="1288" y="752" font-size="230" fill="#0B0614">לרושם ראשוני</text>
-<text class="sub" x="1288" y="984" font-size="135" fill="#EFE6FF">בוא נבנה לך אתר ייחודי</text>
-<text class="sub" x="1288" y="1120" font-size="135" fill="#EFE6FF">שאי אפשר לשכוח</text></g>
+<text class="big l1" x="1288" y="400" font-size="300" fill="#FFFFFF">אין הזדמנות</text>
+<text class="big l2" x="1288" y="640" font-size="200" fill="#0B0614">שנייה לרושם</text>
+<text class="big l3" x="1288" y="1000" font-size="300" fill="url(#fade)">ראשוני</text>
+<text class="sub" x="1288" y="1200" font-size="90" fill="#EFE6FF">בוא נבנה לך אתר ייחודי שאי אפשר לשכוח</text></g>
 </svg>
 </section>
 <script>
@@ -617,21 +617,27 @@ html[data-a11y-size="3"] :is(p,blockquote,label,h3,.ct-nav a,.ct-links a,.menu-l
   // pw: line pitch as a fraction of the widest line's width (so the spacing keeps the design's proportion)
   // two big headline lines + two smaller sub lines, measured from the design (2000×1125 mock):
   // widest big line = 1425px, widest sub line = 1253px, baselines at 420 / 585 / 765 / 870, block centre at 587
-  const BASE = [420, 585, 735, 815], MID = 560, BIGW = 1425, SUBW = 880, BLOCK = 540;
-  function fit(W, cy, k, maxH = 1e9) {
-    texts.forEach(t => { t.setAttribute('x', W / 2); t.setAttribute('font-size', 100); t.setAttribute('letter-spacing', -2); });
-    let mb = 0, ms = 0;
-    texts.forEach(t => { try { const w = t.getBBox().width; if (t.classList.contains('sub')) ms = Math.max(ms, w); else mb = Math.max(mb, w); } catch (_) {} });
-    let u = k * W / BIGW;                                // viewBox units per design px
-    u = Math.min(u, maxH / BLOCK);                       // never taller than the visible hero
-    const Sb = mb ? 100 * BIGW * u / mb : 200, Ss = ms ? 100 * SUBW * u / ms : 120;
+  // the headline in the 'Websites / that leave / a mark' structure: every line has its own size so that it spans
+  // a set share of the width, the lines sit tight under each other, the middle line is black and the last word is
+  // as big as the first and fades downwards; one small line under it. Stacked around cy, never taller than maxH.
+  const SPAN = { l1: .84, l2: .58, sub: .5 };
+  function fit(W, cy, maxH = 1e9) {
+    texts.forEach(t => { t.setAttribute('x', W / 2); t.setAttribute('font-size', 100); t.setAttribute('letter-spacing', 0); });
+    const w = {}; texts.forEach(t => { try { w[t.classList[1] || 'sub'] = t.getBBox().width; } catch (_) {} });
+    let S1 = 100 * SPAN.l1 * W / (w.l1 || 500), S2 = 100 * SPAN.l2 * W / (w.l2 || 500), S3 = S1 * 1.08, S4 = 100 * SPAN.sub * W / (w.sub || 900);
+    S4 = Math.min(S4, S1 * .3);
+    const A = .72;                                                       // cap height of Lia Element (share of the size)
+    const stack = k => { const a = S1 * k * A, b = a + S1 * k * .16 + S2 * k * A, c = b + S2 * k * .2 + S3 * k * A, d = c + S3 * k * .42 + S4 * k * A; return [a, b, c, d]; };
+    let k = 1, ys = stack(1);
+    if (ys[3] > maxH) { k = maxH / ys[3]; ys = stack(k); }
+    const top = cy - ys[3] / 2, sizes = [S1, S2, S3, S4].map(s => s * k);
     texts.forEach((t, i) => {
-      const S = t.classList.contains('sub') ? Ss : Sb;
-      t.setAttribute('font-size', S.toFixed(1)); t.setAttribute('letter-spacing', (-S * .02).toFixed(1));
-      t.setAttribute('y', (cy + (BASE[i] - MID) * u).toFixed(1));
+      t.setAttribute('font-size', sizes[i].toFixed(1)); t.setAttribute('letter-spacing', (-sizes[i] * (i === 3 ? 0 : .025)).toFixed(1));
+      t.setAttribute('y', (top + ys[i]).toFixed(1));
     });
-  }
-  function layout() {
+    // the fade of the last word runs over its own height
+    fade.setAttribute('y1', (top + ys[2] - sizes[2] * A).toFixed(1)); fade.setAttribute('y2', (top + ys[2]).toFixed(1));
+  }  function layout() {
     const want = mq.matches ? 'm' : 'd';
     if (want === 'd') {
       if (mode !== 'd') { mode = 'd'; svg.setAttribute('viewBox', orig.vb); grid.innerHTML = DESK; }
@@ -639,7 +645,7 @@ html[data-a11y-size="3"] :is(p,blockquote,label,h3,.ct-nav a,.ct-links a,.menu-l
       // fit the text into the part of the box that is on screen in the first view
       const r = hero.getBoundingClientRect(), vis = Math.min(1449, 1449 * innerHeight / Math.max(r.height, 1));
       // measured from the design (2000×1125 mock): widest line = 83.5% of the width, pitch = 10.2% of it, block centre at 51.1% height
-      fit(2576, vis * .5, .7125, vis * .58);
+      fit(2576, vis * .5, vis * .86);
       return;
     }
     mode = 'm';
@@ -649,7 +655,7 @@ html[data-a11y-size="3"] :is(p,blockquote,label,h3,.ct-nav a,.ct-links a,.menu-l
     const H = rows * MCH;
     svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
     grid.innerHTML = buildGrid(4, rows, CW, MCH);
-    fit(W, H / 2, .92);
+    fit(W, H / 2, H * .7);
   }
   // a light blur of the grid right behind the words: the sharp grid is masked out around the text block and a
   // softly blurred copy shows there instead, with feathered edges (the rest of the grid stays sharp)
