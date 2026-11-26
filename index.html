@@ -257,7 +257,7 @@ body.menu-open .menu-dim{opacity:1;pointer-events:auto}
   background:radial-gradient(55% 45% at 50% 46%,rgba(150,95,255,.28),transparent 72%),radial-gradient(40% 30% at 50% 100%,rgba(196,120,255,.25),transparent 70%)}
 .pg-space{position:absolute;inset:0;transform-style:preserve-3d}
 .pg-ring{position:absolute;left:50%;top:46%;width:0;height:0;transform-style:preserve-3d}
-.pg-card{position:absolute;left:0;top:0;padding:0;border:0;cursor:pointer;border-radius:16px;background:#140C24 center/contain no-repeat;will-change:transform,opacity;
+.pg-card{position:absolute;left:0;top:0;padding:0;border:0;cursor:pointer;border-radius:16px;background:#140C24 center/cover no-repeat;will-change:transform,opacity;
   box-shadow:0 0 0 1.5px rgba(215,190,255,.6),0 0 24px rgba(150,95,255,.35),0 40px 70px -30px rgba(10,0,30,.8);transition:box-shadow .35s}
 .pg-card.hot,.pg-card:focus-visible{box-shadow:0 0 0 2px #FF9FFC,0 0 40px rgba(255,120,255,.55),0 50px 80px -30px rgba(10,0,30,.9);outline:none}
 /* a soft lilac floor glow the avatar stands on */
@@ -1017,13 +1017,13 @@ if (window.GhostCursor && matchMedia('(hover: hover)').matches) GhostCursor(docu
   const P = {
     avney: { name: 'אבני הכתר', url: 'https://hila0583278831-afk.github.io/avney-haketer-site/' },
     hapisga: { name: 'הפסגה', url: 'https://hila0583278831-afk.github.io/hapisga-site/' },
-    event: { name: 'אירוע חד פעמי' }, vortex: { name: 'VORTEX' }
+    event: { name: 'אירוע חד פעמי' }, vortex: { name: 'VORTEX' }, biscotti: { name: 'Biscotti' },
+    infinity: { name: 'Infinity Cruises' }, ravitz: { name: 'RAVITZ – ניהול נכסים' }
   };
-  // the real site screenshots, each tied to its project
-  const SH = [['in-avney-1.jpg', 'avney'], ['in-hapisga-2.jpg', 'hapisga'], ['in-event-0.jpg', 'event'], ['in-vortex-0.jpg', 'vortex'], ['in-avney-5.jpg', 'avney'],
-              ['in-hapisga-4.jpg', 'hapisga'], ['in-event-2.jpg', 'event'], ['in-avney-2.jpg', 'avney'], ['in-hapisga-3.jpg', 'hapisga'], ['in-vortex-b.jpg', 'vortex'],
-              ['in-hapisga-1.jpg', 'hapisga'], ['in-event-c.jpg', 'event'], ['in-avney-3.jpg', 'avney'], ['in-hapisga-6.jpg', 'hapisga']];
-  const cards = SH.map(([img, id], i) => {
+  // the home page of each site (whole first screen, nothing cut), twice round the arc
+  const HOME = [['in-hapisga-1.jpg', 'hapisga'], ['home-avney.jpg', 'avney'], ['in-vortex-0.jpg', 'vortex'], ['in-event-0.jpg', 'event'],
+                ['home-biscotti.jpg', 'biscotti'], ['home-infinity.jpg', 'infinity'], ['home-ravitz.jpg', 'ravitz']];
+  const SH = [...HOME, ...HOME];  const cards = SH.map(([img, id], i) => {
     const b = document.createElement('button'); b.type = 'button'; b.className = 'pg-card';
     b.style.backgroundImage = `url(assets/shots/${img})`; b.setAttribute('aria-label', `${P[id].name} – פתיחה בתצוגה גדולה`);
     ring.appendChild(b);
@@ -1036,7 +1036,7 @@ if (window.GhostCursor && matchMedia('(hover: hover)').matches) GhostCursor(docu
   let W, H, R, cw, ch, step, span, phone;
   function layout() {
     W = stage.clientWidth; H = stage.clientHeight; phone = W < 700;
-    cw = phone ? W * .5 : Math.min(W * .2, 420); ch = cw * .625;
+    cw = phone ? W * .5 : Math.min(W * .2, 420); ch = cw / 1.72;   // home-page proportions
     R = phone ? W * 1.1 : W * .62;                                   // the arc's radius around the avatar
     step = (cw * 1.12) / R; span = cards.length * step;
     stage.style.perspective = Math.round(phone ? W * 1.5 : W * .7) + 'px';
