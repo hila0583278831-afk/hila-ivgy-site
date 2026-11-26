@@ -285,6 +285,7 @@ body.menu-open .menu-dim{opacity:1;pointer-events:auto}
 @media (max-width:900px){.tst-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
 @media (max-width:600px){.tst-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.tshape{padding:12% 11%}.tshape blockquote{font-size:13.5px}}
 /* header over light sections: logo turns dark */
+.foot-logo{position:relative;display:block;width:min(1600px,90vw);height:auto;margin:clamp(70px,9vw,150px) auto clamp(20px,3vw,46px);opacity:.92}
 .site-head .brand img{transition:filter .35s}
 .site-head.on-light .brand img{filter:brightness(0) saturate(100%) invert(8%) sepia(20%) saturate(2000%) hue-rotate(240deg)}
 
@@ -777,10 +778,11 @@ if (window.GhostCursor && matchMedia('(hover: hover)').matches) GhostCursor(docu
     setInterval(() => {
       if (document.hidden || +white.style.opacity < .3) return;
       shift++;
-      const from = grid.map(c => c.r.slice()), to = grid.map(c => rad(SEQ[(c.base + shift) % SEQ.length])), t0 = performance.now();
+      const g = grid, from = g.map(c => c.r.slice()), to = g.map(c => rad(SEQ[(c.base + shift) % SEQ.length])), t0 = performance.now();
       const step = now => {
         const k = ease(Math.min(1, (now - t0) / 900));
-        grid.forEach((c, n) => { c.r = from[n].map((v, q) => v + (to[n][q] - v) * k); c.p.setAttribute('d', arcs(c.x, c.y, c.r)); });
+        if (g !== grid) return;                                   // the grid was rebuilt (resize) – drop this morph
+        g.forEach((c, n) => { c.r = from[n].map((v, q) => v + (to[n][q] - v) * k); c.p.setAttribute('d', arcs(c.x, c.y, c.r)); });
         if (k < 1) requestAnimationFrame(step);
       };
       requestAnimationFrame(step);
@@ -1440,6 +1442,7 @@ if (window.GradientWaves) window.worksWaves = GradientWaves(document.getElementB
       <p class="ct-err" id="ctErr" role="alert" aria-live="polite"></p>
     </form>
   </div>
+  <img class="foot-logo" src="assets/logo.png" alt="" aria-hidden="true">
   <footer class="ct-foot" dir="rtl">
     <nav aria-label="מידע משפטי"><a href="accessibility.html">הצהרת נגישות</a><a href="privacy.html">מדיניות פרטיות</a><a href="terms.html">תנאי שימוש</a></nav>
     <p>© 2026 הילה איבגי – <span lang="en">HILA IVGY</span>. כל הזכויות שמורות. הסימנים המסחריים והעבודות המוצגים שייכים לבעליהם ומוצגים כתיק עבודות.</p>

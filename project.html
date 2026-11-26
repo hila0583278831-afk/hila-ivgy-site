@@ -12,12 +12,21 @@
 .pj-l{position:absolute;z-index:0;font-size:clamp(160px,22vw,400px);line-height:1;color:transparent;-webkit-text-stroke:2px #FF00FF;opacity:.55;pointer-events:none}
 .pj-l.a{top:2%;right:-3%}.pj-l.b{top:22%;left:-2%}
 .pj-t{position:relative;z-index:1;margin:0 0 clamp(26px,3vw,46px);font-size:clamp(34px,4.2vw,72px);line-height:1}
-.pj-img{position:relative;z-index:1;border-radius:22px;overflow:hidden;box-shadow:0 40px 90px -30px rgba(0,0,0,.8)}
-.pj-img img{width:100%;height:auto}
+.pj-img{position:relative;z-index:1;border-radius:22px;box-shadow:0 40px 90px -30px rgba(0,0,0,.8)}
+.pj-img img{width:100%;height:auto;border-radius:22px}
+/* award medal: text running round a slowly turning ring, a star in the middle */
+.pj-award{position:absolute;z-index:3;top:clamp(-46px,-3.4vw,-26px);left:clamp(-40px,-3vw,-20px);width:clamp(110px,11vw,180px);aspect-ratio:1;pointer-events:none}
+.pj-award .ring{position:absolute;inset:0;animation:awSpin 14s linear infinite}
+.pj-award .core{position:absolute;inset:22%;border-radius:50%;display:grid;place-items:center;
+  background:radial-gradient(circle at 35% 30%,#FFF3B0,#F5C542 45%,#C8901A 100%);box-shadow:0 0 0 3px rgba(255,255,255,.35),0 14px 34px -8px rgba(0,0,0,.6),0 0 30px rgba(245,197,66,.45)}
+.pj-award .core svg{width:46%;height:46%}
+@keyframes awSpin{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion:reduce){.pj-award .ring{animation:none}}
 .pj-body{display:grid;grid-template-columns:minmax(0,7fr) minmax(0,5fr);gap:40px;align-items:end;padding:clamp(70px,9vw,140px) 0 clamp(40px,5vw,80px)}
 .pj-txt p{margin:0 0 .9em;font-size:clamp(21px,2.1vw,32px);line-height:1.25}
 .pj-txt .c{opacity:.12;transition:opacity .4s}.pj-txt .c.on{opacity:1}
 .pj-go{justify-self:start}
+.big-logo{display:block;width:min(1500px,88vw);height:auto;margin:clamp(70px,9vw,150px) auto clamp(30px,4vw,60px)}
 .pj-gal{display:grid;grid-template-columns:1fr 1fr;gap:clamp(12px,1.4vw,22px)}
 .pj-gal figure{margin:0;border-radius:12px;overflow:hidden;background:#1A1030}
 .pj-gal figure.w{grid-column:1/-1}
@@ -60,7 +69,7 @@
   <section class="pj-gal" id="pjGal" aria-label="עמודים מהאתר"></section>
   <h2 class="more-h">פרויקטים נוספים</h2>
   <div class="car"><button class="car-b car-prev" type="button" aria-label="הקודם">›</button><div class="car-track" id="car"></div><button class="car-b car-next" type="button" aria-label="הבא">‹</button></div>
-  <p class="big-word" aria-hidden="true" lang="en">HILA IVGY</p>
+  <img class="big-logo" src="assets/logo.png" alt="" aria-hidden="true">
 </main>
 <footer class="pf"><nav aria-label="מידע משפטי"><a href="accessibility.html">הצהרת נגישות</a><a href="privacy.html">מדיניות פרטיות</a><a href="terms.html">תנאי שימוש</a></nav><p>© 2026 הילה איבגי – <span lang="en">HILA IVGY</span></p></footer>
 <script src="assets/projects.js"></script>
@@ -71,6 +80,15 @@
   document.title = `${p.name} | הילה איבגי HILA IVGY`;
   document.getElementById('pjT').textContent = p.name;
   const hero = document.getElementById('pjHero'); hero.src = p.hero; hero.alt = `האתר של ${p.name}`;
+  if (p.award) {   // award medal on the hero
+    const m = document.createElement('div'); m.className = 'pj-award'; m.setAttribute('role', 'img'); m.setAttribute('aria-label', `${p.name} – ${p.award}`);
+    const txt = `${p.award} ✦ AWARD WINNER ✦ ${p.award} ✦ AWARD WINNER ✦ `;
+    m.innerHTML = `<svg class="ring" viewBox="0 0 200 200" aria-hidden="true"><defs><path id="awP" d="M100,100 m-78,0 a78,78 0 1,1 156,0 a78,78 0 1,1 -156,0"/></defs>
+      <circle cx="100" cy="100" r="96" fill="rgba(20,12,40,.82)" stroke="#F5C542" stroke-width="1.5"/>
+      <text font-family="Lia Element, sans-serif" font-weight="600" font-size="15.5" letter-spacing="2.2" fill="#FFE7A0"><textPath href="#awP">${txt}</textPath></text></svg>
+      <div class="core"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#5A3A00" d="M12 2.5l2.9 6 6.6.9-4.8 4.6 1.2 6.5L12 17.4l-5.9 3.1 1.2-6.5L2.5 9.4l6.6-.9z"/></svg></div>`;
+    hero.parentNode.appendChild(m);
+  }
   if (p.wip) { // not approved for publishing yet: hero + 'in progress' only
     document.querySelector('.pj-body').outerHTML = '<section class="pj-wip"><span class="w">האתר בעבודה</span><h2>הפרויקט בתהליך.<br><span class="hl">בקרוב באוויר.</span></h2></section>';
     document.getElementById('pjGal').remove();
