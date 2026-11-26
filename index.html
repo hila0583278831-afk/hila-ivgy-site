@@ -264,6 +264,8 @@ body.menu-open .menu-dim{opacity:1;pointer-events:auto}
 .pg-floor{position:absolute;left:50%;bottom:-12vh;width:min(1100px,110vw);height:34vh;transform:translateX(-50%);pointer-events:none;
   background:radial-gradient(closest-side,rgba(205,160,255,.45),rgba(142,76,242,.18) 55%,transparent)}
 .pg-ava{position:absolute;left:50%;bottom:-3vh;margin:0;width:min(32vw,66vh,580px);transform:translateX(-50%);pointer-events:none;z-index:2}
+.pg-ava .pg-swipe{position:absolute;left:0;bottom:0;width:100%;height:100%;object-fit:contain;object-position:bottom;opacity:0;transition:opacity .5s;filter:drop-shadow(0 30px 50px rgba(20,6,50,.6))}
+.pg-ava.moving .pg-swipe{opacity:1}.pg-ava.moving img{opacity:0;transition:opacity .5s}
 .pg-ava img{display:block;width:100%;height:auto;filter:drop-shadow(0 30px 50px rgba(20,6,50,.6));
   }
 @media (max-width:700px){.pg3{height:200vh}.pg-ava{width:64vw}.pg-ring{top:30%}}
@@ -956,7 +958,7 @@ if (window.GhostCursor && matchMedia('(hover: hover)').matches) GhostCursor(docu
   <div class="pg-stage" id="pgStage">
     <div class="pg-space" id="pgSpace"><div class="pg-ring" id="pgRing"></div></div>
     <div class="pg-floor" aria-hidden="true"></div>
-    <figure class="pg-ava" aria-hidden="true"><img src="assets/avatar-back.png" alt="" decoding="async"></figure>
+    <figure class="pg-ava" aria-hidden="true"><img src="assets/avatar-back.png" alt="" decoding="async"><video class="pg-swipe" muted loop playsinline preload="none" hidden></video></figure>
   </div>
 </section>
 <div class="pg-lb" id="pgLb" role="dialog" aria-modal="true" aria-labelledby="pgLbT" hidden>
@@ -969,6 +971,16 @@ if (window.GhostCursor && matchMedia('(hover: hover)').matches) GhostCursor(docu
 <script>
 (() => {
   const sec = document.getElementById('gallery3d'), stage = document.getElementById('pgStage'), space = document.getElementById('pgSpace'), ring = document.getElementById('pgRing');
+  // the avatar browses the screens: a looping clip of her swiping (transparent webm); Safari keeps the still image
+  {
+    const fig = document.querySelector('.pg-ava'), v = fig.querySelector('video');
+    const apple = /Apple/.test(navigator.vendor) || /iPhone|iPad/.test(navigator.userAgent);
+    if (!apple && !matchMedia('(prefers-reduced-motion: reduce)').matches && v.canPlayType('video/webm; codecs="vp9"')) {
+      v.src = 'assets/avatar-swipe.webm'; v.hidden = false;
+      v.addEventListener('playing', () => fig.classList.add('moving'), { once: true });
+      new IntersectionObserver(e => { e[0].isIntersecting ? v.play().catch(() => {}) : v.pause(); }, { threshold: .1 }).observe(fig);
+    }
+  }
   const P = {
     avney: { name: 'אבני הכתר', url: 'https://hila0583278831-afk.github.io/avney-haketer-site/' },
     hapisga: { name: 'הפסגה', url: 'https://hila0583278831-afk.github.io/hapisga-site/' },
