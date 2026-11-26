@@ -131,6 +131,18 @@ body.menu-open .menu-dim{opacity:1;pointer-events:auto}
 .gradient-waves-canvas{position:absolute;inset:0;display:block;width:100%;height:100%}
 .works .tick{display:block;margin:0 auto;width:1px;height:calc(93*var(--u));background:linear-gradient(#fff 0 58%,#FF00FF 58% 94%,#fff 94%)}
 .works .wk{margin:calc(68*var(--u)) 0 0;font-size:calc(330*var(--u));line-height:1;letter-spacing:-.02em;color:rgba(255,255,255,.25);font-weight:600}
+/* WORKS: the word stays put in the middle, the project cards roll up over it */
+.works .wk{position:sticky;top:calc(50vh - 190*var(--u));z-index:0;color:rgba(255,255,255,.9)}
+.wcards{position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;gap:16vh;margin-top:22vh;padding-bottom:10vh}
+.wcard{position:relative;display:block;width:min(1150px,72vw);border-radius:calc(22*var(--u) + 8px);overflow:hidden;text-decoration:none;color:#fff;transform-origin:50% 50%;will-change:transform;
+  box-shadow:0 50px 100px -40px rgba(0,0,0,.85),0 0 0 1px rgba(255,255,255,.08)}
+.wcard img{display:block;width:100%;aspect-ratio:3/2;object-fit:cover}
+.wcap{--cap:1;position:absolute;left:0;right:0;bottom:0;display:flex;align-items:flex-end;justify-content:space-between;gap:24px;padding:clamp(18px,2.4vw,40px) clamp(20px,2.8vw,48px);
+  background:linear-gradient(180deg,rgba(10,6,20,0),rgba(10,6,20,.82) 60%);opacity:var(--cap);text-align:right}
+.wcap h3{margin:0;font-size:clamp(26px,3vw,56px);line-height:1;white-space:nowrap}
+.wcap p{margin:0;max-width:46%;font-size:clamp(14px,1.15vw,20px);line-height:1.4;color:rgba(255,255,255,.82);text-align:left}
+.wcard:hover img{transform:scale(1.03);transition:transform .8s cubic-bezier(.16,1,.3,1)}
+@media (max-width:700px){.wcard{width:90vw}.wcap{flex-direction:column;align-items:flex-end;gap:6px}.wcap p{max-width:none;text-align:right}.wcards{gap:9vh}}
 .wl{position:relative;margin-top:calc(118*var(--u))}
 .wl ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;align-items:center;gap:calc(60*var(--u));position:relative;z-index:1}
 .wl li{font-size:calc(97*var(--u));line-height:1;color:rgba(255,255,255,.4);cursor:pointer;transition:color .45s;white-space:nowrap}
@@ -934,19 +946,7 @@ if (window.GhostCursor && matchMedia('(hover: hover)').matches) GhostCursor(docu
   <div class="seam" aria-hidden="true"></div>
   <i class="tick" aria-hidden="true"></i>
   <h2 class="wk" id="worksTitle" lang="en">WORKS</h2>
-  <div class="wl" id="wl">
-    <div class="side side-a" aria-hidden="true"><div id="sideA"></div></div>
-    <div class="side side-b" aria-hidden="true"><div id="sideB"></div></div>
-    <ul id="wlList" dir="rtl">
-      <li data-img="ravitz"><span class="nm">RAVITZ ניהול נכסים</span><div class="acc"><div><img alt="עיצוב ובניית האתר – RAVITZ ניהול נכסים" data-src="ravitz"></div></div></li>
-      <li data-img="trolist"><span class="nm">TROLIST</span><div class="acc"><div><img alt="עיצוב ובניית האתר – TROLIST" data-src="trolist"></div></div></li>
-      <li data-img="hapisga"><span class="nm">הפסגה</span><div class="acc"><div><img alt="עיצוב ובניית האתר – הפסגה" data-src="hapisga"></div></div></li>
-      <li data-img="avney"><span class="nm">אבני הכתר</span><div class="acc"><div><img alt="עיצוב ובניית האתר – אבני הכתר" data-src="avney"></div></div></li>
-      <li data-img="event"><span class="nm">אירוע חד פעמי</span><div class="acc"><div><img alt="עיצוב ובניית האתר – אירוע חד פעמי" data-src="event"></div></div></li>
-      <li data-img="biscotti"><span class="nm">Biscotti</span><div class="acc"><div><img alt="עיצוב ובניית האתר – Biscotti" data-src="biscotti"></div></div></li>
-      <li data-img="vortex"><span class="nm">VORTEX</span><div class="acc"><div><img alt="עיצוב ובניית האתר – VORTEX" data-src="vortex"></div></div></li>
-    </ul>
-  </div>
+  <div class="wcards" id="wcards" dir="rtl"></div>
   <p class="to-page"><a class="to-btn" href="works.html">לכל העבודות והסיפורים שמאחוריהן <svg width="34" height="10" viewBox="0 0 53 12" fill="none" stroke="currentColor" stroke-width="2.6" aria-hidden="true"><path d="M53 6H1M7 1 1 6l6 5"/></svg></a></p>
 </section>
 <!-- under WORKS: a 3D project gallery – the avatar stands in the middle of a purple space and the real site screens
@@ -1138,36 +1138,31 @@ if (window.GradientWaves) window.worksWaves = GradientWaves(document.getElementB
 });
 </script>
 <script>
-/* WORKS (after shifragernetz.com): project names in the middle; the one nearest the centre of the screen lights up
-   and two sticky frames beside the list cross-fade to its desktop (left) and mobile (right) mockups. */
+/* WORKS (after chayafogel.co.il): the giant WORKS stays in the middle of the screen while the project cards roll up
+   over it one after another – each card grows to full size as it reaches the centre and eases back as it leaves. */
 (() => {
-  const list = document.getElementById('wlList'), items = [...list.children];
-  const A = document.getElementById('sideA'), B = document.getElementById('sideB');
-  const imgs = { a: {}, b: {} };
-  items.forEach(li => {
-    const k = li.dataset.img;
-    [['a', A, 'd'], ['b', B, 'm']].forEach(([s, box, suf]) => {
-      const im = new Image(); im.alt = ''; im.decoding = 'async'; im.src = `assets/works/${k}-${suf}.jpg`; box.appendChild(im); imgs[s][k] = im;
+  const box = document.getElementById('wcards');
+  const W = [['ravitz', 'RAVITZ ניהול נכסים', 'ניהול נכסים יוקרתי בירושלים'], ['trolist', 'TROLIST', 'מדבקה חכמה לכבודה · בקרוב'],
+             ['hapisga', 'הפסגה', 'מגדל מגורים יוקרתי על קו המים'], ['avney', 'אבני הכתר', 'יזמות ושיווק נדל״ן בירושלים'],
+             ['event', 'אירוע חד פעמי', 'כל מה שצריך לשולחן מושלם'], ['biscotti', 'Biscotti', 'מאפים ועוגות בוטיק'], ['vortex', 'VORTEX', 'חוויות מוטורספורט']];
+  box.innerHTML = W.map(([id, name, short]) =>
+    `<a class="wcard" href="project.html?id=${id}"><img src="assets/works/${id}-d.jpg" alt="עיצוב ובניית האתר – ${name}" loading="lazy" decoding="async">` +
+    `<div class="wcap"><h3>${name}</h3><p>${short}</p></div></a>`).join('');
+  const cards = [...box.children];
+  if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  let queued = false;
+  const tick = () => {
+    queued = false;
+    const vh = innerHeight;
+    cards.forEach(c => {
+      const r = c.getBoundingClientRect(), d = (r.top + r.height / 2 - vh / 2) / vh;      // -0.5 … 0.5 while centred
+      const k = Math.max(0, 1 - Math.abs(d) * 1.25);
+      c.style.transform = `scale(${(.84 + .16 * k).toFixed(4)})`;
+      c.style.setProperty('--cap', Math.min(1, k * 1.6).toFixed(3));
     });
-    li.querySelector('.acc img').src = `assets/works/${k}-d.jpg`;
-  });
-  let cur = null, hoverLock = false;
-  const activate = li => {
-    if (li === cur) return; cur = li;
-    items.forEach(x => x.classList.toggle('on', x === li));
-    ['a', 'b'].forEach(s => Object.entries(imgs[s]).forEach(([k, im]) => im.classList.toggle('on', k === li.dataset.img)));
   };
-  const pick = () => {
-    if (hoverLock) return;
-    const mid = innerHeight / 2; let best = items[0], bd = Infinity;
-    items.forEach(li => { const r = li.getBoundingClientRect(), d = Math.abs(r.top + r.height / 2 - mid); if (d < bd) { bd = d; best = li; } });
-    activate(best);
-  };
-  items.forEach(li => {
-    li.addEventListener('mouseenter', () => { hoverLock = true; activate(li); });
-    li.addEventListener('mouseleave', () => { hoverLock = false; });
-  });
-  addEventListener('scroll', pick, { passive: true }); addEventListener('resize', pick); pick();
+  const q = () => { if (!queued) { queued = true; requestAnimationFrame(tick); } };
+  addEventListener('scroll', q, { passive: true }); addEventListener('resize', q); tick();
 })();
 </script>
 
