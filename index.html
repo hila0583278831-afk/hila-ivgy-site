@@ -1191,7 +1191,7 @@ if (window.GradientWaves) window.worksWaves = GradientWaves(document.getElementB
              ['hapisga', 'הפסגה', 'מגדל מגורים יוקרתי על קו המים'], ['avney', 'אבני הכתר', 'יזמות ושיווק נדל״ן בירושלים'],
              ['event', 'אירוע חד פעמי', 'כל מה שצריך לשולחן מושלם'], ['biscotti', 'Biscotti', 'מאפים ועוגות בוטיק'], ['vortex', 'VORTEX', 'חוויות מוטורספורט']];
   box.innerHTML = W.map(([id, name, short]) =>
-    `<a class="wcard" href="project.html?id=${id}"><img src="assets/works/${id}-d.jpg" alt="עיצוב ובניית האתר – ${name}" loading="lazy" decoding="async">` +
+    `<a class="wcard" href="project.html?id=${id}"><img src="assets/works/${id}-l.jpg" alt="עיצוב ובניית האתר – ${name}" loading="lazy" decoding="async">` +
     `<div class="wcap"><h3>${name}</h3><p>${short}</p></div></a>`).join('');
   const cards = [...box.children];
   if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
