@@ -570,7 +570,7 @@ html[data-a11y-size="3"] :is(p,blockquote,label,h3,.ct-nav a,.ct-links a,.menu-l
 <rect x="2254.0" y="1159.2" width="322" height="289.8" fill="none" stroke="url(#gl)" stroke-width="2.2"></rect>
 <path d="M2254.0,1159.2 H2439.0 A137,137 0 0 1 2576.0,1296.2 V1449.0 H2391.0 A137,137 0 0 1 2254.0,1312.0 Z" fill="none" stroke="url(#gs)" stroke-width="2.6"></path>
 </g>
-<g class="hero-type" font-family="Lia Element, sans-serif" font-weight="600" direction="rtl" text-anchor="middle">
+<g class="hero-type" id="heroType" font-family="Lia Element, sans-serif" font-weight="600" direction="rtl" text-anchor="middle">
 <text class="big" x="1288" y="540" font-size="230" fill="#FFFFFF">אין הזדמנות שנייה</text>
 <text class="big" x="1288" y="752" font-size="230" fill="#0B0614">לרושם ראשוני</text>
 <text class="sub" x="1288" y="984" font-size="135" fill="#EFE6FF">בוא נבנה לך אתר ייחודי</text>
@@ -672,6 +672,39 @@ html[data-a11y-size="3"] :is(p,blockquote,label,h3,.ct-nav a,.ct-links a,.menu-l
     const pad = 40, a = { x: x0 - pad, y: y0 - pad, width: x1 - x0 + 2 * pad, height: y1 - y0 + 2 * pad, rx: 120 };
     for (const k in a) { holeOut.setAttribute(k, a[k]); holeIn.setAttribute(k, a[k]); }
     window.HERO_TEXT_BOX = a;
+  }
+  // the headline under the cursor: letters glow pink-violet and smear a little in the direction the mouse travels.
+  // Two copies of the words (a glow and a motion-blurred one) are shown only inside a soft circle around the pointer.
+  if (matchMedia('(hover: hover)').matches && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    const glow = mk('filter', { id: 'hGlow', x: '-20%', y: '-40%', width: '140%', height: '180%' }, defs);
+    mk('feGaussianBlur', { in: 'SourceAlpha', stdDeviation: 11, result: 'b' }, glow);
+    mk('feFlood', { 'flood-color': '#FF5CF2', 'flood-opacity': 1, result: 'c' }, glow);
+    mk('feComposite', { in: 'c', in2: 'b', operator: 'in', result: 'g' }, glow);
+    const gm = mk('feMerge', {}, glow); ['g', 'g', 'g', 'SourceGraphic'].forEach(n => mk('feMergeNode', { in: n }, gm));
+    const smear = mk('filter', { id: 'hSmear', x: '-30%', y: '-10%', width: '160%', height: '120%' }, defs);
+    const sb = mk('feGaussianBlur', { stdDeviation: '0 0' }, smear);
+    const rg = mk('radialGradient', { id: 'hSpotG' }, defs);
+    mk('stop', { offset: '0', 'stop-color': '#fff' }, rg); mk('stop', { offset: '.55', 'stop-color': '#fff', 'stop-opacity': .7 }, rg); mk('stop', { offset: '1', 'stop-color': '#fff', 'stop-opacity': 0 }, rg);
+    const mask = mk('mask', { id: 'hSpot', maskUnits: 'userSpaceOnUse', x: -2000, y: -2000, width: 9000, height: 9000 }, defs);
+    const spot = mk('circle', { r: 0, fill: 'url(#hSpotG)' }, mask);
+    const fxg = mk('g', { mask: 'url(#hSpot)', 'pointer-events': 'none' }, svg);
+    const smearUse = mk('use', { href: '#heroType', filter: 'url(#hSmear)', opacity: .8 }, fxg);
+    mk('use', { href: '#heroType', filter: 'url(#hGlow)' }, fxg);
+    let tx = 0, ty = 0, x = 0, y = 0, vx = 0, on = 0, aim = 0, raf = 0, last = 0;
+    const toSvg = e => { const p = svg.createSVGPoint(); p.x = e.clientX; p.y = e.clientY; return p.matrixTransform(svg.getScreenCTM().inverse()); };
+    hero.addEventListener('pointermove', e => { const p = toSvg(e); tx = p.x; ty = p.y; aim = 1; if (!raf) raf = requestAnimationFrame(step); });
+    hero.addEventListener('pointerleave', () => { aim = 0; if (!raf) raf = requestAnimationFrame(step); });
+    function step(now) {
+      const nx = x + (tx - x) * .22, ny = y + (ty - y) * .22;
+      vx = vx * .8 + (nx - x) * .2; x = nx; y = ny;
+      on += (aim - on) * .1;
+      const R = (mode === 'm' ? 300 : 520) * on;
+      spot.setAttribute('cx', x.toFixed(1)); spot.setAttribute('cy', y.toFixed(1)); spot.setAttribute('r', R.toFixed(1));
+      const s = Math.min(46, Math.abs(vx) * 1.6);
+      sb.setAttribute('stdDeviation', `${s.toFixed(1)} 0`);
+      smearUse.setAttribute('transform', `translate(${(-vx * 2.2).toFixed(1)},0)`);
+      raf = (on > .01 || aim) ? requestAnimationFrame(step) : 0;
+    }
   }
   const relayout = () => { layout(); soften(); };
   relayout();
@@ -1524,7 +1557,7 @@ if (window.GradientWaves) window.worksWaves = GradientWaves(document.getElementB
   if (!matchMedia('(hover: hover)').matches) return;
   const NS = 'http://www.w3.org/2000/svg';
   const letters = [];
-  document.querySelectorAll('#hero .hero-type text.big, #about .about-type text, #process .proc-big text').forEach(t => {
+  document.querySelectorAll('#about .about-type text, #process .proc-big text').forEach(t => {
     const paint = t.getAttribute('fill');               // white, black, or the gradient url(#fade)
     const chars = [...t.textContent]; t.textContent = '';
     t.setAttribute('stroke', paint);
