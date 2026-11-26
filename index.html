@@ -257,7 +257,7 @@ body.menu-open .menu-dim{opacity:1;pointer-events:auto}
   background:radial-gradient(55% 45% at 50% 46%,rgba(150,95,255,.28),transparent 72%),radial-gradient(40% 30% at 50% 100%,rgba(196,120,255,.25),transparent 70%)}
 .pg-space{position:absolute;inset:0;transform-style:preserve-3d}
 .pg-ring{position:absolute;left:50%;top:46%;width:0;height:0;transform-style:preserve-3d}
-.pg-card{position:absolute;left:0;top:0;padding:0;border:0;cursor:pointer;border-radius:16px;background:#140C24 center top/cover no-repeat;will-change:transform,opacity;
+.pg-card{position:absolute;left:0;top:0;padding:0;border:0;cursor:pointer;border-radius:16px;background:#140C24 center/contain no-repeat;will-change:transform,opacity;
   box-shadow:0 0 0 1.5px rgba(215,190,255,.6),0 0 24px rgba(150,95,255,.35),0 40px 70px -30px rgba(10,0,30,.8);transition:box-shadow .35s}
 .pg-card.hot,.pg-card:focus-visible{box-shadow:0 0 0 2px #FF9FFC,0 0 40px rgba(255,120,255,.55),0 50px 80px -30px rgba(10,0,30,.9);outline:none}
 /* a soft lilac floor glow the avatar stands on */
@@ -991,8 +991,8 @@ if (window.GhostCursor && matchMedia('(hover: hover)').matches) GhostCursor(docu
   let W, H, R, cw, ch, step, span, phone;
   function layout() {
     W = stage.clientWidth; H = stage.clientHeight; phone = W < 700;
-    cw = phone ? W * .56 : Math.min(W * .26, 520); ch = cw * .625;
-    R = phone ? W * 1.05 : W * .62;                                   // the arc's radius around the avatar
+    cw = phone ? W * .5 : Math.min(W * .2, 420); ch = cw * .625;
+    R = phone ? W * 1.1 : W * .62;                                   // the arc's radius around the avatar
     step = (cw * 1.12) / R; span = cards.length * step;
     stage.style.perspective = Math.round(phone ? W * 1.5 : W * .7) + 'px';
     cards.forEach(c => { c.b.style.width = cw + 'px'; c.b.style.height = ch + 'px'; c.b.style.marginLeft = -cw / 2 + 'px'; c.b.style.marginTop = -ch / 2 + 'px'; });
@@ -1018,10 +1018,11 @@ if (window.GhostCursor && matchMedia('(hover: hover)').matches) GhostCursor(docu
       a = ((a + span / 2) % span + span) % span - span / 2;               // wrap around
       c.hov += ((c.hv ? 1 : 0) - c.hov) * .15;
       const bob = still ? 0 : Math.sin(t * .6 + c.ph) * ch * .03;         // a slow, small float
-      const x = Math.sin(a) * R, z = (1 - Math.cos(a)) * R * .9 + c.hov * cw * .35;
+      const x = Math.sin(a) * R, z = (1 - Math.cos(a)) * R * .45 + c.hov * cw * .35;
       const y = c.lift * ch * (phone ? .5 : 1) - ch * .38 + bob;
       c.b.style.transform = `translate3d(${x.toFixed(1)}px,${y.toFixed(1)}px,${z.toFixed(1)}px) rotateY(${(-a * .92).toFixed(4)}rad) scale(${(1 + c.hov * .06).toFixed(3)})`;
-      const op = Math.max(0, Math.min(1, (1.05 - Math.abs(a)) / .3));
+      const lim = phone ? .3 : .64;                                     // only screens that fit fully on the screen are shown
+      const op = Math.max(0, Math.min(1, (lim - Math.abs(a)) / .12));
       c.b.style.opacity = op.toFixed(3); c.b.style.visibility = op > 0 ? 'visible' : 'hidden';
       c.b.classList.toggle('hot', c.hov > .5);
     });
