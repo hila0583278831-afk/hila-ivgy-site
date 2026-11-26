@@ -3,6 +3,10 @@
 :root{--bg:#0E0A18;--bg2:#160F2A;--ink:#fff;--soft:#CFC4EC;--mute:#9C90BD;--pur:#6E5BF2;--vio:#8E4CF2;--lav:#B46BFF;--pink:#FF00FF;--pink2:#FF9FFC;
   --grad:linear-gradient(100deg,#8E4CF2 0%,#B46BFF 35%,#FF3DF2 70%,#FF00FF 100%);
   --leaf:0 42.5% 0 42.5% / 0 47.3% 0 47.3%; --leaf2:42.5% 0 42.5% 0 / 47.3% 0 47.3% 0}
+/* running text: Ping (headings stay in Lia Element). Until the Ping files are in assets/fonts, it falls back to Lia Element */
+@font-face{font-family:"Ping";src:local("Ping"),local("Ping Hebrew"),local("PingHL");font-weight:400;font-display:swap}
+:root{--body:"Ping","Lia Element","Segoe UI",Arial,sans-serif}
+p,li,blockquote,figcaption,label,input,textarea,select{font-family:var(--body)}
 *{box-sizing:border-box}
 html,body{overflow-x:clip}
 body{margin:0;background:var(--bg);color:var(--ink);font-family:"Lia Element","Segoe UI",Arial,sans-serif;font-weight:600;-webkit-font-smoothing:antialiased}

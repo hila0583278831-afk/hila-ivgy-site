@@ -10,6 +10,10 @@
 <script type="module" src="assets/js/journey3d.js"></script>
 <style>
 @font-face{font-family:"Lia Element";src:url(assets/fonts/lia-element-semibold.ttf) format("truetype");font-weight:600;font-style:normal;font-display:block}
+/* running text: Ping (headings stay in Lia Element). Until the Ping files are in assets/fonts, it falls back to Lia Element */
+@font-face{font-family:"Ping";src:local("Ping"),local("Ping Hebrew"),local("PingHL");font-weight:400;font-display:swap}
+:root{--body:"Ping","Lia Element","Segoe UI",Arial,sans-serif}
+p,li,blockquote,figcaption,label,input,textarea,select{font-family:var(--body)}
 html,body{overflow-x:clip}
 body{margin:0;background:#0B0614}
 a{color:#FFFFFF}a:hover{color:#E9D9FF}
@@ -80,6 +84,21 @@ body.menu-open .menu-dim{opacity:1;pointer-events:auto}
 /* sized by width (2576:1449) so the 8-column leaf grid continues 1:1 into the next section */
 .hero{position:relative;width:100%;aspect-ratio:2576/1449;overflow:hidden;background-color:#5C2696;font-family:'Lia Element',sans-serif}
 @media (max-width:700px){.hero{aspect-ratio:auto;height:100svh;min-height:540px;max-height:900px}}
+/* call to action under the headline (placed by the hero script right under the last line) */
+.hero-cta{position:absolute;left:50%;top:var(--cta-y,72%);z-index:4;transform:translateX(-50%);display:inline-flex;align-items:center;gap:14px;
+  padding:16px 34px;border-radius:999px;background:#fff;color:#2A1460;text-decoration:none;white-space:nowrap;
+  font-family:'Lia Element',sans-serif;font-weight:600;font-size:clamp(16px,1.15vw,20px);box-shadow:0 14px 40px rgba(20,6,50,.35);
+  transition:background .25s,color .25s,transform .25s}
+.hero-cta:hover{background:#FF00FF;color:#fff;transform:translateX(-50%) translateY(-2px)}
+.hero-cta span{font-size:1.2em;line-height:1}
+/* two project mockups resting in the lower corners of the visible hero, floating softly */
+.hero-mock{position:absolute;z-index:3;margin:0;width:min(25vw,520px);top:calc(var(--hero-vis,100%) - min(25vw,520px) * .5);pointer-events:none;
+  filter:drop-shadow(0 30px 40px rgba(20,6,50,.5));animation:heroFloat 7s ease-in-out infinite}
+.hero-mock img{display:block;width:100%;height:auto}
+.hero-mock.l{left:-3vw;--r:6deg}.hero-mock.r{right:-3vw;--r:-6deg;animation-delay:-3.5s}
+@keyframes heroFloat{0%,100%{transform:rotate(var(--r)) translateY(0)}50%{transform:rotate(var(--r)) translateY(-14px)}}
+@media (max-width:700px){.hero-mock{width:52vw;top:auto;bottom:-6vw}.hero-mock.l{left:-12vw}.hero-mock.r{right:-12vw}.hero-cta{padding:14px 28px}}
+@media (prefers-reduced-motion:reduce){.hero-mock{animation:none;transform:rotate(var(--r))}}
 
 /* ---------- projects wall (after tsivia.com's reel): cards fly in one by one and lock into a tilted grid ---------- */
 .reel{position:relative;height:620vh}
@@ -87,7 +106,7 @@ body.menu-open .menu-dim{opacity:1;pointer-events:auto}
 .wwrap{position:relative;isolation:isolate;background:linear-gradient(180deg,#111113 0%,#150E22 30%,#1D1133 75%,#2A1550 100%)}
 .wwrap>.waves{position:absolute;inset:0;z-index:-1;pointer-events:none}
 .wwrap>.waves>div{position:sticky;top:0;height:100vh}
-/* lead-in: the hero background mirrored at the seam fades to near-black gray, and the hero's 8 column lines run on */
+/* lead-in: the hero background mirrored at the seam fades to near-black gray, and the hero's 10 column lines run on */
 .reel::before{content:"";position:absolute;left:0;right:0;top:0;height:56.25vw;pointer-events:none;
   background:url(assets/hero-bg.webp) center bottom/100% auto no-repeat;transform:scaleY(-1);
   /* (flipped) its lower edge melts into the waves instead of ending in a hard line */
@@ -95,8 +114,9 @@ body.menu-open .menu-dim{opacity:1;pointer-events:auto}
 .reel::after{content:"";position:absolute;left:0;right:0;top:0;height:56.25vw;pointer-events:none;
   background:linear-gradient(180deg,rgba(17,17,19,0) 0%,rgba(17,17,19,.6) 16%,rgba(17,17,19,.94) 34%,#111113 50%,rgba(17,17,19,0) 100%)}
 .lines{position:absolute;inset:0;z-index:1;pointer-events:none;
-  background:repeating-linear-gradient(90deg,rgba(120,100,255,.85) 0 1.5px,transparent 1.5px 12.5%);
+  background:repeating-linear-gradient(90deg,rgba(120,100,255,.85) 0 1.5px,transparent 1.5px 10%);
   -webkit-mask-image:linear-gradient(180deg,rgba(0,0,0,.09),rgba(0,0,0,.09));mask-image:linear-gradient(180deg,rgba(0,0,0,.09),rgba(0,0,0,.09))}
+@media (max-width:700px){.lines{background:repeating-linear-gradient(90deg,rgba(120,100,255,.85) 0 1.5px,transparent 1.5px 25%)}}
 /* the lines leave the hero at full strength and settle to a very faint hairline */
 .reel .lines{-webkit-mask-image:linear-gradient(180deg,#000 0,rgba(0,0,0,.09) 32vw,rgba(0,0,0,.09) 100%);
                      mask-image:linear-gradient(180deg,#000 0,rgba(0,0,0,.09) 32vw,rgba(0,0,0,.09) 100%)}
@@ -165,7 +185,7 @@ body.menu-open .menu-dim{opacity:1;pointer-events:auto}
 }
 /* BRANDING: tall rounded cards in 5 columns that drift up and down in opposite directions */
 .brand{--u:calc(100vw/1920);position:relative;color:#fff;text-align:center;padding:0 0 calc(160*var(--u));font-family:'Lia Element',sans-serif;font-weight:600}
-.brand .tick{display:block;margin:0 auto;width:1px;height:calc(93*var(--u));background:linear-gradient(#fff 0 58%,#FF00FF 58% 94%,#fff 94%)}
+.brand .tick{display:none}
 .brand .bk{margin:calc(68*var(--u)) 0 0;font-size:calc(330*var(--u));line-height:1;letter-spacing:-.02em;color:rgba(255,255,255,.25);font-weight:600}
 .brand .bsub{margin:calc(18*var(--u)) auto calc(70*var(--u));max-width:94vw;white-space:nowrap;font-size:clamp(17px,1.35vw,26px);line-height:1.5;color:#D9B8FF;font-weight:400}
 .bwall{position:relative;display:grid;grid-template-columns:repeat(5,1fr);gap:clamp(10px,1.1vw,22px);width:min(1760px,96vw);margin:0 auto;
@@ -254,7 +274,9 @@ body.menu-open .menu-dim{opacity:1;pointer-events:auto}
 /* ---------- under WORKS: 3D project gallery around the avatar ---------- */
 .pg3{position:relative;height:240vh}
 .pg-stage{position:sticky;top:0;height:100vh;overflow:hidden;perspective-origin:50% 42%;
-  background:radial-gradient(55% 45% at 50% 46%,rgba(150,95,255,.28),transparent 72%),radial-gradient(40% 30% at 50% 100%,rgba(196,120,255,.25),transparent 70%)}
+  background:radial-gradient(55% 45% at 50% 46%,rgba(150,95,255,.28),transparent 72%),radial-gradient(40% 22% at 50% 84%,rgba(196,120,255,.2),transparent 70%);
+  /* no hard edge where the stage ends: everything (the glow, the avatar's feet) melts into the next section */
+  -webkit-mask-image:linear-gradient(180deg,#000 82%,transparent);mask-image:linear-gradient(180deg,#000 82%,transparent)}
 .pg-space{position:absolute;inset:0;transform-style:preserve-3d}
 .pg-ring{position:absolute;left:50%;top:46%;width:0;height:0;transform-style:preserve-3d}
 .pg-card{position:absolute;left:0;top:0;padding:0;border:0;cursor:pointer;border-radius:16px;background:#140C24 center/cover no-repeat;will-change:transform,opacity;
@@ -295,9 +317,11 @@ body.menu-open .menu-dim{opacity:1;pointer-events:auto}
 .tcell:hover .tshape{border-color:#B046F2}
 .tc-mark{display:block;font-size:clamp(40px,3.2vw,62px);line-height:.6;height:.42em;margin-bottom:.35em;
   -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent}
+.tshape .tc-name{display:block;margin:0 0 .35em;font-style:normal;font-family:'Lia Element',sans-serif;font-weight:600;font-size:clamp(14px,1.05vw,19px);color:#6A4BEA;letter-spacing:.01em}
 .tshape blockquote{margin:0;font-size:clamp(16px,1.32vw,24px);line-height:1.38;color:#1D1530}
 @media (max-width:900px){.tst-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
-@media (max-width:600px){.tst-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.tshape{padding:12% 11%}.tshape blockquote{font-size:13.5px}}
+@media (max-width:600px){.tst-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.tshape{padding:12% 11%}.tshape .tc-name{display:block;margin:0 0 .35em;font-style:normal;font-family:'Lia Element',sans-serif;font-weight:600;font-size:clamp(14px,1.05vw,19px);color:#6A4BEA;letter-spacing:.01em}
+.tshape blockquote{font-size:13.5px}}
 /* header over light sections: logo turns dark */
 .foot-logo{position:relative;display:block;width:min(1600px,90vw);height:auto;margin:clamp(70px,9vw,150px) auto clamp(20px,3vw,46px);opacity:.92}
 .site-head .brand img{transition:filter .35s}
@@ -307,9 +331,9 @@ body.menu-open .menu-dim{opacity:1;pointer-events:auto}
 .process{position:relative;background:#160D2A;color:#fff;font-family:'Lia Element',sans-serif;font-weight:600}
 .proc-stage{position:sticky;top:0;height:100vh;overflow:hidden;display:flex;flex-direction:column;justify-content:center;box-sizing:border-box;padding-top:clamp(70px,9vh,110px);
   background:radial-gradient(55% 45% at 50% 60%,rgba(108,72,236,.28),transparent 72%),linear-gradient(180deg,#160D2A,#1B0F33 60%,#22123F)}
-/* faint hero grid behind (8 columns) */
+/* faint hero grid behind (10 columns, like the hero) */
 .proc-stage::before{content:"";position:absolute;inset:0;pointer-events:none;opacity:.5;
-  background:repeating-linear-gradient(90deg,rgba(120,100,255,.14) 0 1.5px,transparent 1.5px 12.5%)}
+  background:repeating-linear-gradient(90deg,rgba(120,100,255,.14) 0 1.5px,transparent 1.5px 10%)}
 .proc-head{position:relative;width:98vw;margin:0 auto clamp(30px,6vh,80px);text-align:right}
 .proc-big{display:block;width:100%;height:auto;max-height:40vh}
 .proc-kick{margin:0 0 10px;font-size:clamp(13px,1vw,17px);letter-spacing:.32em;color:#D9B8FF}
@@ -369,6 +393,8 @@ body.menu-open .menu-dim{opacity:1;pointer-events:auto}
              linear-gradient(180deg,#2A1550 0%,#21123F 45%,#160D2A 100%)}
 .about .waves{position:absolute;inset:0;z-index:-1;pointer-events:none}
 .about .waves>div{position:sticky;top:0;height:100vh}
+/* the bottom melts into the process section's colour instead of ending in a line */
+.about::after{content:"";position:absolute;left:0;right:0;bottom:0;height:clamp(140px,22vh,260px);z-index:0;pointer-events:none;background:linear-gradient(180deg,rgba(22,13,42,0),#160D2A)}
 /* the giant word fills the width exactly (SVG textLength) */
 .about-big{display:block;width:100%;height:auto;position:relative;z-index:0}
 .about-stage{position:relative;z-index:1;width:min(1680px,94vw);margin:calc(-15vw) auto 0;display:grid;
@@ -391,10 +417,10 @@ body.menu-open .menu-dim{opacity:1;pointer-events:auto}
   background:linear-gradient(120deg,#3A46EC,#8E4CF2 50%,#FF00FF);
   -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude}
 .leaf .about-lead{margin:0;font-size:clamp(30px,3.1vw,62px);line-height:1;letter-spacing:-.01em;font-weight:600}
-.leaf .about-lead .hl{background:linear-gradient(100deg,#C49BFF,#FF3DF2);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent}
+.leaf .about-lead .hl{color:#E9D2FF;-webkit-text-fill-color:#E9D2FF}
 .leaf .about-text{margin:clamp(16px,1.6vw,28px) 0 0;font-size:clamp(17px,1.32vw,25px);line-height:1.5;color:#fff}
 .leaf .about-text + .about-text{margin-top:.75em}
-.leaf .about-end{font-size:clamp(21px,1.85vw,34px);line-height:1.25;background:linear-gradient(100deg,#C49BFF,#FF3DF2);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent}
+.leaf .about-end{font-size:clamp(21px,1.85vw,34px);line-height:1.25;color:#E9D2FF;-webkit-text-fill-color:#E9D2FF}
 .leaf .about-text .one-line{white-space:nowrap}
 .leaf .about-text .mbr{display:none}
 @media (max-width:900px){.leaf .about-text .one-line{white-space:normal}.leaf .about-text .mbr{display:inline}}
@@ -584,6 +610,9 @@ html[data-a11y-size="3"] :is(p,blockquote,label,h3,.ct-nav a,.ct-links a,.menu-l
 <text class="sub" x="1288" y="984" font-size="135" fill="#FFFFFF">בוא נבנה לך אתר ייחודי</text>
 <text class="sub" x="1288" y="1120" font-size="135" fill="#FFFFFF">שישאיר רושם בלתי נשכח</text></g>
 </svg>
+<figure class="hero-mock l" aria-hidden="true"><img src="assets/hero/mock-event-1000.png" alt="" decoding="async"></figure>
+<figure class="hero-mock r" aria-hidden="true"><img src="assets/hero/mock-ravitz-1000.png" alt="" decoding="async"></figure>
+<a class="hero-cta" href="#contact" dir="rtl">בואו נבנה את האתר שלכם <span aria-hidden="true">&larr;</span></a>
 </section>
 <script>
 /* phones: the landscape hero would be a thin strip, so rebuild it as a full-height portrait grid –
@@ -647,7 +676,8 @@ html[data-a11y-size="3"] :is(p,blockquote,label,h3,.ct-nav a,.ct-links a,.menu-l
       // fit the text into the part of the box that is on screen in the first view
       const r = hero.getBoundingClientRect(), vis = Math.min(1449, 1449 * innerHeight / Math.max(r.height, 1));
       // measured from the design (2000×1125 mock): widest line = 83.5% of the width, pitch = 10.2% of it, block centre at 51.1% height
-      fit(2576, vis * .52, .7125, vis * .6);
+      fit(2576, vis * .44, .5, vis * .46);
+      placeCta(); hero.style.setProperty('--hero-vis', (vis / 1449 * 100).toFixed(2) + '%');
       return;
     }
     mode = 'm';
@@ -657,7 +687,13 @@ html[data-a11y-size="3"] :is(p,blockquote,label,h3,.ct-nav a,.ct-links a,.menu-l
     const H = rows * MCH;
     svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
     grid.innerHTML = buildGrid(4, rows, CW, MCH);
-    fit(W, H / 2, .92);
+    fit(W, H * .42, .84);
+    placeCta();
+  }
+  // the button sits a little under the last line, wherever the fit put it
+  function placeCta() {
+    try { const hb = hero.getBoundingClientRect(), lb = texts[texts.length - 1].getBoundingClientRect();
+      hero.style.setProperty('--cta-y', (lb.bottom - hb.top + Math.max(22, hb.width * .018)) + 'px'); } catch (_) {}
   }
   // a light blur of the grid right behind the words: the sharp grid is masked out around the text block and a
   // softly blurred copy shows there instead, with feathered edges (the rest of the grid stays sharp)
@@ -774,7 +810,7 @@ if (window.GhostCursor && matchMedia('(hover: hover)').matches) GhostCursor(docu
         <g id="rwCells" fill="none" stroke="url(#rwGrid)" stroke-width="1.6"></g>
         <rect id="rwPanel" width="1520" height="685" rx="105" fill="#fff" stroke="url(#rwEdge)" stroke-width="2"/>
         <g id="rHead" fill="url(#rwText)"><text>בעולם עמוס בתוכן ובתחרות,</text><text>אתר יפה כבר לא מספיק.</text><text>צריך ליצור נראות שמושכת את העין,</text><text>משקפת את האיכות שלך</text><text>ומעבירה את המסר הנכון</text><text>מהרגע הראשון.</text></g>
-        <g id="rPara" fill="#000"><text>אני כאן כדי לזהות את הייחודיות שלך</text><text>ולהפוך אותה לשפה עיצובית מדויקת</text><text>ולחוויה דיגיטלית בלתי נשכחת.</text></g>
+        <g id="rPara" fill="#1D1530" style="font-family:var(--body);font-weight:400"><text>אני כאן כדי לזהות את הייחודיות שלך</text><text>ולהפוך אותה לשפה עיצובית מדויקת</text><text>ולחוויה דיגיטלית בלתי נשכחת.</text></g>
       </svg>
     </div>
     <p class="sr">בעולם עמוס בתוכן ובתחרות, אתר יפה כבר לא מספיק. צריך ליצור נראות שמושכת את העין, משקפת את האיכות שלך ומעבירה את המסר הנכון מהרגע הראשון. אני כאן כדי לזהות את הייחודיות שלך ולהפוך אותה לשפה עיצובית מדויקת ולחוויה דיגיטלית בלתי נשכחת.</p></div>  </div>
@@ -822,7 +858,11 @@ if (window.GhostCursor && matchMedia('(hover: hover)').matches) GhostCursor(docu
     panel.setAttribute('x', f1(ox + 240)); panel.setAttribute('y', f1(oy + 221));
     // one font size for all nine lines: the widest gradient line is as wide as in the design
     if (!size) { lines.forEach(t => t.setAttribute('font-size', 100)); try { size = 100 * WIDE / lines[2].getBBox().width; } catch (_) { size = 64; } }
-    lines.forEach((t, i) => { t.setAttribute('x', f1(ox + 1000)); t.setAttribute('y', f1(oy + BASE[i])); t.setAttribute('font-size', f1(size)); });
+    // the heading (6 gradient lines) in Element; the paragraph under it smaller, in the running-text font
+    const ps = size * .58, py0 = BASE[5] + size * 1.05;
+    lines.forEach((t, i) => { t.setAttribute('x', f1(ox + 1000));
+      if (i < 6) { t.setAttribute('y', f1(oy + BASE[i])); t.setAttribute('font-size', f1(size)); }
+      else { t.setAttribute('y', f1(oy + py0 + (i - 6) * ps * 1.5)); t.setAttribute('font-size', f1(ps)); } });
   }
   layout();
   addEventListener('resize', layout);
@@ -930,7 +970,7 @@ if (window.GhostCursor && matchMedia('(hover: hover)').matches) GhostCursor(docu
   let E = null;
   function render(snap) {
     const b = sec.getBoundingClientRect(), vh = G.vh, top = b.top + scrollY;
-    const S = clamp(-b.top / vh, 0, L);
+    const S = clamp((vh * .75 - b.top) / vh, 0, L);      // starts while the hero is still leaving the screen
     E = (E === null || snap) ? S : E + .1 * (S - E);
     if (Math.abs(S - E) < 5e-4) E = S;
     let q = E;
@@ -1327,55 +1367,25 @@ if (window.GradientWaves) window.worksWaves = GradientWaves(document.getElementB
 </section>
 <script>
 /* Process: the section pins and the five shapes travel to the right as you scroll (RTL order 1 → 5).
-   The step nearest the middle of the screen is the active one. After step 5 the shapes couple up like a train –
-   one after another they run into the middle and lock together as the petals of a flower, which then turns. */
+   The step nearest the middle of the screen is the active one; after step 5 the section holds briefly and moves on. */
 (() => {
-  const sec = document.getElementById('process'), track = document.getElementById('procTrack'), head = sec.querySelector('.proc-head');
+  const sec = document.getElementById('process'), track = document.getElementById('procTrack');
   const steps = [...track.children];
-  const clamp = v => Math.min(1, Math.max(0, v)), lerp = (a, b, t) => a + (b - a) * t;
-  const io = t => (t = clamp(t)) < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
-  let dist = 0, run = 0, bloom = 0, flowerOn = false;
+  const clamp = v => Math.min(1, Math.max(0, v));
+  let dist = 0, run = 0, hold = 0;
   const size = () => {
     if (innerWidth <= 860) { sec.style.height = ''; track.style.transform = ''; steps.forEach(s => { s.style.transform = ''; s.style.transition = ''; }); return; }
     dist = Math.max(0, track.scrollWidth - innerWidth);
-    run = dist * 1.1; bloom = innerHeight * 2.6;                     // sideways run, then the flower
-    sec.style.height = (innerHeight + run + bloom) + 'px';
+    run = dist * 1.1; hold = innerHeight * .35;                     // sideways run, then a short pause on step 5
+    sec.style.height = (innerHeight + run + hold) + 'px';
   };
   const move = () => {
     if (innerWidth <= 860) { steps.forEach(s => s.classList.add('on')); return; }
-    const b = sec.getBoundingClientRect(), y = -b.top;
-    const p = clamp(y / Math.max(1, run)), q = clamp((y - run) / Math.max(1, bloom));
+    const y = -sec.getBoundingClientRect().top, p = clamp(y / Math.max(1, run));
     track.style.transform = `translate3d(${(p * dist).toFixed(1)}px,0,0)`;   // moves right
-    if (q <= 0) {
-      if (flowerOn) { flowerOn = false; head.style.transform = ''; head.style.opacity = ''; steps.forEach(s => { s.style.transform = ''; s.style.opacity = ''; s.style.transition = ''; s.style.zIndex = ''; }); }
-      const mid = innerWidth / 2; let best = 0, bd = 1e9;
-      steps.forEach((s, i) => { const r = s.getBoundingClientRect(), d = Math.abs(r.left + r.width / 2 - mid); if (d < bd) { bd = d; best = i; } });
-      steps.forEach((s, i) => s.classList.toggle('on', i === best));
-      return;
-    }
-    // the flower: petals around the middle of the track row
-    flowerOn = true;
-    const T = track.getBoundingClientRect(), w = steps[0].offsetWidth, h = steps[0].offsetHeight;
-    // the heading makes room: it slides up and fades while the shapes gather, so the flower can sit in the middle of the screen
-    const hk = io(q / .35); head.style.transform = `translateY(${(-hk * innerHeight * .35).toFixed(1)}px)`; head.style.opacity = (1 - hk).toFixed(3);
-    const cx = innerWidth / 2, cy = innerHeight * .53;
-    const sc = Math.min(.7, innerHeight * .27 / h), rp = w * sc * .93;       // petal size and distance from the centre – text stays readable
-    const spin = io((q - .55) / .45) * 216;                              // the whole flower turns once it is complete
-    steps.forEach((s, i) => {
-      // the train: step 5 (already in the middle) leads, 4, 3, 2, 1 follow one after another
-      const order = steps.length - 1 - i, k = io((q / .6 - order * .13) / .48);
-      const bx = T.left + s.offsetLeft + w / 2, by = T.top + s.offsetTop + h / 2;
-      const ang = (-90 + i * 72 + spin) * Math.PI / 180;
-      const tx = cx + Math.cos(ang) * rp, ty = cy + Math.sin(ang) * rp;
-      // a little hop on the way, like carriages riding over a bump
-      const hop = Math.sin(k * Math.PI) * h * .18;
-      const dx = lerp(0, tx - bx, k), dy = lerp(0, ty - by, k) - hop;
-      const rot = lerp(0, -90 + i * 72 + 90 + spin, k), s2 = lerp(1, sc, k);
-      s.style.transition = 'none';
-      s.style.transform = `translate3d(${dx.toFixed(1)}px,${dy.toFixed(1)}px,0) rotate(${rot.toFixed(2)}deg) scale(${s2.toFixed(3)})`;
-      s.style.opacity = '1'; s.style.zIndex = String(10 - order);
-      s.classList.add('on');
-    });
+    const mid = innerWidth / 2; let best = 0, bd = 1e9;
+    steps.forEach((s, i) => { const r = s.getBoundingClientRect(), d = Math.abs(r.left + r.width / 2 - mid); if (d < bd) { bd = d; best = i; } });
+    steps.forEach((s, i) => s.classList.toggle('on', i === best));
   };
   size(); move();
   addEventListener('resize', () => { size(); move(); });
@@ -1435,7 +1445,7 @@ if (window.GradientWaves) window.worksWaves = GradientWaves(document.getElementB
     for (let i = 0; i < n; i++) {
       const r = Math.floor(i / cols), c = i % cols, m = SHAPES[r % 3][c % 5], q = list[i];
       h += `<figure class="tcell" dir="rtl"><div class="tshape" style="border-radius:${radius(m)};background-color:${tint(i, 0)}">` +
-        (q ? `<span class="tc-mark" style="background-image:linear-gradient(135deg,${grads[i % grads.length]})" aria-hidden="true">״</span><blockquote>${q[0]}</blockquote>` : '') +
+        (q ? `<span class="tc-mark" style="background-image:linear-gradient(135deg,${grads[i % grads.length]})" aria-hidden="true">״</span>${q[3] ? `<cite class="tc-name">${q[3]}</cite>` : ''}<blockquote>${q[0]}</blockquote>` : '') +
         `</div></figure>`;
     }
     grid.innerHTML = h;
@@ -1476,17 +1486,13 @@ if (window.GradientWaves) window.worksWaves = GradientWaves(document.getElementB
       </nav>
     </div>
     <form class="ct-form" id="ctForm" novalidate>
-      <h3>השאירו פרטים ואחזור אליכם<br>לשיחת היכרות ללא עלות:</h3>
+      <h3>השאירו פרטים<br>ואחזור אליכם</h3>
       <div class="ct-grid">
         <label><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg><span class="sr">שם מלא (חובה)</span><input name="name" placeholder="שם מלא" required aria-required="true" maxlength="80" autocomplete="name"></label>
         <label><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2"/></svg><span class="sr">מספר טלפון (חובה)</span><input name="phone" type="tel" placeholder="מספר טלפון" required aria-required="true" maxlength="20" autocomplete="tel"></label>
-        <label><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg><span class="sr">אימייל (רשות)</span><input name="email" type="email" placeholder="אימייל" maxlength="120" autocomplete="email"></label>
-        <label><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.5 10.9c.6.5 1 1.2 1 2.1h5c0-.9.4-1.6 1-2.1A6 6 0 0 0 12 3"/></svg><span class="sr">שם העסק (רשות)</span><input name="biz" placeholder="שם העסק" maxlength="80" autocomplete="organization"></label>
-        <label class="wide"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16zM14 6l4 4"/></svg><span class="sr">הודעה (רשות)</span><textarea name="msg" rows="3" maxlength="2000" placeholder="ספרו לי קצת על העסק. אם יש לינק לאתר קיים או לרשתות, אשמח לראות."></textarea></label>
       </div>
       <label class="hp" aria-hidden="true">אין למלא שדה זה<input name="_honey" tabindex="-1" autocomplete="off"></label>
-      <label class="ct-ok"><input type="checkbox" name="ok" required aria-required="true"> <span>קראתי את <a href="privacy.html" target="_blank" rel="noopener">מדיניות הפרטיות</a> ואני מאשר/ת שהילה תחזור אליי בנוגע לפנייה</span></label>
-      <p class="ct-note">הפרטים נמסרים מרצונכם ומשמשים רק לחזרה לפנייה – בלי דיוור ובלי פרסום. בשליחה במייל הם עוברים דרך שירות FormSubmit ונשמרים בתיבת Gmail, בשרתים שעשויים להיות מחוץ לישראל. אפשר לבקש לעיין בהם או למחוק אותם בכל עת.</p>
+      <label class="ct-ok"><input type="checkbox" name="ok" required aria-required="true"> <span>מאשר/ת את <a href="privacy.html" target="_blank" rel="noopener">מדיניות הפרטיות</a></span></label>
       <div class="ct-actions">
         <button type="submit" class="ct-send" data-via="mail"><span>שליחה למייל</span><svg width="40" height="12" viewBox="0 0 53 12" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M53 6H1M7 1 1 6l6 5"/></svg></button>
         <button type="submit" class="ct-send ct-wa" data-via="wa"><span>שליחה בוואטסאפ</span><svg viewBox="0 0 32 32" width="24" height="24" aria-hidden="true"><path fill="currentColor" d="M16 3a13 13 0 0 0-11.2 19.6L3 29l6.6-1.7A13 13 0 1 0 16 3m0 23.7c-2 0-4-.6-5.7-1.6l-.4-.2-3.9 1 1-3.8-.3-.4A10.7 10.7 0 1 1 16 26.7"/></svg></button>
@@ -1494,7 +1500,7 @@ if (window.GradientWaves) window.worksWaves = GradientWaves(document.getElementB
       <p class="ct-err" id="ctErr" role="alert" aria-live="polite"></p>
     </form>
   </div>
-  <img class="foot-logo" src="assets/logo.png" alt="" aria-hidden="true">
+  <img class="foot-logo" src="assets/logo-big.png" alt="" aria-hidden="true">
   <footer class="ct-foot" dir="rtl">
     <nav aria-label="מידע משפטי"><a href="accessibility.html">הצהרת נגישות</a><a href="privacy.html">מדיניות פרטיות</a><a href="terms.html">תנאי שימוש</a></nav>
     <p>© 2026 הילה איבגי – <span lang="en">HILA IVGY</span>. כל הזכויות שמורות. הסימנים המסחריים והעבודות המוצגים שייכים לבעליהם ומוצגים כתיק עבודות.</p>
