@@ -105,10 +105,12 @@
   // interleave the clients so the same brand doesn't sit in a block
   const by = {}; all.forEach(x => (by[x.l] = by[x.l] || []).push(x));
   const labels = Object.keys(by).sort((a, b) => (FIRST.indexOf(a) + 1 || 99) - (FIRST.indexOf(b) + 1 || 99) || by[b].length - by[a].length);
-  // the page opens with the Hadas Capital ads, then the other ads; after them all the other works, mixed by client
-  const LEAD = ['הדס קפיטל', 'מודעות'], rest = labels.filter(l => !LEAD.includes(l));
-  const mixed = LEAD.flatMap(l => by[l] || []); const n0 = mixed.length;
-  for (let i = 0; mixed.length < all.length; i++) rest.forEach(l => by[l][i] && mixed.push(by[l][i]));
+  // the page opens with a mix of the strongest ads – Hadas Capital alternating with Ortal, ESTILO and the other ads,
+  // the Shilat film among the first few – and then every other client, one work of each in turn
+  const LEAD = ['הדס קפיטל', 'אורטל וייצמן', 'ESTILO', 'מודעות', 'MAROM', 'ZERO TEN'];
+  const order = [...LEAD.filter(l => by[l]), ...labels.filter(l => !LEAD.includes(l))];
+  const mixed = []; for (let i = 0; mixed.length < all.length; i++) order.forEach(l => by[l][i] && mixed.push(by[l][i]));
+  const n0 = 3;                                                     // the film goes right after the third work
   const VIDEO = { video: 'assets/branding/shilat.mp4', l: 'מודעות', alt: 'סרטון תדמית' };
 
   const grid = document.getElementById('grid'), chips = document.getElementById('chips'), more = document.getElementById('more'), count = document.getElementById('count');
