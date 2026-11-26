@@ -50,7 +50,9 @@
 .sh5 .sbody{text-align:center;padding:0 14% 10%}
 .sbody h3{margin:0 0 .3em;font-size:clamp(20px,1.7vw,32px);line-height:1.05}
 .sbody p{margin:0;font-size:clamp(13px,.95vw,17px);line-height:1.45;color:rgba(255,255,255,.92);font-weight:600}
-@media (max-width:900px){.serv{grid-template-columns:1fr;gap:70px}.scell{width:min(480px,100%);justify-self:center}.sbody p{font-size:15px}.sbody h3{font-size:24px}}
+@media (max-width:900px){.serv{grid-template-columns:1fr;gap:70px}.scell{width:min(480px,100%);justify-self:center}
+  /* phones: no backdrop blur behind the WebGL objects – some mobile GPUs drop the whole card when both are stacked */
+  .sstep{-webkit-backdrop-filter:none;backdrop-filter:none;background:linear-gradient(150deg,rgba(142,76,242,.5),rgba(82,39,255,.36) 55%,rgba(255,0,255,.28))}.sbody p{font-size:15px}.sbody h3{font-size:24px}}
 /* how I work – big gradient blocks, one under the other, alternating sides */
 .steps{list-style:none;margin:clamp(28px,4vw,60px) 0 0;padding:0;display:flex;flex-direction:column;gap:clamp(16px,2vw,28px);counter-reset:s}
 .steps li{position:relative;overflow:hidden;width:min(900px,100%);display:grid;grid-template-columns:auto minmax(0,1fr);align-items:center;gap:clamp(20px,3vw,50px);
