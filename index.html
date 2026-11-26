@@ -484,7 +484,7 @@ html[data-a11y-size="3"] :is(p,blockquote,label,h3,.ct-nav a,.ct-links a,.menu-l
 })();
 </script>
 <section class="hero hero-bg" id="hero" dir="ltr" tabindex="-1">
-<h1 class="sr" dir="rtl">הילה איבגי – בניית אתרים, עיצוב אתרים ומיתוג לעסקים. אין הזדמנות שנייה לרושם ראשוני – בוא נבנה לך אתר ייחודי שאי אפשר לשכוח.</h1>
+<h1 class="sr" dir="rtl">הילה איבגי – בניית אתרים, עיצוב אתרים ומיתוג לעסקים. אין הזדמנות שנייה לרושם ראשוני – בוא נבנה לך אתר ייחודי שישאיר רושם בלתי נשכח.</h1>
 <svg aria-hidden="true" viewBox="0 0 2576 1449" preserveAspectRatio="xMidYMid slice" style="position: absolute; inset: 0; z-index: 2; pointer-events: none; width: 100%; height: 100%; display: block">
 <defs>
 <linearGradient id="gl" x1="0" y1="0" x2="2576" y2="1449" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#4C3BE6" stop-opacity=".85"></stop><stop offset="1" stop-color="#8A4DF0" stop-opacity=".9"></stop></linearGradient>
@@ -571,10 +571,10 @@ html[data-a11y-size="3"] :is(p,blockquote,label,h3,.ct-nav a,.ct-links a,.menu-l
 <path d="M2254.0,1159.2 H2439.0 A137,137 0 0 1 2576.0,1296.2 V1449.0 H2391.0 A137,137 0 0 1 2254.0,1312.0 Z" fill="none" stroke="url(#gs)" stroke-width="2.6"></path>
 </g>
 <g class="hero-type" id="heroType" font-family="Lia Element, sans-serif" font-weight="600" direction="rtl" text-anchor="middle">
-<text class="big" x="1288" y="540" font-size="230" fill="#FFFFFF">אין הזדמנות שנייה</text>
-<text class="big" x="1288" y="752" font-size="230" fill="#0B0614">לרושם ראשוני</text>
-<text class="sub" x="1288" y="984" font-size="135" fill="#EFE6FF">בוא נבנה לך אתר ייחודי</text>
-<text class="sub" x="1288" y="1120" font-size="135" fill="#EFE6FF">שאי אפשר לשכוח</text></g>
+<text class="big" x="1288" y="540" font-size="230" fill="#FFFFFF">אין הזדמנות שניה</text>
+<text class="big" x="1288" y="752" font-size="230" fill="#FFFFFF">לרושם ראשוני</text>
+<text class="sub" x="1288" y="984" font-size="135" fill="#FFFFFF">בוא נבנה לך אתר ייחודי</text>
+<text class="sub" x="1288" y="1120" font-size="135" fill="#FFFFFF">שישאיר רושם בלתי נשכח</text></g>
 </svg>
 </section>
 <script>
@@ -617,7 +617,7 @@ html[data-a11y-size="3"] :is(p,blockquote,label,h3,.ct-nav a,.ct-links a,.menu-l
   // pw: line pitch as a fraction of the widest line's width (so the spacing keeps the design's proportion)
   // two big headline lines + two smaller sub lines, measured from the design (2000×1125 mock):
   // widest big line = 1425px, widest sub line = 1253px, baselines at 420 / 585 / 765 / 870, block centre at 587
-  const BASE = [420, 585, 735, 815], MID = 560, BIGW = 1425, SUBW = 880, BLOCK = 540;
+  const BASE = [420, 585, 765, 870], MID = 585, BIGW = 1425, SUBW = 1253, BLOCK = 570;
   function fit(W, cy, k, maxH = 1e9) {
     texts.forEach(t => { t.setAttribute('x', W / 2); t.setAttribute('font-size', 100); t.setAttribute('letter-spacing', -2); });
     let mb = 0, ms = 0;
@@ -639,7 +639,7 @@ html[data-a11y-size="3"] :is(p,blockquote,label,h3,.ct-nav a,.ct-links a,.menu-l
       // fit the text into the part of the box that is on screen in the first view
       const r = hero.getBoundingClientRect(), vis = Math.min(1449, 1449 * innerHeight / Math.max(r.height, 1));
       // measured from the design (2000×1125 mock): widest line = 83.5% of the width, pitch = 10.2% of it, block centre at 51.1% height
-      fit(2576, vis * .5, .7125, vis * .58);
+      fit(2576, vis * .52, .7125, vis * .6);
       return;
     }
     mode = 'm';
