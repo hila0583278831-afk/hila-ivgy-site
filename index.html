@@ -291,8 +291,8 @@ body.menu-open .menu-dim{opacity:1;pointer-events:auto}
 .tst-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));width:min(1700px,96vw);margin:0 auto;gap:0}
 .tcell{position:relative;aspect-ratio:395/370;box-sizing:border-box;margin:0 -.75px -.75px 0}
 .tshape{position:absolute;inset:0;box-sizing:border-box;border:1.5px solid #6A4BEA;display:flex;flex-direction:column;align-items:center;justify-content:center;
-  padding:12% 14%;text-align:center;transition:background .4s,border-color .4s,border-radius .9s cubic-bezier(.65,0,.35,1)}
-.tcell:hover .tshape{background:rgba(142,76,242,.07);border-color:#B046F2}
+  padding:12% 14%;text-align:center;transition:background-color .9s cubic-bezier(.65,0,.35,1),border-color .4s,border-radius .9s cubic-bezier(.65,0,.35,1)}
+.tcell:hover .tshape{border-color:#B046F2}
 .tc-mark{display:block;font-size:clamp(40px,3.2vw,62px);line-height:.6;height:.42em;margin-bottom:.35em;
   -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent}
 .tshape blockquote{margin:0;font-size:clamp(16px,1.32vw,24px);line-height:1.38;color:#1D1530}
@@ -1417,13 +1417,16 @@ if (window.GradientWaves) window.worksWaves = GradientWaves(document.getElementB
                   ['....', 'RRRR', '.R.R', 'RRRR', '....']];
   const grid = document.getElementById('tstGrid'), list = R.filter(r => !hide.includes(r[0]));
   const radius = m => [...m].map(c => c === 'R' ? '50%' : '0').join(' ');
+  // some cells carry a light tint; the tints move along with the shapes every 2 seconds
+  const TINT = ['#EFE6FF', 'transparent', '#F7E8FF', 'transparent', 'transparent', '#E6E9FF', 'transparent', '#FBEAF6', 'transparent', 'transparent', '#EDE4FF', 'transparent', 'transparent'];
+  const tint = (i, s) => TINT[(i * 7 + s * 5) % TINT.length];
   function build() {
     const cols = getComputedStyle(grid).gridTemplateColumns.split(' ').length;
     const n = Math.ceil(list.length / cols) * cols;                  // fill the last row with empty shapes
     let h = '';
     for (let i = 0; i < n; i++) {
       const r = Math.floor(i / cols), c = i % cols, m = SHAPES[r % 3][c % 5], q = list[i];
-      h += `<figure class="tcell" dir="rtl"><div class="tshape" style="border-radius:${radius(m)}">` +
+      h += `<figure class="tcell" dir="rtl"><div class="tshape" style="border-radius:${radius(m)};background-color:${tint(i, 0)}">` +
         (q ? `<span class="tc-mark" style="background-image:linear-gradient(135deg,${grads[i % grads.length]})" aria-hidden="true">״</span><blockquote>${q[0]}</blockquote>` : '') +
         `</div></figure>`;
     }
@@ -1442,6 +1445,7 @@ if (window.GradientWaves) window.worksWaves = GradientWaves(document.getElementB
       grid.querySelectorAll('.tshape').forEach((el, i) => {
         const r = Math.floor(i / cols), c = i % cols;
         el.style.borderRadius = radius(SHAPES[(r + shift) % 3][(c + shift) % 5]);
+        el.style.backgroundColor = tint(i, shift);
       });
     }, 2000);
   }
