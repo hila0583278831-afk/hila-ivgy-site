@@ -99,6 +99,17 @@ body.menu-open .menu-dim{opacity:1;pointer-events:auto}
 @keyframes heroFloat{0%,100%{transform:rotate(var(--r)) translateY(0)}50%{transform:rotate(var(--r)) translateY(-14px)}}
 @media (max-width:700px){.hero-mock{width:52vw;top:auto;bottom:-6vw}.hero-mock.l{left:-12vw}.hero-mock.r{right:-12vw}.hero-cta{padding:14px 28px}}
 @media (prefers-reduced-motion:reduce){.hero-mock{animation:none;transform:rotate(var(--r))}}
+/* passage gallery: a tunnel of project screens the visitor glides through, behind the headline */
+.tunnel{position:absolute;left:0;right:0;top:0;height:var(--hero-vis,100%);z-index:1;overflow:hidden;perspective:var(--tn-p,900px);pointer-events:none}
+.tn-world{position:absolute;left:50%;top:var(--tn-cy,44%);width:0;height:0;transform-style:preserve-3d}
+.tn-card{position:absolute;left:0;top:0;margin:0;backface-visibility:hidden;border-radius:10px;overflow:hidden;
+  background:#2A1650 center/cover no-repeat;box-shadow:0 0 0 1px rgba(200,170,255,.25),0 0 40px rgba(120,60,240,.35);will-change:transform,opacity}
+.tn-card::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(60,30,140,.18),rgba(30,10,70,.35))}
+/* the far end of the tunnel and the area right behind the words stay calm so the headline reads */
+.tn-shade{position:absolute;left:0;right:0;top:0;height:var(--hero-vis,100%);z-index:1;pointer-events:none;
+  background:radial-gradient(ellipse 44% 42% at 50% var(--tn-cy,44%),rgba(22,10,48,.9),rgba(22,10,48,.7) 45%,rgba(22,10,48,0) 100%),
+             linear-gradient(180deg,rgba(22,10,48,0) 75%,rgba(22,10,48,.55))}
+#hero svg > g[mask="url(#gmOut)"],#hero svg > use[mask="url(#gmIn)"]{display:none}
 
 /* ---------- projects wall (after tsivia.com's reel): cards fly in one by one and lock into a tilted grid ---------- */
 .reel{position:relative;height:620vh}
@@ -610,10 +621,83 @@ html[data-a11y-size="3"] :is(p,blockquote,label,h3,.ct-nav a,.ct-links a,.menu-l
 <text class="sub" x="1288" y="984" font-size="135" fill="#FFFFFF">בוא נבנה לך אתר ייחודי</text>
 <text class="sub" x="1288" y="1120" font-size="135" fill="#FFFFFF">שישאיר רושם בלתי נשכח</text></g>
 </svg>
-<figure class="hero-mock l" aria-hidden="true"><img src="assets/hero/mock-event-1000.png" alt="" decoding="async"></figure>
-<figure class="hero-mock r" aria-hidden="true"><img src="assets/hero/mock-ravitz-1000.png" alt="" decoding="async"></figure>
+<div class="tunnel" id="tunnel" aria-hidden="true"><div class="tn-world"></div></div><div class="tn-shade" aria-hidden="true"></div>
 <a class="hero-cta" href="#contact" dir="rtl">בואו נבנה את האתר שלכם <span aria-hidden="true">&larr;</span></a>
 </section>
+<script>
+/* PASSAGE GALLERY – a tunnel of all the project screens. Four walls (left, right, floor, ceiling) are lined with
+   screenshots that keep sliding toward the viewer; scrolling speeds the ride up and the pointer steers the view a little.
+   (TROLIST and RAVITZ appear only with their approved hero images.) */
+(() => {
+  const tn = document.getElementById('tunnel'), world = tn.querySelector('.tn-world'), hero = document.getElementById('hero');
+  const IM = ['shots/hapisga.webp', 'shots/in-avney-1.jpg', 'works/trolist-d.jpg', 'shots/event.webp', 'shots/home-biscotti.jpg', 'shots/in-vortex-0.jpg',
+    'shots/home-infinity.jpg', 'works/ravitz-d.jpg', 'shots/in-hapisga-2.jpg', 'shots/avney.webp', 'shots/in-event-2.jpg', 'shots/vortex.webp',
+    'shots/biscotti.webp', 'shots/in-hapisga-4.jpg', 'shots/in-avney-3.jpg', 'shots/in-event-0.jpg', 'shots/home-avney.jpg', 'shots/in-vortex-b.jpg',
+    'shots/in-hapisga-1.jpg', 'shots/in-avney-5.jpg', 'shots/in-hapisga-6.jpg', 'shots/in-hapisga-3.jpg', 'shots/in-avney-2.jpg'].map(s => 'assets/' + s);
+  const ROWS = 7;                    // cards along each lane
+  // lanes: wall + offset across the wall (-1..1)
+  const LANES = [['l', -.5], ['l', .5], ['r', -.5], ['r', .5], ['b', -.5], ['b', .5], ['t', -.5], ['t', .5]];
+  const cards = []; let n = 0;
+  LANES.forEach(([w, o], li) => {
+    for (let k = 0; k < ROWS; k++) {
+      const el = document.createElement('div'); el.className = 'tn-card';
+      el.style.backgroundImage = `url("${IM[(n++ * 5 + li) % IM.length]}")`;
+      world.appendChild(el);
+      cards.push({ el, w, o, k: k + (li % 2) * .5 });
+    }
+  });
+  let W2, H2, D, L, P, cw, ch, fw;
+  function size() {
+    const r = tn.getBoundingClientRect(), phone = r.width < 700;
+    W2 = r.width / 2; H2 = r.height / 2;
+    P = Math.max(r.width, r.height) * (phone ? 1.1 : .75); tn.style.setProperty('--tn-p', P + 'px');
+    D = r.height * (phone ? .55 : .62);          // card length along the tunnel (side walls)
+    ch = H2 * .78;                               // side card height
+    fw = W2 * .78;                               // floor / ceiling card width
+    L = ROWS * D * 1.18;                         // one full lap of a lane
+    cards.forEach(c => {
+      const side = c.w === 'l' || c.w === 'r', w = side ? D : fw, h = side ? ch : D * .62;
+      c.el.style.width = w + 'px'; c.el.style.height = h + 'px'; c.el.style.marginLeft = -w / 2 + 'px'; c.el.style.marginTop = -h / 2 + 'px';
+      c.len = side ? D : D * .62;
+    });
+  }
+  const still = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let t = 0, v = 0, last = 0, mx = 0, my = 0, ax = 0, ay = 0, seen = true, lastY = scrollY, boost = 0;
+  function draw() {
+    const gap = L / ROWS;
+    cards.forEach(c => {
+      // z runs from -L (far) to +P*.35 (just past the viewer), then wraps around
+      let z = ((c.k * gap + t) % L + L) % L - L + P * .35;
+      const far = (z + L) / (L * .55), near = (P * .35 - z) / (P * .5);
+      const op = Math.max(0, Math.min(1, far, near));
+      let tr;
+      if (c.w === 'l') tr = `translate3d(${-W2}px,${c.o * H2 * .95}px,${z}px) rotateY(90deg)`;
+      else if (c.w === 'r') tr = `translate3d(${W2}px,${c.o * H2 * .95}px,${z}px) rotateY(-90deg)`;
+      else if (c.w === 'b') tr = `translate3d(${c.o * W2 * .95}px,${H2}px,${z}px) rotateX(90deg)`;
+      else tr = `translate3d(${c.o * W2 * .95}px,${-H2}px,${z}px) rotateX(-90deg)`;
+      c.el.style.transform = tr; c.el.style.opacity = op.toFixed(3);
+    });
+    world.style.transform = `rotateY(${(ax * 4).toFixed(2)}deg) rotateX(${(-ay * 3).toFixed(2)}deg)`;
+  }
+  function frame(now) {
+    const dt = Math.min(50, now - (last || now)); last = now;
+    const dy = scrollY - lastY; lastY = scrollY;
+    boost = boost * .9 + Math.abs(dy) * .9;
+    v = .09 + Math.min(2.2, boost * .02);          // px per ms
+    t += v * dt;
+    ax += (mx - ax) * .05; ay += (my - ay) * .05;
+    draw();
+    raf = seen ? requestAnimationFrame(frame) : 0;
+  }
+  let raf = 0;
+  size(); t = L * .37; draw();
+  new ResizeObserver(() => { size(); draw(); }).observe(tn);
+  if (still) return;
+  hero.addEventListener('pointermove', e => { const r = hero.getBoundingClientRect(); mx = (e.clientX - r.left) / r.width * 2 - 1; my = (e.clientY - r.top) / r.height * 2 - 1; });
+  hero.addEventListener('pointerleave', () => { mx = my = 0; });
+  new IntersectionObserver(e => { seen = e[0].isIntersecting; if (seen && !raf) { last = 0; raf = requestAnimationFrame(frame); } }).observe(hero);
+})();
+</script>
 <script>
 /* phones: the landscape hero would be a thin strip, so rebuild it as a full-height portrait grid –
    4 cells across (same 322 x 289.8 leaf cells), the three lines stacked and sized to the width */
