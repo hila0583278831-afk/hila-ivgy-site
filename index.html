@@ -881,9 +881,9 @@ if (window.GhostCursor && matchMedia('(hover: hover)').matches) GhostCursor(docu
 
 <div class="wwrap">
 <div class="waves" aria-hidden="true"><div id="worksWaves"></div></div>
-<section class="reel" id="reel" aria-label="פרויקטים נבחרים">
+<section class="reel" id="reel" aria-label="הגישה שלי">
   <div class="lines" aria-hidden="true"></div>
-  <div class="stage" id="reelStage"><div class="plane" id="plane"></div>
+  <div class="stage" id="reelStage">
     <div class="rtext" dir="rtl"><div class="rwhite" id="rWhite">
       <svg id="rwSvg" aria-hidden="true" font-family="Lia Element, sans-serif" font-weight="600" direction="rtl" text-anchor="middle">
         <defs>
@@ -970,142 +970,28 @@ if (window.GhostCursor && matchMedia('(hover: hover)').matches) GhostCursor(docu
 })();
 </script>
 <script>
-/* Projects wall – same motion model as tsivia.com's reel, rebuilt for this site.
-   Scroll is split into four phases measured in screen heights: TILT → SIDE → UPDOWN → AWAY.
-   TILT   : the wall tilts to rotateX 54° / rotateZ −34° and scales up; cards fly in from outside (radially),
-            from 520 units in front, spinning slightly, each with a delay that grows with its distance from the centre.
-   SIDE   : rows slide sideways by 3 cells, even rows one way and odd rows the other (wrapping around).
-   UPDOWN : columns slide vertically by 3 cells, alternating direction (wrapping around).
-   AWAY   : cards sink back, shrink a little and fade, outer cards last.
-   Before all that, the mockup travels down from the hero into the centre slot. */
+/* The statement slide right under the hero (the tilted projects wall that used to lead into it was removed):
+   the white slide fades in as the section pins, then the headline and the paragraph rise into the panel. */
 (() => {
-  const sec = document.getElementById('reel'), stage = document.getElementById('reelStage'),
-        plane = document.getElementById('plane'),
-        rHead = document.getElementById('rHead'), rPara = document.getElementById('rPara'), rWhite = document.getElementById('rWhite');
-  if (matchMedia('(prefers-reduced-motion: reduce)').matches) { sec.style.display = 'none'; return; }
-  // home pages + inner pages, grouped by site; no card ever sits next to (or diagonal to) the same site
-  const POOL = {
-    ravitz:  ['ravitz-d.jpg', 'ravitz.webp'],
-    trolist: ['mock5.jpg', 'in-trolist-c.jpg', 'mock4.jpg', 'in-trolist-0.jpg'],
-    hapisga: ['in-hapisga-2.jpg', 'mock3.jpg', 'in-hapisga-4.jpg', 'in-hapisga-6.jpg', 'in-hapisga-1.jpg', 'in-hapisga-3.jpg', 'hapisga.webp', 'in-hapisga-c.jpg'],
-    avney:   ['in-avney-1.jpg', 'avney.webp', 'in-avney-2.jpg', 'in-avney-3.jpg', 'mock1.jpg', 'in-avney-c.jpg'],
-    event:   ['in-event-2.jpg', 'event.webp', 'in-event-c.jpg', 'mock2.jpg'],
-    vortex:  ['vortex.webp', 'vortex-d.jpg'],
-    biscotti:['biscotti.webp', 'biscotti-d.jpg']
-  };
-  const SITES = Object.keys(POOL), useN = {};
-  const HERO_IMG = 'assets/shots/ravitz.webp';
-  const clamp = (v, a = 0, b = 1) => Math.max(a, Math.min(b, v)), lerp = (a, b, t) => a + (b - a) * t;
-  const io3 = t => (t = clamp(t)) < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;   // ease in-out cubic
-  const io2 = t => (t = clamp(t)) < .5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;       // ease in-out quad
-  const smooth = t => (t = clamp(t)) * t * (3 - 2 * t);
-  const out3 = t => 1 - Math.pow(1 - clamp(t), 3);
-  const wrap = (v, span) => ((v + span / 2) % span + span) % span - span / 2;
-  const hash = n => { const t = Math.sin(n * 12.9898 + 78.233) * 43758.5453; return t - Math.floor(t); };
-
-  let G = {}, cards = [], PH, L;
-  function build() {
-    const vw = document.documentElement.clientWidth, vh = innerHeight, phone = vw < 900;
-    PH = phone ? { tilt: 1.8, side: 1, updown: 1, away: 1, hold: 1 } : { tilt: 2.2, side: 1.2, updown: 1.2, away: 1.4, hold: 1.2 };
-    L = PH.tilt + PH.side + PH.updown + PH.away + PH.hold;   // hold: the statement stays on screen before the next section
-    sec.style.height = (vh * (1 + L)) + 'px';
-    const u = vw / 1920, w = phone ? Math.min(vw * .56, 300) : 540 * u, h = w * 10 / 16, gap = .08 * w;
-    G = { u, vw, vh, phone, w, h, sx: w + gap, sy: h + gap, cols: phone ? 9 : 7, rows: phone ? 13 : 11 };
-    G.spanX = G.cols * G.sx; G.spanY = G.rows * G.sy;
-    G.dmax = Math.hypot((G.cols - 1) / 2, (G.rows - 1) / 2);
-    plane.textContent = ''; cards = [];
-    let n = 0; const grid = []; SITES.forEach(s => useN[s] = 0);
-    const cr = Math.floor(G.rows / 2), cc = Math.floor(G.cols / 2);
-    const pickSite = (r, c, k) => {
-      if (r === cr && c === cc) return 'ravitz';
-      const near = new Set();
-      for (let dr = -1; dr <= 1; dr++) for (let dc = -1; dc <= 1; dc++) {
-        const rr = r + dr, c2 = c + dc;
-        if (rr === cr && c2 === cc) near.add('ravitz');                       // the hero card's neighbours avoid Ravitz
-        if (grid[rr] && grid[rr][c2]) near.add(grid[rr][c2]);
-      }
-      // also look one row further down-left/right of the hero slot so nothing repeats around it
-      const ok = SITES.filter(s => !near.has(s));
-      const start = Math.floor(hash(k * 1.91 + 3) * ok.length);
-      return ok[start % ok.length] || SITES[k % SITES.length];
-    };
-    for (let r = 0; r < G.rows; r++) { grid[r] = []; for (let c = 0; c < G.cols; c++) grid[r][c] = pickSite(r, c, r * G.cols + c); }
-    // second pass: fix cells whose later (right / lower) neighbours clash
-    for (let pass = 0; pass < 3; pass++) for (let r = 0; r < G.rows; r++) for (let c = 0; c < G.cols; c++) {
-      if (r === cr && c === cc) continue;
-      const nb = []; for (let dr = -1; dr <= 1; dr++) for (let dc = -1; dc <= 1; dc++) if (dr || dc) nb.push(grid[(r + dr + G.rows) % G.rows][(c + dc + G.cols) % G.cols]);   // the plane wraps, so edges count too
-      if (nb.includes(grid[r][c])) { const alt = SITES.find(s => !nb.includes(s)); if (alt) grid[r][c] = alt; }
-    }
-    for (let r = 0; r < G.rows; r++) for (let c = 0; c < G.cols; c++, n++) {
-      const x = c - (G.cols - 1) / 2, y = r - (G.rows - 1) / 2, hero = x === 0 && y === 0;
-      const el = document.createElement('div'); el.className = 'rc'; el.style.width = w + 'px'; el.style.height = h + 'px';
-      const im = new Image(); im.alt = ''; im.decoding = 'async';
-      const site = grid[r][c], list = POOL[site];
-      im.src = hero ? HERO_IMG : 'assets/shots/' + list[(useN[site]++) % list.length];
-      el.appendChild(im); plane.appendChild(el);
-      const d = Math.hypot(x, y), q = d / G.dmax;
-      cards.push({ el, c: x, r: y, a: Math.atan2(y, x), hero: false,
-        inAt: clamp(.42 * q + .2 * hash(1.7 * n), 0, .62),
-        outAt: clamp(.45 * (1 - q) + .25 * hash(3.1 * n), 0, .7),
-        spin: 2 * (hash(5.3 * n) - .5) });
-    }
-  }
-
-  let E = null;
-  function render(snap) {
-    const b = sec.getBoundingClientRect(), vh = G.vh, top = b.top + scrollY;
-    const S = clamp((vh * .75 - b.top) / vh, 0, L);      // starts while the hero is still leaving the screen
-    E = (E === null || snap) ? S : E + .1 * (S - E);
-    if (Math.abs(S - E) < 5e-4) E = S;
-    let q = E;
-    const zT = clamp(q / PH.tilt); q -= PH.tilt;
-    const A = clamp(q / PH.side); q -= PH.side;
-    const C = clamp(q / PH.updown); q -= PH.updown;
-    const P = clamp(q / PH.away);
-
-    // statement grows in while the cards sink away
-    // the white slide fades in over the sinking cards, then the headline and the paragraph rise into the panel
-    const tw = smooth((P - .2) / .45), th = smooth((P - .38) / .35), tp = smooth((P - .52) / .4);
-    rWhite.style.opacity = tw.toFixed(3);
-    rWhite.style.transform = `scale(${(1.05 - .05 * tw).toFixed(4)})`;
-    rHead.style.opacity = th.toFixed(3);
-    rHead.style.transform = `translateY(${((1 - th) * 24).toFixed(1)}px)`;
-    rPara.style.opacity = tp.toFixed(3);
-    rPara.style.transform = `translateY(${((1 - tp) * 24).toFixed(1)}px)`;
+  const sec = document.getElementById('reel'), rHead = document.getElementById('rHead'), rPara = document.getElementById('rPara'), rWhite = document.getElementById('rWhite');
+  const clamp = (v, a = 0, b = 1) => Math.max(a, Math.min(b, v)), smooth = t => (t = clamp(t)) * t * (3 - 2 * t);
+  const IN = 1, HOLD = 1;                                  // screen heights: fade-in, then the statement stays
+  const size = () => { sec.style.height = (innerHeight * (1 + IN + HOLD)) + 'px'; };
+  const set = P => {
+    const tw = smooth(P / .45), th = smooth((P - .25) / .4), tp = smooth((P - .45) / .45);
+    rWhite.style.opacity = tw.toFixed(3); rWhite.style.transform = `scale(${(1.05 - .05 * tw).toFixed(4)})`;
+    rHead.style.opacity = th.toFixed(3); rHead.style.transform = `translateY(${((1 - th) * 24).toFixed(1)}px)`;
+    rPara.style.opacity = tp.toFixed(3); rPara.style.transform = `translateY(${((1 - tp) * 24).toFixed(1)}px)`;
     window.headCheck && window.headCheck();
-
-    // no mockup travels down from the hero any more – the wall starts straight away, the centre card flies in like the rest
-    const flying = false;
-
-    // the wall
-    const O = io2(zT / .7), Gp = io3(P);
-    const sc = lerp(1, G.phone ? 1.6 : 1.2, O) * lerp(1, .9, Gp);
-    plane.style.transform = `rotateX(${(54 * O + 3 * Gp).toFixed(2)}deg) rotateZ(${(-34 * O).toFixed(2)}deg) scale(${sc.toFixed(4)})`;
-    const V = 3 * io2(A), J = 3 * io2(C);
-    cards.forEach(e => {
-      const t = clamp((zT - e.inAt) / .38);
-      const i = e.hero ? 1 : out3(t), o = e.hero ? 1 : smooth(t / .45);
-      const rowDir = Math.round(e.r) % 2 === 0 ? 1 : -1;
-      let x = wrap(e.c * G.sx + rowDir * V * G.sx, G.spanX);
-      const colDir = Math.round(x / G.sx) % 2 === 0 ? -1 : 1;
-      let y = wrap(e.r * G.sy + colDir * J * G.sy, G.spanY);
-      const far = .7 * (1 - i) * Math.max(G.vw, vh);                          // fly in from outside, radially
-      x += Math.cos(e.a) * far; y += Math.sin(e.a) * far;
-      const gone = smooth((P - e.outAt) / .3);
-      const z = 520 * (1 - i) * G.u - 220 * gone * G.u;
-      const rot = (1 - i) * e.spin * 25, s = 1 - .08 * gone, op = o * (1 - gone);
-      e.el.style.opacity = op >= .999 ? '1' : op.toFixed(3);
-      e.el.style.visibility = (op < .005 || (e.hero && flying)) ? 'hidden' : 'visible';
-      e.el.style.transform = `translate3d(${(x - G.w / 2).toFixed(1)}px,${(y - G.h / 2).toFixed(1)}px,${z.toFixed(1)}px) rotateZ(${rot.toFixed(2)}deg) scale(${s.toFixed(4)})`;
-    });
-    return E !== S;
-  }
-
+  };
+  size();
+  if (matchMedia('(prefers-reduced-motion: reduce)').matches) { set(1); addEventListener('resize', size); return; }
   let queued = false;
-  const tick = () => { if (queued) return; queued = true; requestAnimationFrame(() => { queued = false; if (render()) tick(); }); };
-  build(); render(true);
+  const render = () => { queued = false; set(clamp((innerHeight * .5 - sec.getBoundingClientRect().top) / innerHeight / IN)); };
+  const tick = () => { if (!queued) { queued = true; requestAnimationFrame(render); } };
+  render();
   addEventListener('scroll', tick, { passive: true });
-  let rt = 0; addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(() => { build(); render(true); }, 150); });
+  addEventListener('resize', () => { size(); tick(); });
 })();
 </script>
 
