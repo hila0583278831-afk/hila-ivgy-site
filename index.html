@@ -1525,9 +1525,18 @@ if (window.GradientWaves) window.worksWaves = GradientWaves(document.getElementB
   function build() {
     const cols = getComputedStyle(grid).gridTemplateColumns.split(' ').length;
     const n = Math.ceil(list.length / cols) * cols;                  // fill the last row with empty shapes
+    // the same person never sits next to (or right above/below) their own other comments:
+    // fill the cells one by one, each time taking the next comment whose writer is not among the cell's neighbours
+    const left = list.slice(), seq = [];
+    for (let i = 0; left.length; i++) {
+      const near = [seq[i - 1], seq[i - cols], seq[i - cols - 1], seq[i - cols + 1]].map(q => q && q[3]).filter(Boolean);
+      let j = left.findIndex(q => !q[3] || !near.includes(q[3]));
+      if (j < 0) j = 0;
+      seq.push(left.splice(j, 1)[0]);
+    }
     let h = '';
     for (let i = 0; i < n; i++) {
-      const r = Math.floor(i / cols), c = i % cols, m = SHAPES[r % 3][c % 5], q = list[i];
+      const r = Math.floor(i / cols), c = i % cols, m = SHAPES[r % 3][c % 5], q = seq[i];
       h += `<figure class="tcell" dir="rtl"><div class="tshape" style="border-radius:${radius(m)};background-color:${tint(i, 0)}">` +
         (q ? `<span class="tc-mark" style="background-image:linear-gradient(135deg,${grads[i % grads.length]})" aria-hidden="true">״</span>${q[3] ? `<cite class="tc-name">${q[3]}</cite>` : ''}<blockquote>${q[0]}</blockquote>` : '') +
         `</div></figure>`;
