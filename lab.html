@@ -1,0 +1,302 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>HILA IVGY – גרסת ניסיון</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+@font-face{font-family:"Lia Element";src:url(assets/fonts/lia-element-semibold.ttf) format("truetype");font-weight:600;font-display:block}
+@font-face{font-family:"Ping";src:url(assets/fonts/ping-hl-medium.ttf) format("truetype");font-weight:100 900;font-display:swap}
+:root{
+  --char:#121014;      /* charcoal instead of black */
+  --g1:#1C1A20;        /* raised charcoal */
+  --g2:#2E2B33;        /* strong gray */
+  --g3:#4A4752;        /* mid gray (unlit letters) */
+  --g4:#8D8A94;        /* soft gray text */
+  --light:#E6E4EA;     /* light gray sections */
+  --p1:#6A4BEA;--p2:#8E4CF2;--p3:#C04CE8;
+  --mono:"JetBrains Mono",ui-monospace,monospace;
+  --head:"Lia Element","Ping",sans-serif;
+  --body:"Ping","Lia Element",Arial,sans-serif;
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--char);color:#fff;font-family:var(--body)}
+a{color:inherit}
+.mono{font-family:var(--mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase}
+
+/* thin gray column lines over the whole page (10 columns, like the hero grid) */
+.cols{position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:repeating-linear-gradient(90deg,rgba(255,255,255,.07) 0 1px,transparent 1px 10%)}
+@media (max-width:700px){.cols{background:repeating-linear-gradient(90deg,rgba(255,255,255,.07) 0 1px,transparent 1px 25%)}}
+
+/* header */
+.top{position:fixed;top:0;left:0;right:0;z-index:20;display:flex;justify-content:space-between;align-items:center;padding:22px 4vw;mix-blend-mode:difference}
+.logo{font-family:var(--head);font-size:22px;letter-spacing:.02em;text-decoration:none;direction:ltr}
+.top a.mono{text-decoration:none;border-bottom:1px solid currentColor;padding-bottom:2px}
+
+/* ---------- HERO ---------- */
+.hero{position:relative;z-index:1;height:100svh;min-height:560px;overflow:hidden;display:grid;place-items:center}
+#mesh{position:absolute;inset:0;width:100%;height:100%;display:block}
+.hero .in{position:relative;z-index:2;text-align:center;padding:0 5vw}
+.hero h1{margin:0;font-family:var(--head);font-weight:600;line-height:1.02;letter-spacing:-.01em;font-size:clamp(46px,8.4vw,148px)}
+.hero h1 .ln{display:block}
+.hero h1 .ln.sm{font-size:.5em;margin-top:.35em}
+.hero h1 .ch{color:var(--g3);transition:color .5s ease}
+.hero h1 .ch.on{color:#fff}
+.hero h1 .ch.on.pp{color:var(--p2)}
+.hero .meta{position:absolute;z-index:2;bottom:34px;left:4vw;right:4vw;display:flex;justify-content:space-between;align-items:flex-end;gap:20px;color:var(--g4)}
+.hero .meta p{margin:0;max-width:300px;font-family:var(--mono);font-size:12px;line-height:1.7;text-transform:none;letter-spacing:.02em}
+.cta{display:inline-flex;align-items:center;gap:12px;margin-top:42px;padding:16px 34px;border-radius:999px;background:#fff;color:var(--char);
+  text-decoration:none;font-family:var(--body);font-size:17px;transition:background .3s,color .3s}
+.cta:hover{background:var(--p2);color:#fff}
+.dot{display:inline-grid;place-items:center;width:92px;height:92px;border-radius:50%;background:var(--p1);color:#fff;text-decoration:none;text-align:center;
+  font-family:var(--mono);font-size:11px;letter-spacing:.08em;line-height:1.4;transition:transform .4s}
+.dot:hover{transform:scale(1.08) rotate(-6deg)}
+@media (max-width:700px){.hero .meta{flex-direction:column;align-items:center;text-align:center;bottom:22px}.hero .meta .r{display:none}}
+
+/* ---------- SHAPES: the leaf grid drifts, one shape grows, the words fall into it ---------- */
+.shapes{position:relative;z-index:1;height:420vh}
+.shapes .stage{position:sticky;top:0;height:100vh;overflow:hidden}
+.sgrid{position:absolute;inset:0}
+.scol{position:absolute;top:0;will-change:transform}
+.cell{position:absolute;left:0;border:1.3px solid rgba(230,228,234,.28)}
+.big{position:absolute;left:50%;top:50%;border:2.5px solid #fff;background:var(--char);will-change:width,height,border-radius;
+  box-shadow:0 0 0 0 rgba(142,76,242,0)}
+.big .lbl{position:absolute;top:28px;left:50%;transform:translateX(-50%);color:var(--g4);white-space:nowrap;opacity:0}
+.big .ttl{position:absolute;top:13%;left:0;right:0;text-align:center;font-family:var(--head);font-size:clamp(30px,4vw,62px);line-height:1.05;opacity:0}
+.big .ttl em{font-style:normal;color:var(--p2)}
+#pit{position:absolute;inset:0;width:100%;height:100%;display:block}
+@media (prefers-reduced-motion:reduce){.shapes{height:auto}.shapes .stage{position:relative}}
+
+/* ---------- next: light section, just to feel the contrast ---------- */
+.light{position:relative;z-index:1;background:var(--light);color:var(--char);padding:16vh 6vw;text-align:center}
+.light h2{margin:0;font-family:var(--head);font-size:clamp(44px,8vw,140px);line-height:1;letter-spacing:-.01em}
+.light h2 em{font-style:normal;color:var(--p1)}
+.light p{max-width:620px;margin:28px auto 0;font-size:19px;line-height:1.7;color:#3A3740}
+.light .mono{display:block;margin-top:18px;color:#6E6A76}
+</style>
+</head>
+<body>
+<div class="cols" aria-hidden="true"></div>
+<header class="top">
+  <a class="logo" href="index.html">HILA IVGY</a>
+  <a class="mono" href="index.html">← לאתר הנוכחי</a>
+</header>
+
+<main>
+<section class="hero" aria-labelledby="h1">
+  <canvas id="mesh" aria-hidden="true"></canvas>
+  <div class="in">
+    <h1 id="h1"><span class="ln">אין הזדמנות שניה</span><span class="ln">לרושם <span class="pp-word">ראשוני</span></span><span class="ln sm">בוא נבנה לך אתר שישאיר רושם בלתי נשכח</span></h1>
+    <a class="cta" href="index.html#contact">בואו נבנה את האתר שלכם <span aria-hidden="true">←</span></a>
+  </div>
+  <div class="meta">
+    <p>Web design · Branding · Digital experience<br>Hila Ivgy Studio</p>
+    <a class="dot r" href="index.html#contact">LET'S<br>TALK</a>
+    <span class="mono r">Scroll ↓</span>
+  </div>
+</section>
+
+<section class="shapes" id="shapes" aria-label="מה אני עושה">
+  <div class="stage" id="sStage">
+    <div class="sgrid" id="sGrid" aria-hidden="true"></div>
+    <div class="big" id="big"><span class="lbl mono">↓ What I do</span><div class="ttl" id="bigTtl">כל מה שצריך<br>ל<em>רושם ראשוני</em></div></div>
+    <canvas id="pit" aria-hidden="true"></canvas>
+  </div>
+  <p class="sr" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)">אפיון, עיצוב אתרים, בניית אתרים, מיתוג, UX/UI, אנימציה, חוויה דיגיטלית, דפי נחיתה.</p>
+</section>
+
+<section class="light">
+  <h2>עיצוב ש<em>מדבר</em><br>בשבילך</h2>
+  <p>אני כאן כדי לזהות את הייחודיות שלך ולהפוך אותה לשפה עיצובית מדויקת ולחוויה דיגיטלית בלתי נשכחת.</p>
+  <span class="mono">Design · Build · Brand</span>
+</section>
+</main>
+
+<script>
+/* HERO 1/2 – the headline lights up letter by letter: gray → white (the word "ראשוני" lights up purple) */
+(() => {
+  const h = document.getElementById('h1'), chars = [];
+  h.querySelectorAll('.ln').forEach(ln => {
+    const walk = (node, pp) => [...node.childNodes].forEach(n => {
+      if (n.nodeType === 3) {
+        const frag = document.createDocumentFragment();
+        [...n.textContent].forEach(c => { const s = document.createElement('span'); s.className = 'ch' + (pp ? ' pp' : ''); s.textContent = c; frag.appendChild(s); if (c.trim()) chars.push(s); });
+        n.replaceWith(frag);
+      } else walk(n, pp || n.classList.contains('pp-word'));
+    });
+    walk(ln, false);
+  });
+  const still = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  document.fonts.ready.then(() => chars.forEach((s, i) => setTimeout(() => s.classList.add('on'), still ? 0 : 250 + i * 45)));
+})();
+
+/* HERO 2/2 – a purple wire mesh hanging from the top, gently waving; the mouse tilts it a little */
+(() => {
+  const cv = document.getElementById('mesh'), cx = cv.getContext('2d');
+  const NX = 46, NY = 26;
+  let W, H, dpr, mx = 0, my = 0, tx = 0, ty = 0, run = true;
+  const size = () => { dpr = Math.min(2, devicePixelRatio || 1); W = cv.clientWidth; H = cv.clientHeight; cv.width = W * dpr; cv.height = H * dpr; cx.setTransform(dpr, 0, 0, dpr, 0, 0); };
+  size(); addEventListener('resize', size);
+  addEventListener('pointermove', e => { tx = e.clientX / innerWidth - .5; ty = e.clientY / innerHeight - .5; });
+  new IntersectionObserver(e => { run = e[0].isIntersecting; if (run) requestAnimationFrame(draw); }).observe(cv);
+  const still = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const P = [];
+  function draw(now) {
+    const t = still ? 0 : now / 1000;
+    mx += (tx - mx) * .04; my += (ty - my) * .04;
+    cx.clearRect(0, 0, W, H);
+    const S = Math.max(W, H * 1.6), f = S * .9, ry = -.95 + my * .25, rz = mx * .35;
+    const cy = Math.cos(ry), sy = Math.sin(ry), cz = Math.cos(rz), sz = Math.sin(rz);
+    for (let j = 0; j < NY; j++) for (let i = 0; i < NX; i++) {
+      const u = i / (NX - 1) - .5, v = j / (NY - 1) - .5;
+      let x = u * S * 1.1, z = v * S * .62;
+      // a soft sagging cloth: it dips in the middle and ripples slowly
+      let y = -S * .1 * (1 - (u * u * 2.4 + v * v * 1.4)) + Math.sin(u * 7 + t * .7) * S * .018 + Math.cos(v * 9 - t * .55) * S * .016 + Math.sin((u + v) * 5 + t * .4) * S * .012;
+      // rotate (tilt toward the viewer, then a little turn with the mouse)
+      let y2 = y * cy - z * sy, z2 = y * sy + z * cy;
+      let x2 = x * cz - y2 * sz; y2 = x * sz + y2 * cz;
+      z2 += S * 1.05;
+      const k = f / z2;
+      P[j * NX + i] = [W / 2 + x2 * k, H * .02 + y2 * k + H * -.02, z2];
+    }
+    const g = cx.createLinearGradient(0, 0, W, 0);
+    g.addColorStop(0, 'rgba(106,75,234,.75)'); g.addColorStop(.5, 'rgba(200,190,230,.6)'); g.addColorStop(1, 'rgba(192,76,232,.75)');
+    cx.strokeStyle = g; cx.lineWidth = 1;
+    cx.beginPath();
+    for (let j = 0; j < NY; j++) for (let i = 0; i < NX; i++) {
+      const p = P[j * NX + i];
+      if (i < NX - 1) { const q = P[j * NX + i + 1]; cx.moveTo(p[0], p[1]); cx.lineTo(q[0], q[1]); }
+      if (j < NY - 1) { const q = P[(j + 1) * NX + i]; cx.moveTo(p[0], p[1]); cx.lineTo(q[0], q[1]); }
+    }
+    cx.stroke();
+    // fade the mesh out toward the headline
+    const fade = cx.createLinearGradient(0, 0, 0, H);
+    fade.addColorStop(0, 'rgba(18,16,20,0)'); fade.addColorStop(.32, 'rgba(18,16,20,.1)'); fade.addColorStop(.55, 'rgba(18,16,20,1)');
+    cx.fillStyle = fade; cx.fillRect(0, 0, W, H);
+    if (run && !still) requestAnimationFrame(draw);
+  }
+  requestAnimationFrame(draw);
+})();
+
+/* SHAPES – pinned for 4 screens:
+   0  – .38  the leaf grid: columns drift up and down in turns as you scroll
+   .3 – .62  the middle shape lights up and grows into a big tall leaf, the grid dims
+   .6 – 1    the services drop into it as pills and pile up at the bottom (simple physics) */
+(() => {
+  const sec = document.getElementById('shapes'), stage = document.getElementById('sStage'), gridEl = document.getElementById('sGrid'),
+        big = document.getElementById('big'), ttl = document.getElementById('bigTtl'), lbl = big.querySelector('.lbl'), cv = document.getElementById('pit'), cx = cv.getContext('2d');
+  const clamp = (v, a = 0, b = 1) => Math.max(a, Math.min(b, v)), lerp = (a, b, t) => a + (b - a) * t;
+  const io = t => (t = clamp(t)) < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+  // the hero's corner patterns (TL TR BR BL), R = rounded
+  const PAT = ['.R.R', 'R.R.', 'RRRR', '..RR', 'RR..', '.R.R', 'R..R', 'R.R.'];
+  const rad = (m, w, h) => [...m].map(c => c === 'R' ? Math.min(w, h) / 2 + 'px' : '0').join(' ');
+  let vw, vh, cw, ch, cols = [], phone;
+  function build() {
+    vw = stage.clientWidth; vh = stage.clientHeight; phone = vw < 700;
+    const n = phone ? 4 : 10; cw = vw / n; ch = cw * 1.45;
+    const rows = Math.ceil(vh / ch) + 3;
+    gridEl.textContent = ''; cols = [];
+    for (let i = 0; i < n; i++) {
+      const col = document.createElement('div'); col.className = 'scol'; col.style.left = i * cw + 'px'; col.style.width = cw + 'px'; col.style.height = rows * ch + 'px';
+      for (let j = 0; j < rows; j++) {
+        const c = document.createElement('div'); c.className = 'cell';
+        const g = 6; c.style.top = j * ch + g + 'px'; c.style.left = g + 'px'; c.style.width = cw - 2 * g + 'px'; c.style.height = ch - 2 * g + 'px';
+        c.style.borderRadius = rad(PAT[(i * 3 + j * 5) % PAT.length], cw - 2 * g, ch - 2 * g);
+        col.appendChild(c);
+      }
+      gridEl.appendChild(col); cols.push({ el: col, dir: i % 2 ? 1 : -1, off: (i % 3) * ch * .33 });
+    }
+    const dpr = Math.min(2, devicePixelRatio || 1); cv.width = vw * dpr; cv.height = vh * dpr; cx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    sec.style.height = phone ? '360vh' : '420vh';
+  }
+  // the big leaf: from one cell to a tall shape with a round bottom (a "U") and a rounded top-right corner
+  let BIG = { w: 0, h: 0, x: 0, y: 0 };
+  function setBig(g) {
+    const w0 = cw - 12, h0 = ch - 12, w1 = Math.min(vw * (phone ? .9 : .5), 760), h1 = vh * (phone ? .82 : .86);
+    const w = lerp(w0, w1, g), h = lerp(h0, h1, g);
+    big.style.width = w + 'px'; big.style.height = h + 'px';
+    big.style.transform = `translate(-50%,-50%) translateY(${lerp(0, vh * .04, g)}px)`;
+    const r = w / 2, rt = lerp(0, Math.min(w1, h1) * .28, g);
+    big.style.borderRadius = `${lerp(r, 0, g)}px ${rt}px ${r}px ${r}px`;    // TL TR BR BL (corners in a LTR box)
+    big.style.boxShadow = `0 0 ${60 * g}px ${10 * g}px rgba(142,76,242,${.25 * g})`;
+    BIG = { w, h, x: (vw - w) / 2, y: (vh - h) / 2 + lerp(0, vh * .04, g), r };
+  }
+
+  // ---- the falling services ----
+  const WORDS = ['אפיון', 'עיצוב אתרים', 'בניית אתרים', 'מיתוג', 'UX / UI', 'אנימציה', 'חוויה דיגיטלית', 'דפי נחיתה', 'קופירייטינג', 'לוגו', 'שפה עיצובית', 'חנויות'];
+  const FILL = ['#E6E4EA', '#2E2B33', '#6A4BEA', '#E6E4EA', '#8E4CF2', '#2E2B33', '#E6E4EA', '#C04CE8', '#2E2B33', '#E6E4EA', '#6A4BEA', '#4A4752'];
+  let balls = [], dropped = false, simOn = false;
+  function drop() {
+    dropped = true; balls = [];
+    const s = Math.min(BIG.w / 560, 1.2);
+    WORDS.forEach((w, i) => {
+      const r = (phone ? 36 : 50) * s * (.85 + ((i * 37) % 10) / 22);
+      const x = BIG.x + BIG.w / 2 + Math.sin(i * 2.3) * BIG.w * .28, y = -r - i * r * 1.1;
+      balls.push({ w, r, x, y, px: x - Math.sin(i) * .6, py: y - 2, fill: FILL[i % FILL.length] });
+    });
+    if (!simOn) { simOn = true; requestAnimationFrame(sim); }
+  }
+  function sim() {
+    const G = .55, left = BIG.x + 2, right = BIG.x + BIG.w - 2, bot = BIG.y + BIG.h - 2, bc = { x: BIG.x + BIG.w / 2, y: bot - BIG.w / 2 }, R0 = BIG.w / 2 - 2;
+    let moving = 0;
+    balls.forEach(b => { const vx = (b.x - b.px) * .99, vy = (b.y - b.py) * .99; b.px = b.x; b.py = b.y; b.x += vx; b.y += vy + G; });
+    for (let it = 0; it < 6; it++) {
+      for (let a = 0; a < balls.length; a++) for (let c = a + 1; c < balls.length; c++) {
+        const A = balls[a], B = balls[c], dx = B.x - A.x, dy = B.y - A.y, d = Math.hypot(dx, dy) || .01, m = A.r + B.r;
+        if (d < m) { const k = (m - d) / d * .5; A.x -= dx * k; A.y -= dy * k; B.x += dx * k; B.y += dy * k; }
+      }
+      balls.forEach(b => {
+        if (b.y > bc.y) { const dx = b.x - bc.x, dy = b.y - bc.y, d = Math.hypot(dx, dy); if (d > R0 - b.r) { const k = (R0 - b.r) / d; b.x = bc.x + dx * k; b.y = bc.y + dy * k; } }
+        b.x = clamp(b.x, left + b.r, right - b.r);
+      });
+    }
+    balls.forEach(b => { moving += Math.abs(b.x - b.px) + Math.abs(b.y - b.py); });
+    paint();
+    simOn = dropped && moving > .05 * balls.length;
+    if (simOn) requestAnimationFrame(sim);
+  }
+  function paint() {
+    cx.clearRect(0, 0, vw, vh);
+    cx.save();
+    // clip to the big shape so nothing pokes out of it
+    cx.beginPath(); cx.rect(BIG.x, -vh, BIG.w, BIG.y + BIG.h - BIG.w / 2 + vh); cx.arc(BIG.x + BIG.w / 2, BIG.y + BIG.h - BIG.w / 2, BIG.w / 2, 0, Math.PI); cx.clip();
+    balls.forEach(b => {
+      cx.beginPath(); cx.arc(b.x, b.y, b.r, 0, Math.PI * 2); cx.fillStyle = b.fill; cx.fill();
+      const dark = b.fill === '#E6E4EA';
+      cx.fillStyle = dark ? '#121014' : '#fff';
+      let fs = b.r * .36; cx.font = `600 ${fs}px "Lia Element", sans-serif`;
+      const tw = cx.measureText(b.w).width; if (tw > b.r * 1.55) { fs *= b.r * 1.55 / tw; cx.font = `600 ${fs}px "Lia Element", sans-serif`; }
+      cx.textAlign = 'center'; cx.textBaseline = 'middle'; cx.direction = 'rtl';
+      cx.fillText(b.w, b.x, b.y + 1);
+    });
+    cx.restore();
+  }
+
+  function render() {
+    const b = sec.getBoundingClientRect(), span = sec.offsetHeight - vh;
+    const p = clamp(-b.top / span);
+    // columns drift in turns
+    const drift = p * ch * 3;
+    cols.forEach(c => { let y = (c.dir * drift + c.off) % ch; if (y > 0) y -= ch; c.el.style.transform = `translateY(${y - ch}px)`; });
+    const g = io((p - .3) / .3);
+    gridEl.style.opacity = (1 - .55 * g).toFixed(3);
+    big.style.opacity = clamp(p / .05 + .2).toFixed(3);
+    setBig(g);
+    lbl.style.opacity = clamp((g - .7) / .3).toFixed(3);
+    ttl.style.opacity = clamp((p - .58) / .08).toFixed(3);
+    if (p > .64 && !dropped) drop();
+    if (p < .6 && dropped) { dropped = false; balls = []; cx.clearRect(0, 0, vw, vh); }
+    if (dropped && !simOn) paint();
+  }
+  build(); render();
+  if (matchMedia('(prefers-reduced-motion: reduce)').matches) { setBig(1); ttl.style.opacity = 1; return; }
+  let q = false; addEventListener('scroll', () => { if (!q) { q = true; requestAnimationFrame(() => { q = false; render(); }); } }, { passive: true });
+  addEventListener('resize', () => { build(); dropped = false; balls = []; render(); });
+})();
+</script>
+</body>
+</html>
